@@ -23,7 +23,8 @@ RUN apk add --no-cache \
     gcc \
     g++ \
     make \
-    $PHPIZE_DEPS
+    $PHPIZE_DEPS \
+    fcgi
 
 # Configuração de extensões PHP
 RUN docker-php-ext-configure gd --with-freetype --with-jpeg \
@@ -105,7 +106,7 @@ RUN mv "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini" \
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=3s --start-period=40s --retries=3 \
-    CMD php-fpm-healthcheck || exit 1
+    CMD SCRIPT_NAME=/ping SCRIPT_FILENAME=/ping REQUEST_METHOD=GET cgi-fcgi -bind -connect 127.0.0.1:9000 || exit 1
 
 # Exposição da porta PHP-FPM
 EXPOSE 9000

@@ -4,17 +4,17 @@ services:
   # Aplicação Laravel
   app:
     build:
-      context: .
+      context: ../../
       dockerfile: Dockerfile
       target: production
     container_name: planeta-boy-app
     restart: unless-stopped
     working_dir: /var/www/html
     volumes:
-      - ./:/var/www/html
+      - ../../:/var/www/html
       - ./storage:/var/www/html/storage
     env_file:
-      - .env.docker
+      - ./.env
     networks:
       - planeta-boy-network
     depends_on:
@@ -32,9 +32,9 @@ services:
       - "80:80"
       - "443:443"
     volumes:
-      - ./:/var/www/html
-      - ./nginx.conf:/etc/nginx/nginx.conf
-      - ./docker/nginx/ssl:/etc/nginx/ssl
+      - ../../:/var/www/html
+      - ../../nginx.conf:/etc/nginx/nginx.conf
+      - ../../docker/nginx/ssl:/etc/nginx/ssl
     networks:
       - planeta-boy-network
     depends_on:
@@ -54,7 +54,7 @@ services:
       - "3307:3306"
     volumes:
       - mysql_data:/var/lib/mysql
-      - ./docker/mysql/my.cnf:/etc/mysql/conf.d/my.cnf
+      - ../../docker/mysql/my.cnf:/etc/mysql/conf.d/my.cnf
     networks:
       - planeta-boy-network
     healthcheck:
@@ -83,17 +83,17 @@ services:
   # Queue Worker
   queue:
     build:
-      context: .
+      context: ../../
       dockerfile: Dockerfile
       target: production
     container_name: planeta-boy-queue
     restart: unless-stopped
     working_dir: /var/www/html
     volumes:
-      - ./:/var/www/html
+      - ../../:/var/www/html
       - ./storage:/var/www/html/storage
     env_file:
-      - .env.docker
+      - ./.env
     command: php artisan queue:work --sleep=3 --tries=3 --timeout=90
     networks:
       - planeta-boy-network
@@ -105,17 +105,17 @@ services:
   # Scheduler (Cron)
   scheduler:
     build:
-      context: .
+      context: ../../
       dockerfile: Dockerfile
       target: production
     container_name: planeta-boy-scheduler
     restart: unless-stopped
     working_dir: /var/www/html
     volumes:
-      - ./:/var/www/html
+      - ../../:/var/www/html
       - ./storage:/var/www/html/storage
     env_file:
-      - .env.docker
+      - ./.env
     command: >
       sh -c "while true; do
         php artisan schedule:work --verbose --no-interaction &
