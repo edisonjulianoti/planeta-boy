@@ -1,0 +1,139 @@
+version: '3.8'
+
+services:
+  # Aplicação Laravel
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: production
+    container_name: planeta-boy-app
+    restart: unless-stopped
+    working_dir: /var/www/html
+    volumes:
+      - ./:/var/www/html
+      - ./storage:/var/www/html/storage
+    env_file:
+      - .env.docker
+    networks:
+      - planeta-boy-network
+    depends_on:
+      mysql:
+        condition: service_healthy
+      redis:
+        condition: service_started
+
+  # Nginx como proxy reverso
+  nginx:
+    image: nginx:alpine
+    container_name: planeta-boy-nginx
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./:/var/www/html
+      - ./nginx.conf:/etc/nginx/nginx.conf
+      - ./docker/nginx/ssl:/etc/nginx/ssl
+    networks:
+      - planeta-boy-network
+    depends_on:
+      - app
+
+  # MySQL
+  mysql:
+    image: mysql:8.0
+    container_name: planeta-boy-mysql
+    restart: unless-stopped
+    environment:
+      - MYSQL_ROOT_PASSWORD=root_password
+      - MYSQL_DATABASE=planeta_boy
+      - MYSQL_USER=planeta_user
+      - MYSQL_PASSWORD=planeta_password
+    ports:
+      - "3307:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./docker/mysql/my.cnf:/etc/mysql/conf.d/my.cnf
+    networks:
+      - planeta-boy-network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-proot_password"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Redis
+  redis:
+    image: redis:7-alpine
+    container_name: planeta-boy-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - planeta-boy-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Queue Worker
+  queue:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: production
+    container_name: planeta-boy-queue
+    restart: unless-stopped
+    working_dir: /var/www/html
+    volumes:
+      - ./:/var/www/html
+      - ./storage:/var/www/html/storage
+    env_file:
+      - .env.docker
+    command: php artisan queue:work --sleep=3 --tries=3 --timeout=90
+    networks:
+      - planeta-boy-network
+    depends_on:
+      - app
+      - mysql
+      - redis
+
+  # Scheduler (Cron)
+  scheduler:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: production
+    container_name: planeta-boy-scheduler
+    restart: unless-stopped
+    working_dir: /var/www/html
+    volumes:
+      - ./:/var/www/html
+      - ./storage:/var/www/html/storage
+    env_file:
+      - .env.docker
+    command: >
+      sh -c "while true; do
+        php artisan schedule:work --verbose --no-interaction &
+        sleep 60;
+      done"
+    networks:
+      - planeta-boy-network
+    depends_on:
+      - app
+      - mysql
+      - redis
+
+networks:
+  planeta-boy-network:
+    driver: bridge
+
+volumes:
+  mysql_data:
+    driver: local
+  redis_data:
+    driver: local

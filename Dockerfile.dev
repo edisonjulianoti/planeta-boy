@@ -1,0 +1,108 @@
+# Dockerfile para Desenvolvimento - Laravel 13
+
+# Stage base - PHP 8.3 com extensões necessárias
+FROM php:8.3-fpm-alpine AS base
+
+# Instalação de dependências do sistema
+RUN apk add --no-cache \
+    git \
+    curl \
+    zip \
+    unzip \
+    libpng-dev \
+    libjpeg-turbo-dev \
+    freetype-dev \
+    libzip-dev \
+    icu-dev \
+    oniguruma-dev \
+    postgresql-dev \
+    mysql-client \
+    nodejs \
+    npm \
+    autoconf \
+    gcc \
+    g++ \
+    make \
+    $PHPIZE_DEPS \
+    linux-headers
+
+# Configuração de extensões PHP
+RUN docker-php-ext-configure gd --with-freetype --with-jpeg \
+    && docker-php-ext-install -j$(nproc) \
+    gd \
+    pdo \
+    pdo_mysql \
+    pdo_pgsql \
+    mbstring \
+    exif \
+    pcntl \
+    bcmath \
+    intl \
+    zip \
+    opcache
+
+# Instalação do Redis via PECL
+RUN pecl install redis \
+    && docker-php-ext-enable redis
+
+# Instalação do Xdebug para desenvolvimento
+RUN pecl install xdebug \
+    && docker-php-ext-enable xdebug
+
+# Configuração Xdebug
+RUN echo "xdebug.mode=debug" >> /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini \
+    && echo "xdebug.client_host=host.docker.internal" >> /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini \
+    && echo "xdebug.client_port=9003" >> /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini \
+    && echo "xdebug.log=/var/log/xdebug.log" >> /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini
+
+# Instalação do Composer
+COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
+
+# Configuração do diretório de trabalho
+WORKDIR /var/www/html
+
+# Stage de desenvolvimento
+FROM base AS development
+
+# Copia arquivos de dependências
+COPY composer.json composer.lock ./
+COPY package.json package-lock.json ./
+
+# Copia o restante dos arquivos do projeto
+COPY . .
+
+# Instalação de dependências PHP (incluindo dev)
+RUN composer install \
+    --no-interaction \
+    --no-ansi \
+    --prefer-dist \
+    --optimize-autoloader \
+    --no-scripts
+
+# Instalação de dependências Node
+RUN npm install
+
+# Criar diretórios necessários
+RUN mkdir -p /var/www/html/storage \
+    /var/www/html/bootstrap/cache \
+    /var/www/html/storage/framework/cache \
+    /var/www/html/storage/framework/sessions \
+    /var/www/html/storage/framework/views
+
+# Permissões de diretórios
+RUN chown -R www-data:www-data \
+    /var/www/html/storage \
+    /var/www/html/bootstrap/cache \
+    && chmod -R 775 \
+    /var/www/html/storage \
+    /var/www/html/bootstrap/cache
+
+# Configuração PHP de desenvolvimento
+RUN echo "opcache.enable=0" >> /usr/local/etc/php/conf.d/custom.ini \
+    && echo "display_errors=On" >> /usr/local/etc/php/conf.d/custom.ini \
+    && echo "error_reporting=E_ALL" >> /usr/local/etc/php/conf.d/custom.ini
+
+# Exposição da porta PHP-FPM
+EXPOSE 9000
+
+CMD ["php-fpm"]

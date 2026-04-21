@@ -1,0 +1,100 @@
+@import 'tailwindcss';
+
+:root {
+    --background: #050505;
+    --foreground: #fafafa;
+    --card: #121212;
+    --card-foreground: #fafafa;
+    --primary: #fbbf24;
+    --primary-foreground: #000000;
+    --muted: #27272a;
+    --muted-foreground: #a1a1aa;
+    --border: #27272a;
+}
+
+body {
+    background: var(--background);
+    color: var(--foreground);
+    font-family: system-ui, sans-serif;
+}
+
+button, [role="button"], a, input[type="button"], input[type="submit"] {
+    cursor: pointer;
+}
+
+button:disabled, [disabled] {
+    cursor: not-allowed;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(16px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.fade-in {
+    animation: fadeIn 0.4s ease forwards;
+}
+
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #27272a; border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: #3f3f46; }
+
+.scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+.scrollbar-hide::-webkit-scrollbar { display: none; }
+
+@source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
+@source '../../storage/framework/views/*.php';
+@source '../**/*.blade.php';
+@source '../**/*.js';
+
+@theme {
+    /* Tokens alinhados a site-old-antigo-clonagem/tailwind.config.ts */
+    --color-primary: #fbbf24;
+    --color-primary-foreground: #000000;
+    --color-background: #050505;
+    --color-foreground: #fafafa;
+    --color-card: #121212;
+    --color-card-foreground: #fafafa;
+    --color-muted: #27272a;
+    --color-muted-foreground: #a1a1aa;
+    --color-border: #27272a;
+
+    --font-sans: 'Montserrat', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol',
+        'Noto Color Emoji';
+
+    /* Spacing - Container Padding */
+    --container-padding-sm: 1rem; /* 16px */
+    --container-padding-md: 1.5rem; /* 24px */
+    --container-padding-lg: 2rem; /* 32px */
+    --container-padding-xl: 7.5rem; /* 120px - hero/header */
+
+    /* Spacing - Section Padding */
+    --section-padding-y-sm: 4rem; /* 64px */
+    --section-padding-y-md: 5rem; /* 80px */
+    --section-padding-y-lg: 6rem; /* 96px */
+
+    /* Spacing - Card Padding */
+    --card-padding-sm: 1rem; /* 16px */
+    --card-padding-md: 1.5rem; /* 24px */
+    --card-padding-lg: 2rem; /* 32px */
+
+    /* Spacing - Gaps */
+    --gap-sm: 1rem; /* 16px */
+    --gap-md: 1.5rem; /* 24px */
+    --gap-lg: 2rem; /* 32px */
+    --gap-xl: 4rem; /* 64px */
+
+    /* Border Radius */
+    --radius-sm: 0.5rem; /* 8px */
+    --radius-md: 0.75rem; /* 12px */
+    --radius-lg: 1rem; /* 16px */
+
+    /* Max Widths */
+    --max-width-narrow: 28rem; /* 448px */
+    --max-width-content: 48rem; /* 768px */
+    --max-width-wide: 80rem; /* 1280px */
+}
