@@ -20,7 +20,7 @@
         <div class="container mx-auto flex h-full items-center justify-between px-4 lg:px-8">
             {{-- Logo --}}
             <a href="{{ url('/') }}" class="relative z-10 flex items-center gap-3 cursor-pointer">
-                <span class="text-2xl font-black uppercase tracking-tight text-primary">PLANETA BOYS</span>
+                <span class="text-2xl font-black uppercase italic tracking-tight text-white"><span class="text-primary">PLANETA</span><span class="text-foreground">BOYS</span></span>
             </a>
 
             {{-- Desktop Nav --}}
@@ -158,7 +158,7 @@
             <div class="flex flex-col md:flex-row justify-between gap-16">
             {{-- Coluna Esquerda --}}
             <div class="flex flex-col gap-4 max-w-[300px]">
-                <h3 class="text-primary text-[24px] font-extrabold">PLANETA BOYS</h3>
+                <h3 class="text-[24px] font-extrabold"><span class="text-primary">PLANETA</span> <span class="text-foreground">BOYS</span></h3>
                 <p class="text-zinc-400 text-[14px] font-normal">O melhor diretório premium para conectar você aos melhores acompanhantes masculinos e trans.</p>
                 <p class="text-zinc-400 text-[12px] font-normal">© 2026 Planeta Boys.</p>
             </div>
