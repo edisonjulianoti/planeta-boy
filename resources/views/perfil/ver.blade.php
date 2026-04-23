@@ -12,37 +12,131 @@
             <div class="space-y-8">
 
                 {{-- Galeria Principal --}}
-                <div class="relative rounded-2xl overflow-hidden h-[400px] sm:h-[560px] p-4 bg-zinc-900">
-                    @if($perfil->images->isNotEmpty())
-                        @php $mainImage = $perfil->images()->where('is_main', true)->first() ?? $perfil->images->first(); @endphp
-                        <div class="relative w-full h-full rounded-xl overflow-hidden">
-                            <img id="img-principal" src="{{ asset('storage/' . $mainImage->url) }}" alt="{{ $perfil->name }}"
-                                 class="w-full h-full object-cover">
-                            {{-- Badge de Verificação --}}
-                            @if($perfil->verified)
-                            <div class="absolute top-4 right-4">
-                                <div class="w-8 h-8 rounded-full bg-green-500 flex items-center justify-center">
-                                    <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 24 24"><path d="M9 12l2 2 4-4m6 2a9 9 0 1 1-18 0 9 9 0 0 1 18 0z"/></svg>
+                <div class="relative rounded-2xl overflow-hidden bg-zinc-900">
+                    @php
+                        $images = $perfil->images->sortBy('order')->values();
+                        $videos = $perfil->videos->sortBy('order')->values();
+                        
+                        // Misturar imagens e vídeos em um array ordenado
+                        $media = collect();
+                        foreach ($images as $image) {
+                            $media->push((object)[
+                                'type' => 'image',
+                                'data' => $image,
+                                'order' => $image->order,
+                                'is_main' => $image->is_main,
+                            ]);
+                        }
+                        foreach ($videos as $video) {
+                            $media->push((object)[
+                                'type' => 'video',
+                                'data' => $video,
+                                'order' => $video->order,
+                                'is_main' => $video->is_main,
+                            ]);
+                        }
+                        $media = $media->sortBy('order')->values();
+                        
+                        $mainMedia = $media->where('is_main', true)->first() ?? $media->first();
+                    @endphp
+                    
+                    @if($media->isNotEmpty())
+                        <div class="relative h-[400px] sm:h-[560px] p-4">
+                            <div class="relative w-full h-full rounded-xl overflow-hidden cursor-pointer" onclick="openLightbox()">
+                                @if($mainMedia->type === 'video')
+                                    <iframe id="media-principal" 
+                                            src="https://www.youtube.com/embed/{{ $mainMedia->data->video_id }}?enablejsapi=1" 
+                                            class="w-full h-full"
+                                            frameborder="0" 
+                                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                                            allowfullscreen></iframe>
+                                @else
+                                    <img id="media-principal" src="{{ asset('storage/' . $mainMedia->data->url) }}" alt="{{ $perfil->name }}"
+                                         class="w-full h-full object-cover transition-opacity duration-300">
+                                @endif
+                                {{-- Badge de Verificação --}}
+                                @if($perfil->verified)
+                                <div class="absolute top-4 right-4">
+                                    <div class="w-8 h-8 rounded-full bg-green-500 flex items-center justify-center">
+                                        <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 24 24"><path d="M9 12l2 2 4-4m6 2a9 9 0 1 1-18 0 9 9 0 0 1 18 0z"/></svg>
+                                    </div>
                                 </div>
+                                @endif
                             </div>
+
+                            {{-- Setas de Navegação --}}
+                            @if($media->count() > 1)
+                            <button onclick="changeImage(-1)" class="absolute left-6 top-1/2 -translate-y-1/2 w-12 h-12 bg-black/50 hover:bg-black/70 rounded-full flex items-center justify-center transition-colors cursor-pointer z-10">
+                                <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+                            </button>
+                            <button onclick="changeImage(1)" class="absolute right-6 top-1/2 -translate-y-1/2 w-12 h-12 bg-black/50 hover:bg-black/70 rounded-full flex items-center justify-center transition-colors cursor-pointer z-10">
+                                <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                            </button>
                             @endif
                         </div>
-                        {{-- Dots de Navegação --}}
-                        @if($perfil->images->count() > 1)
-                        <div class="absolute bottom-4 left-4 right-4 flex justify-center gap-2">
-                            @foreach($perfil->images->sortBy('order') as $index => $imagem)
-                                <button type="button"
-                                        onclick="document.getElementById('img-principal').src='{{ asset('storage/' . $imagem->url) }}'"
-                                        class="w-2 h-2 rounded-full {{ $index === 0 ? 'bg-white' : 'bg-zinc-500' }} transition-colors">
-                                </button>
-                            @endforeach
+
+                        {{-- Miniaturas --}}
+                        @if($media->count() > 1)
+                        <div class="p-4 pb-6">
+                            <div class="flex gap-3 overflow-x-auto pb-2">
+                                @foreach($media as $index => $item)
+                                    <button onclick="setImage({{ $index }})" class="shrink-0 w-20 h-20 rounded-lg overflow-hidden border-2 transition-all cursor-pointer {{ $index === 0 ? 'border-primary' : 'border-transparent hover:border-zinc-600' }}">
+                                        @if($item->type === 'video')
+                                            <div class="relative w-full h-full bg-zinc-800 flex items-center justify-center">
+                                                <img src="https://img.youtube.com/vi/{{ $item->data->video_id }}/mqdefault.jpg" alt="Miniatura vídeo {{ $index + 1 }}" class="w-full h-full object-cover">
+                                                <div class="absolute inset-0 flex items-center justify-center">
+                                                    <svg class="w-8 h-8 text-white drop-shadow-lg" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                                                </div>
+                                            </div>
+                                        @else
+                                            <img src="{{ asset('storage/' . $item->data->url) }}" alt="Miniatura {{ $index + 1 }}" class="w-full h-full object-cover">
+                                        @endif
+                                    </button>
+                                @endforeach
+                            </div>
                         </div>
                         @endif
                     @else
-                        <div class="w-full h-full flex items-center justify-center bg-zinc-800 rounded-xl">
+                        <div class="w-full h-[400px] sm:h-[560px] flex items-center justify-center bg-zinc-800 rounded-xl">
                             <svg class="w-24 h-24 text-zinc-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
                         </div>
                     @endif
+                </div>
+
+                {{-- Lightbox Modal --}}
+                <div id="lightbox" class="fixed inset-0 bg-black/95 z-50 hidden flex items-center justify-center p-4">
+                    <button onclick="closeLightbox()" class="absolute top-4 right-4 w-12 h-12 bg-white/10 hover:bg-white/20 rounded-full flex items-center justify-center transition-colors cursor-pointer z-10">
+                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                    </button>
+
+                    <button onclick="changeLightboxImage(-1)" class="absolute left-4 top-1/2 -translate-y-1/2 w-14 h-14 bg-white/10 hover:bg-white/20 rounded-full flex items-center justify-center transition-colors cursor-pointer z-10">
+                        <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+                    </button>
+
+                    <button onclick="changeLightboxImage(1)" class="absolute right-4 top-1/2 -translate-y-1/2 w-14 h-14 bg-white/10 hover:bg-white/20 rounded-full flex items-center justify-center transition-colors cursor-pointer z-10">
+                        <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                    </button>
+
+                    <div id="lightbox-content" class="max-w-full max-h-full">
+                        <!-- Conteúdo dinâmico: imagem ou iframe -->
+                    </div>
+
+                    <div class="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2">
+                        @foreach($media as $index => $item)
+                            <button onclick="setLightboxImage({{ $index }})" class="w-12 h-12 rounded-lg overflow-hidden border-2 transition-all cursor-pointer lightbox-thumb" data-index="{{ $index }}">
+                                @if($item->type === 'video')
+                                    <div class="relative w-full h-full bg-zinc-800 flex items-center justify-center">
+                                        <img src="https://img.youtube.com/vi/{{ $item->data->video_id }}/mqdefault.jpg" alt="Miniatura vídeo {{ $index + 1 }}" class="w-full h-full object-cover">
+                                        <div class="absolute inset-0 flex items-center justify-center">
+                                            <svg class="w-6 h-6 text-white drop-shadow-lg" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                                        </div>
+                                    </div>
+                                @else
+                                    <img src="{{ asset('storage/' . $item->data->url) }}" alt="Miniatura {{ $index + 1 }}" class="w-full h-full object-cover">
+                                @endif
+                            </button>
+                        @endforeach
+                    </div>
                 </div>
 
                 {{-- Menu de Ações --}}
@@ -237,4 +331,166 @@
         </div>
     </x-ui.container>
 </div>
+
+<script>
+(function() {
+    const media = @json($media ?? []);
+    let currentIndex = 0;
+
+    window.changeImage = function(direction) {
+        if (media.length === 0) return;
+
+        currentIndex = (currentIndex + direction + media.length) % media.length;
+        updateImage();
+    };
+
+    window.setImage = function(index) {
+        if (index < 0 || index >= media.length) return;
+        currentIndex = index;
+        updateImage();
+    };
+
+    function updateImage() {
+        const mediaPrincipal = document.getElementById('media-principal');
+        if (!mediaPrincipal || !media[currentIndex]) return;
+
+        const currentItem = media[currentIndex];
+        const container = mediaPrincipal.parentElement;
+
+        if (currentItem.type === 'video') {
+            const iframe = document.createElement('iframe');
+            iframe.id = 'media-principal';
+            iframe.src = `https://www.youtube.com/embed/${currentItem.data.video_id}?enablejsapi=1`;
+            iframe.className = 'w-full h-full';
+            iframe.frameBorder = '0';
+            iframe.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture';
+            iframe.allowFullscreen = true;
+            container.replaceChild(iframe, mediaPrincipal);
+        } else {
+            const img = document.createElement('img');
+            img.id = 'media-principal';
+            img.src = '/storage/' + currentItem.data.url;
+            img.alt = 'Imagem';
+            img.className = 'w-full h-full object-cover transition-opacity duration-300';
+            img.style.opacity = '0';
+            container.replaceChild(img, mediaPrincipal);
+            
+            setTimeout(() => {
+                img.style.opacity = '1';
+            }, 50);
+        }
+
+        // Atualizar borda das miniaturas
+        const thumbnails = document.querySelectorAll('[onclick^="setImage"]');
+        thumbnails.forEach((thumb, index) => {
+            if (index === currentIndex) {
+                thumb.classList.remove('border-transparent', 'hover:border-zinc-600');
+                thumb.classList.add('border-primary');
+            } else {
+                thumb.classList.remove('border-primary');
+                thumb.classList.add('border-transparent', 'hover:border-zinc-600');
+            }
+        });
+    }
+
+    // Navegação por teclado
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'ArrowLeft') {
+            changeImage(-1);
+        } else if (e.key === 'ArrowRight') {
+            changeImage(1);
+        }
+    });
+
+    // Lightbox functions
+    window.openLightbox = function() {
+        if (media.length === 0) return;
+        const lightbox = document.getElementById('lightbox');
+        const lightboxContent = document.getElementById('lightbox-content');
+        if (!lightbox || !lightboxContent) return;
+
+        updateLightboxImage();
+        lightbox.classList.remove('hidden');
+        document.body.style.overflow = 'hidden';
+        updateLightboxThumbnails();
+    };
+
+    window.closeLightbox = function() {
+        const lightbox = document.getElementById('lightbox');
+        if (lightbox) {
+            lightbox.classList.add('hidden');
+            document.body.style.overflow = '';
+            // Limpar conteúdo do lightbox
+            const lightboxContent = document.getElementById('lightbox-content');
+            if (lightboxContent) {
+                lightboxContent.innerHTML = '';
+            }
+        }
+    };
+
+    window.changeLightboxImage = function(direction) {
+        if (media.length === 0) return;
+        currentIndex = (currentIndex + direction + media.length) % media.length;
+        updateLightboxImage();
+    };
+
+    window.setLightboxImage = function(index) {
+        if (index < 0 || index >= media.length) return;
+        currentIndex = index;
+        updateLightboxImage();
+    };
+
+    function updateLightboxImage() {
+        const lightboxContent = document.getElementById('lightbox-content');
+        if (!lightboxContent || !media[currentIndex]) return;
+
+        const currentItem = media[currentIndex];
+
+        if (currentItem.type === 'video') {
+            lightboxContent.innerHTML = `
+                <iframe src="https://www.youtube.com/embed/${currentItem.data.video_id}?autoplay=1" 
+                        class="max-w-full max-h-[80vh] object-contain"
+                        frameborder="0" 
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                        allowfullscreen></iframe>
+            `;
+        } else {
+            lightboxContent.innerHTML = `
+                <img src="/storage/${currentItem.data.url}" 
+                     alt="Imagem em tela cheia" 
+                     class="max-w-full max-h-[80vh] object-contain">
+            `;
+        }
+
+        updateLightboxThumbnails();
+    }
+
+    function updateLightboxThumbnails() {
+        const thumbs = document.querySelectorAll('.lightbox-thumb');
+        thumbs.forEach((thumb, index) => {
+            if (index === currentIndex) {
+                thumb.classList.remove('border-transparent');
+                thumb.classList.add('border-primary');
+            } else {
+                thumb.classList.remove('border-primary');
+                thumb.classList.add('border-transparent');
+            }
+        });
+    }
+
+    // Fechar lightbox ao clicar fora da imagem
+    document.getElementById('lightbox')?.addEventListener('click', function(e) {
+        if (e.target.id === 'lightbox') {
+            closeLightbox();
+        }
+    });
+
+    // Fechar lightbox com ESC
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            closeLightbox();
+        }
+    });
+})();
+</script>
 @endsection

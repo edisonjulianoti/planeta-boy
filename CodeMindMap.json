@@ -1,0 +1,761 @@
+{
+  "nodeData": {
+    "id": "me-root",
+    "topic": "PLANETA BOY - SISTEMA COMPLETO",
+    "children": [
+      {
+        "id": "seguranca",
+        "topic": "SEGURANCA E AUTENTICACAO",
+        "expanded": true,
+        "children": [
+          {
+            "id": "seg-auth",
+            "topic": "Autenticacao",
+            "children": [
+              { "id": "auth-login", "topic": "Login" },
+              { "id": "auth-registro", "topic": "Registro" },
+              { "id": "auth-logout", "topic": "Logout" },
+              { "id": "auth-recuperar", "topic": "Recuperacao de senha" }
+            ]
+          },
+          {
+            "id": "seg-protecao",
+            "topic": "Protecao de Conteudo",
+            "children": [
+              { "id": "prot-age-gate", "topic": "Validacao de idade (18+)" },
+              { "id": "prot-cookie", "topic": "Cookie de confirmacao (30 dias)" }
+            ]
+          },
+          {
+            "id": "seg-middleware",
+            "topic": "Middleware",
+            "children": [
+              { "id": "mw-auth", "topic": "Auth - Usuario autenticado" },
+              { "id": "mw-guest", "topic": "Guest - Visitante" },
+              { "id": "mw-admin", "topic": "EnsureUserIsAdmin - Verificacao admin" },
+              { "id": "mw-age", "topic": "Age Gate - Maioridade" }
+            ]
+          },
+          {
+            "id": "seg-bloqueio",
+            "topic": "Bloqueio de Usuarios",
+            "children": [
+              { "id": "block-toggle", "topic": "Toggle bloqueio pelo admin" },
+              { "id": "block-acesso", "topic": "Acesso negado se bloqueado" }
+            ]
+          },
+          {
+            "id": "seg-dados",
+            "topic": "Dados Pessoais",
+            "children": [
+              { "id": "dados-cpf", "topic": "CPF" },
+              { "id": "dados-nasc", "topic": "Data de nascimento" },
+              { "id": "dados-verif", "topic": "Verificacao de maioridade" }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "admin",
+        "topic": "ADMINISTRADOR",
+        "expanded": true,
+        "children": [
+          {
+            "id": "admin-dashboard",
+            "topic": "Dashboard",
+            "children": [
+              { "id": "dash-users", "topic": "Total de usuarios" },
+              { "id": "dash-profiles", "topic": "Perfis ativos" },
+              { "id": "dash-revenue", "topic": "Receita" },
+              { "id": "dash-new", "topic": "Novos cadastros" }
+            ]
+          },
+          {
+            "id": "admin-users",
+            "topic": "Gestao de Usuarios",
+            "children": [
+              { "id": "user-list", "topic": "Listar usuarios" },
+              { "id": "user-view", "topic": "Ver detalhes" },
+              { "id": "user-edit", "topic": "Editar usuario" },
+              { "id": "user-toggle-admin", "topic": "Promover/demitir admin" },
+              { "id": "user-toggle-block", "topic": "Bloquear/desbloquear" },
+              { "id": "user-delete", "topic": "Excluir usuario" },
+              { "id": "user-plan", "topic": "Alterar plano manualmente" }
+            ]
+          },
+          {
+            "id": "admin-profiles",
+            "topic": "Gestao de Perfis",
+            "children": [
+              { "id": "prof-list", "topic": "Listar perfis" },
+              { "id": "prof-view", "topic": "Ver detalhes" },
+              { "id": "prof-edit", "topic": "Editar perfil" },
+              { "id": "prof-aprovar", "topic": "Aprovar perfis" },
+              { "id": "prof-banir", "topic": "Banir perfis" }
+            ]
+          },
+          {
+            "id": "admin-planos",
+            "topic": "Gestao de Planos",
+            "children": [
+              { "id": "plan-list", "topic": "Listar planos" },
+              { "id": "plan-create", "topic": "Criar plano" },
+              { "id": "plan-edit", "topic": "Editar plano" },
+              { "id": "plan-price", "topic": "Ajustar precos" },
+              { "id": "plan-promo", "topic": "Criar promocoes" },
+              { "id": "plan-delete", "topic": "Remover plano" }
+            ]
+          },
+          {
+            "id": "admin-assinaturas",
+            "topic": "Gestao de Assinaturas",
+            "children": [
+              { "id": "sub-list", "topic": "Listar solicitacoes" },
+              { "id": "sub-view", "topic": "Ver detalhes" },
+              { "id": "sub-edit", "topic": "Editar solicitacao" },
+              { "id": "sub-approve", "topic": "Aprovar pagamento" },
+              { "id": "sub-reject", "topic": "Rejeitar pagamento" }
+            ]
+          },
+          {
+            "id": "admin-cidades",
+            "topic": "Gestao de Cidades",
+            "children": [
+              { "id": "city-list", "topic": "Listar cidades" },
+              { "id": "city-create", "topic": "Criar cidade" },
+              { "id": "city-edit", "topic": "Editar cidade" },
+              { "id": "city-featured", "topic": "Marcar como destaque" },
+              { "id": "city-delete", "topic": "Remover cidade" }
+            ]
+          },
+          {
+            "id": "admin-servicos",
+            "topic": "Gestao de Servicos",
+            "children": [
+              { "id": "serv-list", "topic": "Listar servicos" },
+              { "id": "serv-create", "topic": "Criar servico" },
+              { "id": "serv-edit", "topic": "Editar servico" },
+              { "id": "serv-delete", "topic": "Remover servico" }
+            ]
+          },
+          {
+            "id": "admin-categorias",
+            "topic": "Categorias de Assinantes",
+            "children": [
+              { "id": "cat-list", "topic": "Listar categorias" },
+              { "id": "cat-create", "topic": "Criar categoria" },
+              { "id": "cat-edit", "topic": "Editar categoria" },
+              { "id": "cat-delete", "topic": "Remover categoria" },
+              { "id": "cat-restrict", "topic": "Servicos restritos por categoria" }
+            ]
+          },
+          {
+            "id": "admin-faq",
+            "topic": "Gestao de FAQ",
+            "children": [
+              { "id": "faq-list", "topic": "Listar perguntas" },
+              { "id": "faq-create", "topic": "Criar pergunta" },
+              { "id": "faq-edit", "topic": "Editar pergunta" },
+              { "id": "faq-delete", "topic": "Remover pergunta" }
+            ]
+          },
+          {
+            "id": "admin-regras",
+            "topic": "Regras Automaticas",
+            "children": [
+              { "id": "regra-expira", "topic": "Plano expirou - perfil desativa" },
+              { "id": "regra-pagamento", "topic": "Pagamento aprovado - ativa perfil" },
+              { "id": "regra-limite", "topic": "Limite de midia - bloqueia upload" },
+              { "id": "regra-denuncia", "topic": "Denuncias - podem ocultar perfil" }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "visitante",
+        "topic": "VISITANTE",
+        "expanded": true,
+        "children": [
+          {
+            "id": "visit-paginas",
+            "topic": "Paginas Publicas",
+            "children": [
+              {
+                "id": "page-home",
+                "topic": "Home",
+                "children": [
+                  { "id": "home-filtro", "topic": "Filtro de categorias/cidades" },
+                  { "id": "home-cards", "topic": "Cards com cidades em destaque" }
+                ]
+              },
+              {
+                "id": "page-explorar",
+                "topic": "Explorar (Encontrar Garotos)",
+                "children": [
+                  {
+                    "id": "exp-lista",
+                    "topic": "Lista de perfis",
+                    "children": [
+                      { "id": "exp-diamante", "topic": "Diamante (topo)" },
+                      { "id": "exp-premium", "topic": "Premium" },
+                      { "id": "exp-destaque", "topic": "Destaque" },
+                      { "id": "exp-basico", "topic": "Basico (fim)" }
+                    ]
+                  },
+                  {
+                    "id": "exp-filtros",
+                    "topic": "Filtros avancados",
+                    "children": [
+                      { "id": "filt-cidade", "topic": "Cidade" },
+                      { "id": "filt-servico", "topic": "Servico principal" },
+                      { "id": "filt-categoria", "topic": "Categoria" },
+                      { "id": "filt-caract", "topic": "Caracteristicas" },
+                      { "id": "filt-avaliacao", "topic": "Avaliacao" },
+                      { "id": "filt-idade", "topic": "Idade" },
+                      { "id": "filt-verif", "topic": "Verificado (Sim/Nao)" }
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "page-perfil",
+                "topic": "Perfil Publico",
+                "children": [
+                  { "id": "perf-info", "topic": "Informacoes do perfil" },
+                  { "id": "perf-midia", "topic": "Fotos e videos" },
+                  { "id": "perf-disp", "topic": "Disponibilidade" },
+                  { "id": "perf-precos", "topic": "Tabela de precos" },
+                  { "id": "perf-coment", "topic": "Comentarios" }
+                ]
+              },
+              { "id": "page-planos", "topic": "Planos" },
+              { "id": "page-faq", "topic": "FAQ" },
+              { "id": "page-contato", "topic": "Contato" },
+              { "id": "page-termos", "topic": "Termos de Uso" },
+              { "id": "page-privacidade", "topic": "Politica de Privacidade" }
+            ]
+          },
+          {
+            "id": "visit-interacao",
+            "topic": "Interacao (requer login)",
+            "children": [
+              { "id": "int-comentar", "topic": "Comentar em perfil" },
+              { "id": "int-denunciar", "topic": "Denunciar perfil" }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "anunciante",
+        "topic": "ANUNCIANTE",
+        "expanded": true,
+        "children": [
+          {
+            "id": "anunc-fluxo",
+            "topic": "Fluxo de Criacao",
+            "children": [
+              {
+                "id": "fluxo-1",
+                "topic": "Passo 1: Criar Perfil",
+                "children": [
+                  { "id": "f1-nome", "topic": "Nome de exibicao" },
+                  { "id": "f1-idade", "topic": "Idade" },
+                  { "id": "f1-genero", "topic": "Genero" },
+                  { "id": "f1-cidade", "topic": "Cidade" },
+                  { "id": "f1-desc", "topic": "Descricao" },
+                  { "id": "f1-tagline", "topic": "Tagline" },
+                  { "id": "f1-telegram", "topic": "Telegram" },
+                  { "id": "f1-foto", "topic": "Foto principal" },
+                  { "id": "f1-salvar", "topic": "Salvar perfil" },
+                  { "id": "f1-status", "topic": "Status: PENDENTE" }
+                ]
+              },
+              {
+                "id": "fluxo-2",
+                "topic": "Passo 2: Escolher Plano",
+                "children": [
+                  { "id": "f2-diamante", "topic": "Diamante" },
+                  { "id": "f2-premium", "topic": "Premium" },
+                  { "id": "f2-destaque", "topic": "Destaque" },
+                  { "id": "f2-basico", "topic": "Basico" }
+                ]
+              },
+              {
+                "id": "fluxo-3",
+                "topic": "Passo 3: Pagamento",
+                "children": [
+                  { "id": "f3-metodo", "topic": "PIX ou cartao" },
+                  { "id": "f3-confirma", "topic": "Confirmar pagamento" }
+                ]
+              },
+              {
+                "id": "fluxo-4",
+                "topic": "Passo 4: Ativacao",
+                "children": [
+                  { "id": "f4-plano", "topic": "Plano ativado" },
+                  { "id": "f4-status", "topic": "Perfil: ATIVO" },
+                  { "id": "f4-upload", "topic": "Upload liberado" },
+                  { "id": "f4-anuncio", "topic": "Anuncio publicado" }
+                ]
+              },
+              {
+                "id": "fluxo-5",
+                "topic": "Passo 5: Publicar",
+                "children": [
+                  { "id": "f5-titulo", "topic": "Titulo do anuncio" },
+                  { "id": "f5-desc", "topic": "Descricao" },
+                  { "id": "f5-midia", "topic": "Fotos/videos" },
+                  { "id": "f5-regiao", "topic": "Regiao" }
+                ]
+              }
+            ]
+          },
+          {
+            "id": "anunc-painel",
+            "topic": "Painel do Usuario",
+            "children": [
+              { "id": "painel-ver", "topic": "Ver visualizacoes" },
+              { "id": "painel-edit", "topic": "Editar perfil" },
+              { "id": "painel-atualizar", "topic": "Atualizar perfil" },
+              { "id": "painel-midia", "topic": "Adicionar midia" },
+              { "id": "painel-renovar", "topic": "Renovar plano" },
+              { "id": "painel-cancelar", "topic": "Cancelar plano" },
+              { "id": "painel-promo", "topic": "Comprar destaque" },
+              { "id": "painel-disp", "topic": "Gerenciar disponibilidade" },
+              { "id": "painel-precos", "topic": "Definir precos" },
+              { "id": "painel-location", "topic": "Atualizar localizacao" }
+            ]
+          },
+          {
+            "id": "anunc-upsell",
+            "topic": "Upsell",
+            "children": [
+              { "id": "upsell-topo", "topic": "Subir para o topo" },
+              { "id": "upsell-24h", "topic": "Destaque por 24h" },
+              { "id": "upsell-verif", "topic": "Perfil verificado" }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "sistema-perfis",
+        "topic": "SISTEMA DE PERFIS",
+        "expanded": true,
+        "children": [
+          {
+            "id": "perf-estrutura",
+            "topic": "Estrutura do Perfil",
+            "children": [
+              { "id": "estr-basicos", "topic": "Dados basicos (nome, idade, cidade)" },
+              { "id": "estr-genero", "topic": "Genero" },
+              { "id": "estr-desc", "topic": "Descricao" },
+              { "id": "estr-tagline", "topic": "Tagline (slogan)" },
+              { "id": "estr-telegram", "topic": "Contato Telegram" },
+              { "id": "estr-atributos", "topic": "Atributos fisicos" },
+              { "id": "estr-categoria", "topic": "Categoria de assinante" },
+              { "id": "estr-verif", "topic": "Verificado" },
+              { "id": "estr-docs", "topic": "Documentos verificados" },
+              { "id": "estr-rating", "topic": "Avaliacao" },
+              { "id": "estr-views", "topic": "Visualizacoes" },
+              { "id": "estr-active", "topic": "Status ativo/inativo" }
+            ]
+          },
+          {
+            "id": "perf-configuracoes",
+            "topic": "Configuracoes do Perfil",
+            "children": [
+              { "id": "cfg-target", "topic": "Publico alvo (attendance_target)" },
+              { "id": "cfg-pagamento", "topic": "Formas de pagamento" },
+              { "id": "cfg-reports", "topic": "Sem denuncias (no_reports)" },
+              { "id": "cfg-history", "topic": "Historico limpo (clean_history)" },
+              { "id": "cfg-location", "topic": "Localizacao ativada" }
+            ]
+          },
+          {
+            "id": "perf-atributos",
+            "topic": "Atributos Fisicos",
+            "children": [
+              { "id": "atr-altura", "topic": "Altura" },
+              { "id": "atr-peso", "topic": "Peso" },
+              { "id": "atr-cabelo", "topic": "Cor do cabelo" },
+              { "id": "atr-olhos", "topic": "Cor dos olhos" },
+              { "id": "atr-etnia", "topic": "Etnia" }
+            ]
+          },
+          {
+            "id": "perf-disponibilidade",
+            "topic": "Disponibilidade",
+            "children": [
+              { "id": "disp-dias", "topic": "Dias da semana" },
+              { "id": "disp-horas", "topic": "Horario inicio/fim" },
+              { "id": "disp-diaria", "topic": "Horas totais diarias" }
+            ]
+          },
+          {
+            "id": "perf-servicos",
+            "topic": "Servicos Oferecidos",
+            "children": [
+              { "id": "srv-lista", "topic": "Lista de servicos" },
+              { "id": "srv-preco", "topic": "Preco por servico" },
+              { "id": "srv-categoria", "topic": "Categoria do servico" }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "sistema-midia",
+        "topic": "SISTEMA DE MIDIA",
+        "expanded": true,
+        "children": [
+          {
+            "id": "mid-fotos",
+            "topic": "Fotos",
+            "children": [
+              { "id": "foto-upload", "topic": "Upload de fotos" },
+              { "id": "foto-ordem", "topic": "Ordenacao" },
+              { "id": "foto-principal", "topic": "Foto principal" },
+              { "id": "foto-limite", "topic": "Limite por plano" }
+            ]
+          },
+          {
+            "id": "mid-videos",
+            "topic": "Videos",
+            "children": [
+              { "id": "vid-upload", "topic": "Upload de videos" },
+              { "id": "vid-youtube", "topic": "Integracao YouTube" },
+              { "id": "vid-url", "topic": "URL do video" },
+              { "id": "vid-platform", "topic": "Plataforma (YouTube, etc)" },
+              { "id": "vid-id", "topic": "Video ID" },
+              { "id": "vid-thumb", "topic": "Thumbnail" },
+              { "id": "vid-ordem", "topic": "Ordenacao" },
+              { "id": "vid-principal", "topic": "Video principal" },
+              { "id": "vid-limite", "topic": "Limite por plano" }
+            ]
+          },
+          {
+            "id": "mid-limites",
+            "topic": "Limites por Plano",
+            "children": [
+              { "id": "lim-basico", "topic": "Basico: 5 fotos, 0 videos" },
+              { "id": "lim-destaque", "topic": "Destaque: 10 fotos, 2 videos" },
+              { "id": "lim-premium", "topic": "Premium: 15 fotos, 5 videos" },
+              { "id": "lim-diamante", "topic": "Diamante: ilimitado" }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "sistema-interacao",
+        "topic": "SISTEMA DE INTERACAO",
+        "expanded": true,
+        "children": [
+          {
+            "id": "int-comentarios",
+            "topic": "Comentarios",
+            "children": [
+              { "id": "com-criar", "topic": "Criar comentario" },
+              { "id": "com-listar", "topic": "Listar comentarios" },
+              { "id": "com-autor", "topic": "Autor do comentario" },
+              { "id": "com-rating", "topic": "Avaliacao (rating)" },
+              { "id": "com-data", "topic": "Data de criacao" }
+            ]
+          },
+          {
+            "id": "int-denuncias",
+            "topic": "Denuncias",
+            "children": [
+              { "id": "den-criar", "topic": "Denunciar perfil" },
+              { "id": "den-motivo", "topic": "Motivo da denuncia" },
+              { "id": "den-desc", "topic": "Descricao da denuncia" },
+              { "id": "den-autor", "topic": "Autor da denuncia" },
+              { "id": "den-status", "topic": "Status da denuncia" },
+              { "id": "den-data", "topic": "Data da denuncia" },
+              { "id": "den-acao", "topic": "Acao tomada pelo admin" }
+            ]
+          },
+          {
+            "id": "int-moderacao",
+            "topic": "Moderacao",
+            "children": [
+              { "id": "mod-aprovar", "topic": "Aprovar comentario" },
+              { "id": "mod-remover", "topic": "Remover comentario" },
+              { "id": "mod-ocultar", "topic": "Ocultar perfil denunciado" }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "sistema-localizacao",
+        "topic": "SISTEMA DE LOCALIZACAO",
+        "expanded": true,
+        "children": [
+          {
+            "id": "loc-cidades",
+            "topic": "Cidades",
+            "children": [
+              { "id": "cid-nome", "topic": "Nome da cidade" },
+              { "id": "cid-estado", "topic": "Estado (UF)" },
+              { "id": "cid-featured", "topic": "Cidade em destaque" },
+              { "id": "cid-ativo", "topic": "Status ativo" }
+            ]
+          },
+          {
+            "id": "loc-geolocalizacao",
+            "topic": "Geolocalizacao",
+            "children": [
+              { "id": "geo-lat", "topic": "Latitude" },
+              { "id": "geo-lng", "topic": "Longitude" },
+              { "id": "geo-atualizar", "topic": "Atualizar localizacao" }
+            ]
+          },
+          {
+            "id": "loc-filtro",
+            "topic": "Filtro por Localizacao",
+            "children": [
+              { "id": "filt-cidade", "topic": "Filtrar por cidade" },
+              { "id": "filt-estado", "topic": "Filtrar por estado" },
+              { "id": "filt-prox", "topic": "Perfis proximos" }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "sistema-precos",
+        "topic": "SISTEMA DE PRECOS",
+        "expanded": true,
+        "children": [
+          {
+            "id": "pre-perfil",
+            "topic": "Precos por Perfil",
+            "children": [
+              { "id": "pre-servico", "topic": "Preco por servico" },
+              { "id": "pre-duracao", "topic": "Duracao do servico" },
+              { "id": "pre-desc", "topic": "Descricao do preco" }
+            ]
+          },
+          {
+            "id": "pre-tabela",
+            "topic": "Tabela de Precos",
+            "children": [
+              { "id": "tab-lista", "topic": "Lista de precos" },
+              { "id": "tab-visivel", "topic": "Visibilidade no perfil" }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "sistema-planos",
+        "topic": "SISTEMA DE PLANOS",
+        "expanded": true,
+        "children": [
+          {
+            "id": "pl-basico",
+            "topic": "Plano Basico",
+            "children": [
+              { "id": "pb-obj", "topic": "Objetivo: Entrada no sistema" },
+              { "id": "pb-fotos", "topic": "5 fotos" },
+              { "id": "pb-videos", "topic": "0 videos" },
+              { "id": "pb-anuncios", "topic": "1 anuncio" },
+              { "id": "pb-validade", "topic": "30 dias" },
+              { "id": "pb-exibicao", "topic": "Ultimos da lista" }
+            ]
+          },
+          {
+            "id": "pl-destaque",
+            "topic": "Plano Destaque",
+            "children": [
+              { "id": "pd-obj", "topic": "Objetivo: Primeira visibilidade" },
+              { "id": "pd-fotos", "topic": "10 fotos" },
+              { "id": "pd-videos", "topic": "2 videos" },
+              { "id": "pd-anuncios", "topic": "1 anuncio" },
+              { "id": "pd-validade", "topic": "30 dias" },
+              { "id": "pd-badge", "topic": "Badge Destaque" },
+              { "id": "pd-exibicao", "topic": "Acima do Basico" }
+            ]
+          },
+          {
+            "id": "pl-premium",
+            "topic": "Plano Premium",
+            "children": [
+              { "id": "pp-obj", "topic": "Objetivo: Alta performance" },
+              { "id": "pp-fotos", "topic": "15 fotos" },
+              { "id": "pp-videos", "topic": "5 videos" },
+              { "id": "pp-anuncios", "topic": "2 anuncios" },
+              { "id": "pp-validade", "topic": "30 dias" },
+              { "id": "pp-badge", "topic": "Badge Premium" },
+              { "id": "pp-exibicao", "topic": "Prioridade nas buscas" }
+            ]
+          },
+          {
+            "id": "pl-diamante",
+            "topic": "Plano Diamante",
+            "children": [
+              { "id": "pdm-obj", "topic": "Objetivo: Maxima exposicao" },
+              { "id": "pdm-fotos", "topic": "Fotos ilimitadas" },
+              { "id": "pdm-videos", "topic": "Videos ilimitados" },
+              { "id": "pdm-anuncios", "topic": "3 anuncios" },
+              { "id": "pdm-validade", "topic": "30 dias" },
+              { "id": "pdm-badge", "topic": "Badge Diamante" },
+              { "id": "pdm-exibicao", "topic": "Topo da pagina" },
+              { "id": "pdm-verif", "topic": "Selo verificado" }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "infraestrutura",
+        "topic": "INFRAESTRUTURA",
+        "expanded": true,
+        "children": [
+          {
+            "id": "inf-stack",
+            "topic": "Stack Tecnologico",
+            "children": [
+              { "id": "stack-framework", "topic": "Laravel 13 (PHP 8.3)" },
+              { "id": "stack-frontend", "topic": "Blade + Tailwind CSS 4 + Vite 8" },
+              { "id": "stack-db", "topic": "MySQL" },
+              { "id": "stack-testes", "topic": "PHPUnit 12" }
+            ]
+          },
+          {
+            "id": "inf-models",
+            "topic": "Models (15)",
+            "children": [
+              { "id": "mod-user", "topic": "User" },
+              { "id": "mod-profile", "topic": "Profile" },
+              { "id": "mod-plan", "topic": "Plan" },
+              { "id": "mod-service", "topic": "Service" },
+              { "id": "mod-city", "topic": "City" },
+              { "id": "mod-faq", "topic": "Faq" },
+              { "id": "mod-sub-cat", "topic": "SubscriberCategory" },
+              { "id": "mod-sub-req", "topic": "SubscriptionRequest" },
+              { "id": "mod-prof-attr", "topic": "ProfilePhysicalAttribute" },
+              { "id": "mod-prof-img", "topic": "ProfileImage" },
+              { "id": "mod-prof-vid", "topic": "ProfileVideo" },
+              { "id": "mod-prof-avail", "topic": "ProfileAvailability" },
+              { "id": "mod-prof-price", "topic": "ProfilePricing" },
+              { "id": "mod-prof-comm", "topic": "ProfileComment" },
+              { "id": "mod-prof-rep", "topic": "ProfileReport" }
+            ]
+          },
+          {
+            "id": "inf-controllers",
+            "topic": "Controllers (18)",
+            "children": [
+              { "id": "ctrl-home", "topic": "HomeController" },
+              { "id": "ctrl-explorar", "topic": "ExplorarController" },
+              { "id": "ctrl-perfil", "topic": "PerfilController" },
+              { "id": "ctrl-plano", "topic": "PlanoController" },
+              { "id": "ctrl-contato", "topic": "ContatoController" },
+              { "id": "ctrl-faq", "topic": "FaqController" },
+              { "id": "ctrl-location", "topic": "LocationController" },
+              { "id": "ctrl-login", "topic": "LoginController" },
+              { "id": "ctrl-registro", "topic": "RegistroController" },
+              { "id": "ctrl-admin", "topic": "AdminController" },
+              { "id": "ctrl-admin-plan", "topic": "PlanController (Admin)" },
+              { "id": "ctrl-admin-sub", "topic": "SubscriptionController" },
+              { "id": "ctrl-admin-city", "topic": "AdminCityController" },
+              { "id": "ctrl-admin-serv", "topic": "AdminServiceController" },
+              { "id": "ctrl-admin-cat", "topic": "AdminSubscriberCategoryController" },
+              { "id": "ctrl-admin-faq", "topic": "AdminFaqController" }
+            ]
+          },
+          {
+            "id": "inf-migrations",
+            "topic": "Migrations (28)",
+            "children": [
+              { "id": "mig-users", "topic": "Users" },
+              { "id": "mig-planos", "topic": "Planos" },
+              { "id": "mig-perfis", "topic": "Perfis" },
+              { "id": "mig-servicos", "topic": "Servicos" },
+              { "id": "mig-cidades", "topic": "Cidades" },
+              { "id": "mig-faqs", "topic": "FAQs" },
+              { "id": "mig-sub-req", "topic": "Subscription Requests" },
+              { "id": "mig-sub-cat", "topic": "Subscriber Categories" },
+              { "id": "mig-prof-attr", "topic": "Profile Attributes" },
+              { "id": "mig-prof-img", "topic": "Profile Images" },
+              { "id": "mig-prof-vid", "topic": "Profile Videos" },
+              { "id": "mig-prof-avail", "topic": "Profile Availability" },
+              { "id": "mig-prof-price", "topic": "Profile Pricing" },
+              { "id": "mig-prof-comm", "topic": "Profile Comments" },
+              { "id": "mig-prof-rep", "topic": "Profile Reports" }
+            ]
+          }
+        ]
+      }
+    ],
+    "expanded": true
+  },
+  "arrows": [
+    { "from": "regra-expira", "to": "prof-active", "label": "Desativa perfil" },
+    { "from": "regra-pagamento", "to": "prof-active", "label": "Ativa perfil" },
+    { "from": "regra-limite", "to": "mid-upload", "label": "Bloqueia upload" },
+    { "from": "regra-denuncia", "to": "mod-ocultar", "label": "Ocultar perfil" },
+    { "from": "block-toggle", "to": "block-acesso", "label": "Bloqueia acesso" },
+    { "from": "cat-restrict", "to": "srv-lista", "label": "Restringe servicos" },
+    { "from": "pl-basico", "to": "lim-basico", "label": "Define limites" },
+    { "from": "pl-destaque", "to": "lim-destaque", "label": "Define limites" },
+    { "from": "pl-premium", "to": "lim-premium", "label": "Define limites" },
+    { "from": "pl-diamante", "to": "lim-diamante", "label": "Define limites" },
+    { "from": "page-perfil", "to": "int-comentar", "label": "Permite interacao" },
+    { "from": "page-perfil", "to": "int-denunciar", "label": "Permite denuncia" },
+    { "from": "disp-dias", "to": "disp-horas", "label": "Define horarios" },
+    { "from": "srv-lista", "to": "pre-servico", "label": "Define preco" },
+    { "from": "fluxo-4", "to": "fluxo-5", "label": "Libera publicacao" },
+    { "from": "mw-admin", "to": "admin-dashboard", "label": "Protege acesso" },
+    { "from": "mw-auth", "to": "anunc-painel", "label": "Requer login" },
+    { "from": "prot-age-gate", "to": "visit-paginas", "label": "Protege conteudo" }
+  ],
+  "summaries": [
+    { "id": "seguranca", "text": "Sistema de autenticacao e protecao de conteudo adulto" },
+    { "id": "admin", "text": "Painel de controle completo para gestao do sistema" },
+    { "id": "visitante", "text": "Fluxo de navegacao e descoberta de perfis" },
+    { "id": "anunciante", "text": "Ciclo completo de criacao e gestao de perfil" },
+    { "id": "sistema-perfis", "text": "Estrutura e dados dos perfis de acompanhantes" },
+    { "id": "sistema-midia", "text": "Gestao de fotos e videos com limites por plano" },
+    { "id": "sistema-interacao", "text": "Sistema de engajamento entre usuarios" },
+    { "id": "sistema-localizacao", "text": "Gestao de cidades e geolocalizacao" },
+    { "id": "sistema-precos", "text": "Sistema de precificacao por servico" },
+    { "id": "sistema-planos", "text": "Planos de assinatura com diferentes niveis de visibilidade" },
+    { "id": "infraestrutura", "text": "Stack tecnologico e estrutura do projeto" }
+  ],
+  "direction": 2,
+  "theme": {
+    "name": "Dark",
+    "palette": [
+      "#848FA0",
+      "#748BE9",
+      "#D2F9FE",
+      "#4145A5",
+      "#789AFA",
+      "#706CF4",
+      "#EF987F",
+      "#775DD5",
+      "#FCEECF",
+      "#DA7FBC"
+    ],
+    "cssVar": {
+      "--node-gap-x": "30px",
+      "--node-gap-y": "10px",
+      "--main-gap-x": "32px",
+      "--main-gap-y": "12px",
+      "--root-radius": "30px",
+      "--main-radius": "20px",
+      "--root-color": "#ffffff",
+      "--root-bgcolor": "#4c4f69",
+      "--root-border-color": "rgba(0, 0, 0, 0)",
+      "--main-color": "#ffffff",
+      "--main-bgcolor": "#4c4f69",
+      "--topic-padding": "3px",
+      "--color": "#E0E0E0",
+      "--bgcolor": "#252526",
+      "--selected": "#4dc4ff",
+      "--panel-color": "#ffffff",
+      "--panel-bgcolor": "#2d3748",
+      "--panel-border-color": "#696969",
+      "--map-padding": "50px 80px",
+      "font-size": "14px",
+      "font-family": "Verdana"
+    }
+  }
+}

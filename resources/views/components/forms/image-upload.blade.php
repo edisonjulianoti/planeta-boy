@@ -10,14 +10,14 @@
     <label class="block text-zinc-500 text-xs uppercase tracking-wider mb-1.5">{{ $label }}</label>
     
     {{-- Área de Upload --}}
-    <div class="border-2 border-dashed border-zinc-700 rounded-xl p-8 text-center transition-all hover:border-primary hover:bg-zinc-900/50">
+    <div id="upload-area-{{ $name }}" class="border-2 border-dashed border-zinc-700 rounded-xl p-8 text-center transition-all hover:border-primary hover:bg-zinc-900/50 cursor-pointer" onclick="document.getElementById('input-{{ $name }}').click()">
         <input 
             type="file" 
             id="input-{{ $name }}" 
             name="{{ $name }}[]" 
             accept="image/jpeg,image/jpg,image/png,image/gif,image/webp"
             {{ $multiple ? 'multiple' : '' }}
-            class="w-full"
+            class="hidden"
             onchange="previewNewImages(this, '{{ $name }}')"
         >
         
