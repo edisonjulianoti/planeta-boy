@@ -61,7 +61,7 @@
                     Cancelar
                 </a>
                 <button type="submit"
-                    class="px-6 py-3 bg-primary hover:bg-primary/80 text-white font-bold uppercase tracking-wider rounded-lg transition-all cursor-pointer">
+                    class="px-6 py-3 bg-primary hover:bg-primary/80 text-black font-bold uppercase tracking-wider rounded-lg transition-all cursor-pointer">
                     Salvar Alterações
                 </button>
             </div>

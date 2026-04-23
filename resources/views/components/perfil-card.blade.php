@@ -5,7 +5,7 @@
     $physical = $perfil->physicalAttributes;
 @endphp
 <a href="{{ route('perfil.ver', $perfil->id) }}"
-   class="group bg-zinc-900 border border-zinc-800 rounded-lg overflow-hidden hover:border-primary/50 hover:shadow-xl hover:shadow-primary/10 transition-all duration-300 cursor-pointer">
+   class="group bg-zinc-900 border border-zinc-800 rounded-lg overflow-hidden hover:border-primary/50 hover:shadow-xl hover:shadow-primary/10 transition-all duration-300 cursor-pointer flex flex-col h-full">
     {{-- Imagem --}}
     <div class="relative h-[260px] bg-zinc-800 flex flex-col justify-between p-3">
         @if($perfil->images->isNotEmpty())
@@ -35,7 +35,7 @@
     </div>
 
     {{-- Info --}}
-    <div class="p-4 flex flex-col gap-3">
+    <div class="p-4 flex-1 flex flex-col gap-3">
         {{-- Nome e idade --}}
         <div class="flex flex-col gap-1">
             <h3 class="text-white font-black text-[18px] group-hover:text-primary transition-colors">{{ $perfil->name }}</h3>
@@ -75,8 +75,8 @@
         @endif
 
         {{-- Botão --}}
-        <div class="pt-4 flex justify-center">
-            <span class="text-white font-black text-[14px] group-hover:text-primary transition-colors">Ver Perfil</span>
+        <div class="pt-4 flex justify-center mt-auto">
+            <span class="bg-yellow-500 text-black font-black text-[14px] px-6 py-2 rounded-full group-hover:bg-yellow-400 transition-colors">Ver Perfil</span>
         </div>
     </div>
 </a>

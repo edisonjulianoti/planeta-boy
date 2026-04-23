@@ -17,10 +17,10 @@
             <p class="text-[16px] text-zinc-400">{{ $perfis->total() }} perfis encontrados</p>
         </div>
 
-        <div class="flex gap-8 h-[calc(100vh-200px)]">
+        <div class="flex gap-8 h-[calc(100vh-100px)]">
 
         {{-- Sidebar de Filtros --}}
-        <aside id="sidebar" class="hidden md:block w-[280px] shrink-0 overflow-y-auto pr-2">
+        <aside id="sidebar" class="hidden md:block w-[280px] shrink-0 pr-2 pb-8 overflow-y-auto h-full">
             <form action="{{ route('explorar') }}" method="GET" class="space-y-10" id="filtroForm">
 
                 {{-- Localização --}}
@@ -31,7 +31,8 @@
                                name="cidade" 
                                placeholder="Qualquer cidade..." 
                                value="{{ request('cidade') }}"
-                               class="w-full bg-transparent text-zinc-300 placeholder-zinc-500 focus:outline-none text-[14px]">
+                               class="w-full bg-transparent text-zinc-300 placeholder-zinc-500 focus:outline-none text-[14px] filtro-change"
+                               onchange="document.getElementById('filtroForm').submit()">
                     </div>
                 </div>
 
@@ -40,10 +41,26 @@
                     <h3 class="text-[18px] font-bold text-white">Serviços Principais</h3>
                     <div class="flex flex-wrap gap-2">
                         @foreach($servicos->take(6) as $servico)
+                            <?php
+                            $servicosRequest = request('servicos');
+                            $servicosArray = [];
+                            if (is_array($servicosRequest)) {
+                                foreach ($servicosRequest as $s) {
+                                    if (is_string($s) && strpos($s, ',') !== false) {
+                                        $servicosArray = array_merge($servicosArray, explode(',', $s));
+                                    } else {
+                                        $servicosArray[] = $s;
+                                    }
+                                }
+                            } elseif (is_string($servicosRequest)) {
+                                $servicosArray = explode(',', $servicosRequest);
+                            }
+                            $servicosArray = array_filter(array_map('intval', $servicosArray));
+                            ?>
                             <button type="button" 
                                     onclick="toggleServico({{ $servico->id }})"
                                     data-servico="{{ $servico->id }}"
-                                    class="px-4 py-2 rounded-full text-[14px] transition-all cursor-pointer {{ in_array($servico->id, request('servicos', [])) ? 'bg-primary text-white' : 'bg-transparent border border-zinc-700 text-zinc-300 hover:border-zinc-600' }}">
+                                    class="px-4 py-2 rounded-full text-[14px] transition-all cursor-pointer {{ in_array($servico->id, $servicosArray) ? 'bg-primary text-black' : 'bg-transparent border border-zinc-700 text-zinc-300 hover:border-zinc-600' }}">
                                 {{ $servico->name }}
                             </button>
                         @endforeach
@@ -59,7 +76,8 @@
                                name="idade" 
                                placeholder="Todas as idades" 
                                value="{{ request('idade') }}"
-                               class="w-full bg-transparent text-zinc-300 placeholder-zinc-500 focus:outline-none text-[14px]">
+                               class="w-full bg-transparent text-zinc-300 placeholder-zinc-500 focus:outline-none text-[14px] filtro-change"
+                               onchange="document.getElementById('filtroForm').submit()">
                     </div>
                 </div>
 
@@ -146,9 +164,9 @@
                             const btnId = parseInt(btn.dataset.servico);
                             if (valores.includes(btnId)) {
                                 btn.classList.remove('bg-transparent', 'border', 'border-zinc-700', 'text-zinc-300');
-                                btn.classList.add('bg-primary', 'text-white');
+                                btn.classList.add('bg-primary', 'text-black');
                             } else {
-                                btn.classList.remove('bg-primary', 'text-white');
+                                btn.classList.remove('bg-primary', 'text-black');
                                 btn.classList.add('bg-transparent', 'border', 'border-zinc-700', 'text-zinc-300');
                             }
                         });

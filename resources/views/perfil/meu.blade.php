@@ -95,24 +95,10 @@
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
                         Editar
                     </a>
-                @else
-                    <a href="{{ route('perfil.criar') }}" class="text-sm text-primary hover:text-primary/80 font-medium transition-colors flex items-center gap-1.5 cursor-pointer">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M12 4v16m8-8H4"/></svg>
-                        Criar Perfil
-                    </a>
                 @endif
             </div>
 
-            @if(!$perfil)
-                <div class="text-center py-12">
-                    <svg class="w-12 h-12 text-zinc-700 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-                    <p class="text-zinc-500 mb-4">Você ainda não tem perfil cadastrado.</p>
-                    <a href="{{ route('perfil.criar') }}" class="inline-flex items-center gap-2 px-4 py-2 bg-primary hover:brightness-110 text-primary-foreground text-sm font-bold rounded-lg transition-all uppercase tracking-wider cursor-pointer">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M12 4v16m8-8H4"/></svg>
-                        Criar meu perfil
-                    </a>
-                </div>
-            @else
+            @if($perfil)
                 <a href="{{ route('perfil.ver', $perfil->id) }}" class="group flex items-center gap-4 p-4 bg-zinc-800 hover:bg-zinc-700 rounded-xl transition-all border border-zinc-700 hover:border-primary/50 cursor-pointer">
                     <div class="w-14 h-14 rounded-lg bg-zinc-700 overflow-hidden shrink-0">
                         @if($perfil->images->isNotEmpty())
@@ -162,6 +148,17 @@
                     <p id="localizacao-erro" class="hidden mt-2 text-xs text-red-400"></p>
                 </div>
             @endif
+
+            @if(!$perfil)
+                <div class="text-center py-12">
+                    <svg class="w-12 h-12 text-zinc-700 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                    <p class="text-zinc-500 mb-4">Você ainda não tem perfil cadastrado.</p>
+                    <a href="{{ route('perfil.criar') }}" class="inline-flex items-center gap-2 px-4 py-2 bg-primary hover:brightness-110 text-primary-foreground text-sm font-bold rounded-lg transition-all uppercase tracking-wider cursor-pointer">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M12 4v16m8-8H4"/></svg>
+                        Criar meu perfil
+                    </a>
+                </div>
+            @endif
         </div>
 
         <div class="mt-6 text-center">
@@ -170,7 +167,7 @@
                 <button type="submit" class="text-zinc-500 hover:text-red-400 text-sm transition-colors cursor-pointer">Sair da conta</button>
             </form>
         </div>
-    </x-ui.container>
+    </div>
 </div>
 
 <script>

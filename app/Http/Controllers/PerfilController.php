@@ -127,29 +127,73 @@ class PerfilController extends Controller
         }
 
         // Upload novas imagens
+        $newImages = [];
         if ($request->hasFile('gallery')) {
             $currentOrder = $profile->images()->max('order') ?? 0;
             
             foreach ($request->file('gallery') as $index => $file) {
                 $path = $file->store('profiles/images', 'public');
                 
-                $profile->images()->create([
+                $image = $profile->images()->create([
                     'url'     => $path,
                     'is_main' => false,
                     'order'   => $currentOrder + $index + 1,
                 ]);
+                
+                $newImages[] = $image;
             }
         }
 
         // Definir imagem principal
-        if ($request->filled('main_image_id')) {
+        // Prioridade: new_main_image_index > main_image_id > primeira nova imagem > primeira imagem existente
+        $mainImageSet = false;
+
+        // 1. Verificar se selecionou uma nova imagem como principal
+        if ($request->filled('new_main_image_index')) {
+            $mainIndex = (int) $request->input('new_main_image_index');
+            
+            if (isset($newImages[$mainIndex])) {
+                // Remover is_main de todas as imagens
+                $profile->images()->update(['is_main' => false]);
+                
+                // Definir nova imagem como principal
+                $newImages[$mainIndex]->update(['is_main' => true, 'order' => 0]);
+                $mainImageSet = true;
+            }
+        }
+
+        // 2. Se não, verificar se selecionou uma imagem existente como principal
+        if (!$mainImageSet && $request->filled('main_image_id')) {
             $mainImageId = $request->input('main_image_id');
             
+            // Verificar se a imagem ainda existe (não foi removida)
+            if ($profile->images()->where('id', $mainImageId)->exists()) {
+                // Remover is_main de todas as imagens
+                $profile->images()->update(['is_main' => false]);
+                
+                // Definir como principal
+                $profile->images()->where('id', $mainImageId)->update(['is_main' => true, 'order' => 0]);
+                $mainImageSet = true;
+            }
+        }
+
+        // 3. Se ainda não definiu principal e tem novas imagens, definir a primeira como principal
+        if (!$mainImageSet && !empty($newImages)) {
             // Remover is_main de todas as imagens
             $profile->images()->update(['is_main' => false]);
             
-            // Definir como principal
-            $profile->images()->where('id', $mainImageId)->update(['is_main' => true, 'order' => 0]);
+            // Definir primeira nova imagem como principal
+            $newImages[0]->update(['is_main' => true, 'order' => 0]);
+            $mainImageSet = true;
+        }
+
+        // 4. Se ainda não definiu principal e não tem imagens existentes com principal, definir a primeira existente
+        if (!$mainImageSet && !$profile->images()->where('is_main', true)->exists()) {
+            $firstImage = $profile->images()->orderBy('order')->first();
+            
+            if ($firstImage) {
+                $firstImage->update(['is_main' => true, 'order' => 0]);
+            }
         }
 
         // Processar URL do YouTube

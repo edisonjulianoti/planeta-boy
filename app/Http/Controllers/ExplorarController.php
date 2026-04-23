@@ -21,7 +21,7 @@ class ExplorarController extends Controller
 
     public function index(Request $request): View|JsonResponse
     {
-        $query = Profile::with(['images', 'user', 'services'])
+        $query = Profile::with(['images', 'user', 'services', 'physicalAttributes'])
             ->where('active', true)
             ->leftJoin('users', 'profiles.user_id', '=', 'users.id')
             ->select('profiles.*', 'users.plan as user_plan');
@@ -72,19 +72,20 @@ class ExplorarController extends Controller
             if (is_array($caracteristicas) && !empty($caracteristicas)) {
                 // Mapeamento de características para campos do banco
                 $caracteristicaMap = [
-                    'loiro' => 'hair_color',
-                    'moreno' => 'hair_color',
-                    'ruivo' => 'hair_color',
-                    'oriental' => 'ethnicity',
+                    'loiro' => ['campo' => 'hair_color', 'valor' => 'Loiro'],
+                    'moreno' => ['campo' => 'hair_color', 'valor' => 'Moreno'],
+                    'ruivo' => ['campo' => 'hair_color', 'valor' => 'Ruivo'],
+                    'oriental' => ['campo' => 'ethnicity', 'valor' => 'Oriental'],
                 ];
 
-                foreach ($caracteristicas as $caracteristica) {
-                    if (isset($caracteristicaMap[$caracteristica])) {
-                        $campo = $caracteristicaMap[$caracteristica];
-                        $valor = ucfirst($caracteristica);
-                        $query->where($campo, $valor);
+                $query->whereHas('physicalAttributes', function ($q) use ($caracteristicas, $caracteristicaMap) {
+                    foreach ($caracteristicas as $caracteristica) {
+                        if (isset($caracteristicaMap[$caracteristica])) {
+                            $config = $caracteristicaMap[$caracteristica];
+                            $q->where($config['campo'], $config['valor'], 'or');
+                        }
                     }
-                }
+                });
             }
         }
 
