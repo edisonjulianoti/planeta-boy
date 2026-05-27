@@ -7,7 +7,7 @@
 @php
     $classes = match($variant) {
         'success' => 'bg-green-500/10 text-green-400 border-green-500/30',
-        'warning' => 'bg-yellow-500/10 text-yellow-400 border-yellow-500/30',
+        'warning' => 'bg-matrix-500/10 text-matrix-400 border-matrix-500/30',
         'danger' => 'bg-red-500/10 text-red-400 border-red-500/30',
         'primary' => 'bg-primary/10 text-primary border-primary/30',
         'neutral' => 'bg-zinc-800 text-zinc-400 border-zinc-700',

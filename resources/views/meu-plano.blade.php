@@ -76,11 +76,11 @@
         {{-- Planos disponíveis (se pendente) --}}
         @php $pending = $requests->firstWhere('status', 'pending'); @endphp
         @if($pending)
-        <div class="bg-yellow-500/5 border border-yellow-500/30 rounded-2xl p-6 mb-6">
+        <div class="bg-matrix-500/5 border border-matrix-500/30 rounded-2xl p-6 mb-6">
             <div class="flex items-center gap-3">
-                <svg class="w-5 h-5 text-yellow-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                <svg class="w-5 h-5 text-matrix-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
                 <div>
-                    <p class="text-yellow-400 font-bold text-sm">Solicitação Pendente</p>
+                    <p class="text-matrix-400 font-bold text-sm">Solicitação Pendente</p>
                     <p class="text-zinc-400 text-xs mt-0.5">Você solicitou o plano <strong class="text-white uppercase">{{ $pending->plan_slug }}</strong> em {{ $pending->created_at->format('d/m/Y') }}. Aguardando aprovação.</p>
                 </div>
             </div>

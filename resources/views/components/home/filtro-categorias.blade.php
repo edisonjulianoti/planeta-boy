@@ -14,7 +14,7 @@
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             @foreach($cidades as $cidade)
             <a href="{{ route('explorar') }}?cidade={{ $cidade['slug'] }}"
-               class="group relative overflow-hidden rounded-2xl transition-all duration-300 hover:scale-105 hover:shadow-2xl hover:shadow-yellow-500/20 cursor-pointer block">
+               class="group relative overflow-hidden rounded-2xl transition-all duration-300 hover:scale-105 hover:shadow-2xl hover:shadow-matrix-500/20 cursor-pointer block">
                 <div class="relative h-60 sm:h-80 w-full">
                     @if($cidade['image'])
                         <img src="{{ asset('storage/' . $cidade['image']) }}"

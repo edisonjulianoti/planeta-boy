@@ -11,7 +11,7 @@
 {{-- Pendentes --}}
 <div class="mb-8">
     <h2 class="text-white font-black uppercase tracking-wider text-sm mb-4 flex items-center gap-2">
-        <div class="w-1 h-4 bg-yellow-400 rounded-full"></div>
+        <div class="w-1 h-4 bg-matrix-400 rounded-full"></div>
         Solicitações Pendentes
         @if($pending->count())
             <x-admin.badge variant="warning" :text="$pending->count()" />
@@ -25,7 +25,7 @@
     @else
         <div class="space-y-4">
             @foreach($pending as $req)
-            <div class="bg-zinc-900 border border-yellow-500/20 rounded-2xl p-4 sm:p-6">
+            <div class="bg-zinc-900 border border-matrix-500/20 rounded-2xl p-4 sm:p-6">
                 <div class="flex flex-col sm:flex-row items-start justify-between gap-4">
                     <div class="flex-1">
                         <p class="text-white font-bold">{{ $req->user->name }}</p>

@@ -76,7 +76,7 @@
 
         {{-- Botão --}}
         <div class="pt-4 flex justify-center mt-auto">
-            <span class="bg-yellow-500 text-black font-black text-[14px] px-6 py-2 rounded-full group-hover:bg-yellow-400 transition-colors">Ver Perfil</span>
+            <span class="bg-matrix-500 text-black font-black text-[14px] px-6 py-2 rounded-full group-hover:bg-matrix-400 transition-colors">Ver Perfil</span>
         </div>
     </div>
 </a>

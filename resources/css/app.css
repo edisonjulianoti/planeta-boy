@@ -1,3 +1,4 @@
+@import url('https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap');
 @import 'tailwindcss';
 
 :root {
@@ -5,7 +6,7 @@
     --foreground: #fafafa;
     --card: #121212;
     --card-foreground: #fafafa;
-    --primary: #fbbf24;
+    --primary: #00ff41;
     --primary-foreground: #000000;
     --muted: #27272a;
     --muted-foreground: #a1a1aa;
@@ -15,7 +16,7 @@
 body {
     background: var(--background);
     color: var(--foreground);
-    font-family: system-ui, sans-serif;
+    font-family: 'Open Sans', system-ui, sans-serif;
 }
 
 button, [role="button"], a, input[type="button"], input[type="submit"] {
@@ -53,7 +54,7 @@ button:disabled, [disabled] {
 
 @theme {
     /* Tokens alinhados a site-old-antigo-clonagem/tailwind.config.ts */
-    --color-primary: #fbbf24;
+    --color-primary: #00ff41;
     --color-primary-foreground: #000000;
     --color-background: #050505;
     --color-foreground: #fafafa;
@@ -63,8 +64,20 @@ button:disabled, [disabled] {
     --color-muted-foreground: #a1a1aa;
     --color-border: #27272a;
 
-    --font-sans: 'Montserrat', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol',
+    --font-sans: 'Open Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol',
         'Noto Color Emoji';
+
+    /* Matrix Green Palette */
+    --color-matrix-50: #e8ffe8;
+    --color-matrix-100: #b3ffb3;
+    --color-matrix-200: #80ff80;
+    --color-matrix-300: #4dff4d;
+    --color-matrix-400: #00ff41;
+    --color-matrix-500: #00cc34;
+    --color-matrix-600: #009927;
+    --color-matrix-700: #00661a;
+    --color-matrix-800: #00330d;
+    --color-matrix-900: #001a07;
 
     /* Spacing - Container Padding */
     --container-padding-sm: 1rem; /* 16px */

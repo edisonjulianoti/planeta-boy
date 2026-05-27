@@ -9,7 +9,7 @@
     $classes = match($type) {
         'success' => 'bg-green-600/10 border-green-600/30 text-green-400',
         'error' => 'bg-red-600/10 border-red-600/30 text-red-400',
-        'warning' => 'bg-yellow-600/10 border-yellow-600/30 text-yellow-400',
+        'warning' => 'bg-matrix-600/10 border-matrix-600/30 text-matrix-400',
         'info' => 'bg-blue-600/10 border-blue-600/30 text-blue-400',
         default => 'bg-zinc-600/10 border-zinc-600/30 text-zinc-400',
     };
