@@ -9,6 +9,10 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 #[Fillable(['profile_id', 'user_id', 'reason', 'description', 'status'])]
 class ProfileReport extends Model
 {
+    protected $attributes = [
+        'status' => 'pendente',
+    ];
+
     protected function casts(): array
     {
         return [

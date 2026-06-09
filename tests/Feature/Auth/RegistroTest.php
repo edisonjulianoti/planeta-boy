@@ -30,6 +30,7 @@ final class RegistroTest extends TestCase
 
     public function test_user_can_register_and_is_redirected_to_profile(): void
     {
+
         $this->post('/registro', [
             'nome'                  => 'Novo Usuário',
             'email'                 => 'novo@example.com',
@@ -48,6 +49,7 @@ final class RegistroTest extends TestCase
 
     public function test_registro_requires_nome(): void
     {
+
         $this->from(route('registro'))
             ->post('/registro', [
                 'nome'               => '',
@@ -63,6 +65,7 @@ final class RegistroTest extends TestCase
 
     public function test_registro_requires_valid_email(): void
     {
+
         $this->from(route('registro'))
             ->post('/registro', [
                 'nome'               => 'Teste',
@@ -78,6 +81,7 @@ final class RegistroTest extends TestCase
 
     public function test_registro_rejects_duplicate_email(): void
     {
+
         User::factory()->create(['email' => 'existente@example.com']);
 
         $this->from(route('registro'))
@@ -93,6 +97,7 @@ final class RegistroTest extends TestCase
 
     public function test_registro_requires_password_confirmation(): void
     {
+
         $this->from(route('registro'))
             ->post('/registro', [
                 'nome'               => 'Teste',
@@ -108,6 +113,7 @@ final class RegistroTest extends TestCase
 
     public function test_registro_requires_minimum_password_length(): void
     {
+
         $this->from(route('registro'))
             ->post('/registro', [
                 'nome'               => 'Teste',
@@ -123,6 +129,7 @@ final class RegistroTest extends TestCase
 
     public function test_new_user_has_free_plan_and_no_admin(): void
     {
+
         $this->post('/registro', [
             'nome'               => 'Usuário Comum',
             'email'              => 'comum@example.com',

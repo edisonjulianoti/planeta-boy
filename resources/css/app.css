@@ -6,7 +6,7 @@
     --foreground: #fafafa;
     --card: #121212;
     --card-foreground: #fafafa;
-    --primary: #00ff41;
+    --primary: #facc15;
     --primary-foreground: #000000;
     --muted: #27272a;
     --muted-foreground: #a1a1aa;
@@ -54,7 +54,7 @@ button:disabled, [disabled] {
 
 @theme {
     /* Tokens alinhados a site-old-antigo-clonagem/tailwind.config.ts */
-    --color-primary: #00ff41;
+    --color-primary: #facc15;
     --color-primary-foreground: #000000;
     --color-background: #050505;
     --color-foreground: #fafafa;
@@ -68,16 +68,16 @@ button:disabled, [disabled] {
         'Noto Color Emoji';
 
     /* Matrix Green Palette */
-    --color-matrix-50: #e8ffe8;
-    --color-matrix-100: #b3ffb3;
-    --color-matrix-200: #80ff80;
-    --color-matrix-300: #4dff4d;
-    --color-matrix-400: #00ff41;
-    --color-matrix-500: #00cc34;
-    --color-matrix-600: #009927;
-    --color-matrix-700: #00661a;
-    --color-matrix-800: #00330d;
-    --color-matrix-900: #001a07;
+    --color-matrix-50: #fffce8;
+    --color-matrix-100: #fef9c3;
+    --color-matrix-200: #fef08a;
+    --color-matrix-300: #fde047;
+    --color-matrix-400: #facc15;
+    --color-matrix-500: #eab308;
+    --color-matrix-600: #ca8a04;
+    --color-matrix-700: #a16207;
+    --color-matrix-800: #854d0e;
+    --color-matrix-900: #422b00;
 
     /* Spacing - Container Padding */
     --container-padding-sm: 1rem; /* 16px */

@@ -20,8 +20,8 @@ class ProfileAvailabilitySeeder extends Seeder
             ProfileAvailability::create([
                 'profile_id' => $profile->id,
                 'days' => $selectedDays,
-                'start_time' => fake()->time('H:00', '18:00'),
-                'end_time' => fake()->time('23:00', '06:00'),
+                'start_time' => fake()->time('H:i', '18:00'),
+                'end_time' => fake()->time('H:i', '23:00'),
             ]);
         }
 

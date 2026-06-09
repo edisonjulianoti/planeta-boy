@@ -80,6 +80,10 @@
                                     <svg class="w-4 h-4 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M2 4l3 12h14l3-12-6 7-4-7-4 7-6-7z"/></svg>
                                     Meu Plano
                                 </a>
+                                <a href="{{ route('conta.excluir.form') }}" class="flex items-center gap-3 px-4 py-2.5 text-sm text-zinc-400 hover:text-red-400 hover:bg-zinc-800/50 transition-colors cursor-pointer">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M3 6h18"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                                    Excluir Conta
+                                </a>
                                 @endif
                             </div>
 
@@ -134,6 +138,7 @@
                     @else
                     <a href="{{ route('perfil') }}" class="flex items-center gap-3 px-4 py-4 text-lg font-bold text-zinc-300 hover:text-white hover:bg-zinc-800/50 rounded-xl transition-all uppercase tracking-wider cursor-pointer">Meu Perfil</a>
                     <a href="{{ route('meu.plano') }}" class="flex items-center gap-3 px-4 py-4 text-lg font-bold text-zinc-300 hover:text-white hover:bg-zinc-800/50 rounded-xl transition-all uppercase tracking-wider cursor-pointer">Meu Plano</a>
+                    <a href="{{ route('conta.excluir.form') }}" class="flex items-center gap-3 px-4 py-4 text-lg font-bold text-zinc-500 hover:text-red-400 hover:bg-zinc-800/50 rounded-xl transition-all uppercase tracking-wider cursor-pointer">Excluir Conta</a>
                     @endif
                     <form action="{{ route('logout') }}" method="POST">
                         @csrf
@@ -160,7 +165,7 @@
             <div class="flex flex-col gap-4 max-w-[300px]">
                 <h3 class="text-[24px] font-extrabold"><span class="text-primary">PLANETA</span> <span class="text-foreground">BOYS</span></h3>
                 <p class="text-zinc-400 text-[14px] font-normal">O melhor diretório premium para conectar você aos melhores acompanhantes masculinos e trans.</p>
-                <p class="text-zinc-400 text-[12px] font-normal">© 2026 Planeta Boys.</p>
+                <p class="text-zinc-400 text-[12px] font-normal">&copy; 2026 Planeta Boys.</p>
             </div>
 
             {{-- Links Container --}}
@@ -197,6 +202,9 @@
             </div>
         </x-ui.container>
     </footer>
+
+    {{-- Cookie Consent Banner --}}
+    <x-cookie-consent />
 
     @stack('scripts')
 </body>

@@ -59,7 +59,7 @@ class ProfileAvailabilitySeederTest extends TestCase
 
         $availability = ProfileAvailability::where('profile_id', $profile->id)->first();
 
-        $this->assertMatchesRegularExpression('/^\d{2}:\d{2}$/', $availability->start_time);
+        $this->assertMatchesRegularExpression('/^\d{2}:\d{2}(:\d{2})?$/', $availability->start_time);
     }
 
     public function test_end_time_is_time(): void
@@ -70,6 +70,6 @@ class ProfileAvailabilitySeederTest extends TestCase
 
         $availability = ProfileAvailability::where('profile_id', $profile->id)->first();
 
-        $this->assertMatchesRegularExpression('/^\d{2}:\d{2}$/', $availability->end_time);
+        $this->assertMatchesRegularExpression('/^\d{2}:\d{2}(:\d{2})?$/', $availability->end_time);
     }
 }

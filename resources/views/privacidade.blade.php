@@ -25,6 +25,6 @@
                 </div>
             </div>
         </div>
-    </x-ui.container>
+    </div>
 </div>
 @endsection

@@ -28,7 +28,13 @@
             </div>
 
             @if($errors->any())
-                <x-alerts.alert type="error" :message="$errors->first()" />
+                <div class="mb-6 p-4 bg-red-600/20 border border-red-600/30 rounded-lg">
+                    <ul class="list-disc list-inside text-red-400 text-sm space-y-1">
+                        @foreach($errors->all() as $erro)
+                            <li>{{ $erro }}</li>
+                        @endforeach
+                    </ul>
+                </div>
             @endif
 
             <form class="space-y-5" action="{{ route('registro') }}" method="POST">
@@ -109,6 +115,20 @@
                     required
                     icon="<rect x='3' y='4' width='18' height='18' rx='2' ry='2'/><line x1='16' y1='2' x2='16' y2='6'/><line x1='8' y1='2' x2='8' y2='6'/><line x1='3' y1='10' x2='21' y2='10'/>"
                 />
+
+                {{-- LGPD Consent Checkbox --}}
+                <label class="flex items-start gap-3 p-4 bg-zinc-800/50 rounded-lg cursor-pointer">
+                    <input type="checkbox" name="lgpd_consent" required
+                           class="mt-0.5 h-4 w-4 rounded border-zinc-700 bg-zinc-800 text-primary focus:ring-primary focus:ring-offset-0"
+                           {{ old('lgpd_consent') ? 'checked' : '' }}>
+                    <span class="text-zinc-300 text-xs leading-relaxed">
+                        <strong class="text-primary">*</strong> Declaro que li e estou de acordo com a 
+                        <a href="{{ route('privacidade') }}" target="_blank" class="text-primary hover:brightness-125 underline cursor-pointer">Política de Privacidade</a> 
+                        e autorizo o tratamento dos meus dados pessoais (CPF, data de nascimento, telefone e demais informações fornecidas) 
+                        para os fins de cadastro, verificação de maioridade e operação da plataforma, conforme a 
+                        <strong>Lei Geral de Proteção de Dados (LGPD - Lei nº 13.709/2018)</strong>.
+                    </span>
+                </label>
 
                 <button type="submit"
                         class="w-full flex justify-center py-2.5 px-4 rounded-lg text-sm font-bold text-primary-foreground bg-primary hover:brightness-110 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-black transition-all duration-200 uppercase tracking-wider cursor-pointer">

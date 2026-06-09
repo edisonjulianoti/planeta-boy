@@ -26,6 +26,9 @@ class User extends Authenticatable
             'password'          => 'hashed',
             'is_admin'          => 'boolean',
             'blocked'           => 'boolean',
+            'cpf'               => 'encrypted',
+            'phone'             => 'encrypted',
+            'data_nascimento'   => 'encrypted',
         ];
     }
 

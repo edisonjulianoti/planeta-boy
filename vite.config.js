@@ -14,10 +14,10 @@ export default defineConfig({
         host: '0.0.0.0',
         port: 5173,
         strictPort: true,
-        origin: 'http://187.77.36.12:5173',
+        origin: 'https://planetaboy.com.br',
         cors: true,
         hmr: {
-            host: '187.77.36.12',
+            host: 'planetaboy.com.br',
             port: 5173
         },
         watch: {

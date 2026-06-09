@@ -30,6 +30,7 @@ final class LoginTest extends TestCase
 
     public function test_user_login_redirects_to_profile(): void
     {
+
         $user = User::factory()->create([
             'email'    => 'user@example.com',
             'password' => 'password',
@@ -47,6 +48,7 @@ final class LoginTest extends TestCase
 
     public function test_admin_login_redirects_to_admin_dashboard(): void
     {
+
         $admin = User::factory()->admin()->create([
             'email'    => 'admin@example.com',
             'password' => 'password',
@@ -63,6 +65,7 @@ final class LoginTest extends TestCase
 
     public function test_login_rejects_invalid_password(): void
     {
+
         $user = User::factory()->create([
             'email'    => 'test@example.com',
             'password' => 'correct-password',
@@ -81,6 +84,7 @@ final class LoginTest extends TestCase
 
     public function test_login_rejects_nonexistent_email(): void
     {
+
         $this->from(route('login'))
             ->post('/login', [
                 'email'    => 'nonexistent@example.com',
@@ -94,6 +98,7 @@ final class LoginTest extends TestCase
 
     public function test_login_validates_required_fields(): void
     {
+
         $this->from(route('login'))
             ->post('/login', [])
             ->assertSessionHasErrors(['email', 'password'])
@@ -102,6 +107,7 @@ final class LoginTest extends TestCase
 
     public function test_login_validates_email_format(): void
     {
+
         $this->from(route('login'))
             ->post('/login', [
                 'email'    => 'not-an-email',
@@ -113,6 +119,7 @@ final class LoginTest extends TestCase
 
     public function test_remember_me_creates_persistent_session(): void
     {
+
         $user = User::factory()->create([
             'email'    => 'remember@example.com',
             'password' => 'password',

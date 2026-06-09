@@ -6,7 +6,6 @@ use App\Models\Profile;
 use App\Models\ProfileReport;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Http\Middleware\ValidateCsrfToken;
 use Tests\TestCase;
 
 class ProfileReportFeatureTest extends TestCase
@@ -15,7 +14,6 @@ class ProfileReportFeatureTest extends TestCase
 
     public function test_authenticated_user_can_report(): void
     {
-        $this->withoutMiddleware(ValidateCsrfToken::class);
 
         $user = User::factory()->create();
         $profile = Profile::factory()->create(['user_id' => $user->id]);
@@ -36,7 +34,6 @@ class ProfileReportFeatureTest extends TestCase
 
     public function test_guest_cannot_report(): void
     {
-        $this->withoutMiddleware(ValidateCsrfToken::class);
 
         $user = User::factory()->create();
         $profile = Profile::factory()->create(['user_id' => $user->id]);
@@ -50,7 +47,6 @@ class ProfileReportFeatureTest extends TestCase
 
     public function test_report_requires_reason_field(): void
     {
-        $this->withoutMiddleware(ValidateCsrfToken::class);
 
         $user = User::factory()->create();
         $profile = Profile::factory()->create(['user_id' => $user->id]);
@@ -65,7 +61,6 @@ class ProfileReportFeatureTest extends TestCase
 
     public function test_description_is_optional(): void
     {
-        $this->withoutMiddleware(ValidateCsrfToken::class);
 
         $user = User::factory()->create();
         $profile = Profile::factory()->create(['user_id' => $user->id]);
@@ -85,7 +80,6 @@ class ProfileReportFeatureTest extends TestCase
 
     public function test_report_redirects_to_profile(): void
     {
-        $this->withoutMiddleware(ValidateCsrfToken::class);
 
         $user = User::factory()->create();
         $profile = Profile::factory()->create(['user_id' => $user->id]);
@@ -100,7 +94,6 @@ class ProfileReportFeatureTest extends TestCase
 
     public function test_report_stores_in_database(): void
     {
-        $this->withoutMiddleware(ValidateCsrfToken::class);
 
         $user = User::factory()->create();
         $profile = Profile::factory()->create(['user_id' => $user->id]);
@@ -122,7 +115,6 @@ class ProfileReportFeatureTest extends TestCase
 
     public function test_report_status_defaults_to_pendente(): void
     {
-        $this->withoutMiddleware(ValidateCsrfToken::class);
 
         $user = User::factory()->create();
         $profile = Profile::factory()->create(['user_id' => $user->id]);

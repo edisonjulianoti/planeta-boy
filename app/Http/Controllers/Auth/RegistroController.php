@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Rules\Cpf;
 use Carbon\Carbon;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -25,8 +26,9 @@ class RegistroController extends Controller
             'email'            => 'required|email|unique:users,email',
             'whatsapp'         => 'nullable|string|min:14|max:15',
             'senha'            => 'required|string|min:6|confirmed',
-            'cpf'              => 'required|string|max:14|unique:users,cpf',
+            'cpf'              => ['required', 'string', 'max:14', 'unique:users,cpf', new Cpf],
             'data_nascimento'  => 'required|date_format:d/m/Y|before:today|after:-100 years',
+            'lgpd_consent'     => 'accepted',
         ], [
             'nome.required'             => 'O nome é obrigatório.',
             'nome.min'                  => 'O nome deve ter no mínimo 2 caracteres.',
@@ -42,7 +44,8 @@ class RegistroController extends Controller
             'data_nascimento.required'  => 'A data de nascimento é obrigatória.',
             'data_nascimento.date_format' => 'Data de nascimento inválida. Use o formato dd/mm/aaaa.',
             'data_nascimento.before'    => 'A data de nascimento deve ser anterior a hoje.',
-            'data_nascimento.after'     => 'A data de nascimento deve ser posterior a 100 anos.',
+            'data_nascimento.after'     => 'Data de nascimento inválida.',
+            'lgpd_consent.accepted'     => 'Você precisa aceitar a Política de Privacidade e autorizar o tratamento dos seus dados pessoais (LGPD).',
         ]);
 
         // Converter data de nascimento do formato brasileiro para MySQL

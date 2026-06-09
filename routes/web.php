@@ -16,9 +16,10 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\LocationController;
 use App\Http\Controllers\PerfilController;
 use App\Http\Controllers\PlanoController;
+use App\Http\Controllers\AccountDeletionController;
 use Illuminate\Support\Facades\Route;
 
-// Rotas públicas com validação de idade
+// Rotas p\u00fablicas com valida\u00e7\u00e3o de idade
 Route::middleware('age.gate')->group(function () {
     // Home
     Route::get('/', [HomeController::class, 'index'])->name('home');
@@ -26,10 +27,10 @@ Route::middleware('age.gate')->group(function () {
     // Explorar
     Route::get('/explorar', [ExplorarController::class, 'index'])->name('explorar');
 
-    // Perfil público
+    // Perfil p\u00fablico
     Route::get('/perfis/{id}', [PerfilController::class, 'ver'])->name('perfil.ver');
 
-    // Planos (público)
+    // Planos (p\u00fablico)
     Route::get('/planos', [PlanoController::class, 'index'])->name('planos');
 
     // FAQ
@@ -40,26 +41,26 @@ Route::middleware('age.gate')->group(function () {
     Route::post('/contato', [ContatoController::class, 'store'])->name('contato.store');
 });
 
-// Perfil público (sem age gate para comentários/denúncias)
+// Perfil p\u00fablico (sem age gate para coment\u00e1rios/den\u00fanciaas)
 Route::post('/perfis/{id}/comentar', [PerfilController::class, 'comentar'])->name('perfil.comentar')->middleware('auth');
 Route::post('/perfis/{id}/denunciar', [PerfilController::class, 'denunciar'])->name('perfil.denunciar')->middleware('auth');
 
-// Páginas estáticas
+// P\u00e1ginas est\u00e1ticas
 Route::view('/termos', 'termos')->name('termos');
 Route::view('/privacidade', 'privacidade')->name('privacidade');
 
-// Validação de idade
+// Valida\u00e7\u00e3o de idade
 Route::post('/age-gate/confirm', function () {
-    return response()->json(['success' => true])->cookie('age_gate_confirmed', 'true', 43200); // 30 dias
+    return response()->json(['success' => true])->cookie('age_gate_confirmed', 'true', 43200);
 })->name('age-gate.confirm');
 
-// Auth (guest)
+// Auth (guest) - com rate limiting para prote\u00e7\u00e3o contra brute force
 Route::middleware('guest')->group(function () {
     Route::get('/login', [LoginController::class, 'form'])->name('login');
-    Route::post('/login', [LoginController::class, 'store']);
+    Route::post('/login', [LoginController::class, 'store'])->middleware('throttle:5,1');
 
     Route::get('/registro', [RegistroController::class, 'form'])->name('registro');
-    Route::post('/registro', [RegistroController::class, 'store']);
+    Route::post('/registro', [RegistroController::class, 'store'])->middleware('throttle:3,30');
 
     Route::get('/esqueci-senha', fn() => view('auth.login'))->name('password.request');
 });
@@ -80,6 +81,10 @@ Route::middleware('auth')->group(function () {
     Route::post('/planos/contratar', [PlanoController::class, 'contratar'])->name('planos.contratar');
     Route::get('/meu-plano', [PlanoController::class, 'meuPlano'])->name('meu.plano');
     Route::post('/meu-plano/cancelar', [PlanoController::class, 'cancelar'])->name('meu.plano.cancelar');
+
+    // Exclus\u00e3o de conta (LGPD - direito de exclus\u00e3o)
+    Route::get('/excluir-conta', [AccountDeletionController::class, 'form'])->name('conta.excluir.form');
+    Route::delete('/excluir-conta', [AccountDeletionController::class, 'destroy'])->name('conta.excluir');
 });
 
 // Admin
@@ -120,7 +125,7 @@ Route::middleware(['auth', \App\Http\Middleware\EnsureUserIsAdmin::class])
         Route::put('/cidades/{city}', [AdminCityController::class, 'update'])->name('cities.update');
         Route::delete('/cidades/{city}', [AdminCityController::class, 'destroy'])->name('cities.destroy');
 
-        // Serviços
+        // Servi\u00e7os
         Route::get('/servicos', [AdminServiceController::class, 'index'])->name('services');
         Route::get('/servicos/criar', [AdminServiceController::class, 'create'])->name('services.create');
         Route::post('/servicos', [AdminServiceController::class, 'store'])->name('services.store');
