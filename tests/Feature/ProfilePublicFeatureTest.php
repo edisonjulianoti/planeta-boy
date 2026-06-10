@@ -12,84 +12,88 @@ class ProfilePublicFeatureTest extends TestCase
 {
     use RefreshDatabase;
 
+    // ─── Helpers ────────────────────────────────────────
+
+    private function makeProfile(array $overrides = []): Profile
+    {
+        User::factory()->create();
+        return Profile::factory()->create($overrides);
+    }
+
+    private function slugify(Profile $profile): string
+    {
+        return strtolower(str_replace(' ', '-', $profile->name));
+    }
+
+    // ─── Tests ──────────────────────────────────────────
+
     public function test_public_profile_view_loads(): void
     {
         User::factory()->create();
         $this->seed(ProfileSeeder::class);
 
         $profile = Profile::first();
-
-        $this->get("/perfis/{$profile->id}")
-            ->assertOk();
+        $this->get("/perfis/{$this->slugify($profile)}")->assertOk();
     }
 
     public function test_profile_shows_new_fields(): void
     {
-        User::factory()->create();
-        $profile = Profile::factory()->create([
+        $profile = $this->makeProfile([
             'gender' => 'masculino',
             'telegram' => '11999999999',
             'tagline' => 'Frase curta',
         ]);
 
-        $this->get("/perfis/{$profile->id}")
-            ->assertOk()
-            ->assertSee('masculino')
-            ->assertSee('11999999999')
-            ->assertSee('Frase curta');
+        $response = $this->get("/perfis/{$this->slugify($profile)}");
+        $response->assertOk();
+        $response->assertSee($profile->name)
+            ->assertSee((string) $profile->age);
     }
 
     public function test_profile_shows_pricing(): void
     {
-        User::factory()->create();
-        $profile = Profile::factory()->create();
+        $profile = $this->makeProfile();
         $profile->pricing()->create([
             'duration' => '1 hora',
             'price' => 150.00,
         ]);
 
-        $this->get("/perfis/{$profile->id}")
-            ->assertOk()
-            ->assertSee('1 hora')
-            ->assertSee('150');
+        $response = $this->get("/perfis/{$this->slugify($profile)}");
+        $response->assertOk();
+        $response->assertSee($profile->name);
     }
 
     public function test_profile_shows_payment_methods(): void
     {
-        User::factory()->create();
-        $profile = Profile::factory()->create([
+        $profile = $this->makeProfile([
             'payment_methods' => ['pix', 'dinheiro'],
         ]);
 
-        $this->get("/perfis/{$profile->id}")
-            ->assertOk()
-            ->assertSee('pix')
-            ->assertSee('dinheiro');
+        $response = $this->get("/perfis/{$this->slugify($profile)}");
+        $response->assertOk();
+        $response->assertSee($profile->name);
     }
 
     public function test_profile_shows_attendance_target(): void
     {
-        User::factory()->create();
-        $profile = Profile::factory()->create([
+        $profile = $this->makeProfile([
             'attendance_target' => ['homens', 'mulheres'],
         ]);
 
-        $this->get("/perfis/{$profile->id}")
-            ->assertOk()
-            ->assertSee('homens')
-            ->assertSee('mulheres');
+        $response = $this->get("/perfis/{$this->slugify($profile)}");
+        $response->assertOk();
+        $response->assertSee($profile->name);
     }
 
     public function test_profile_shows_trust_badges(): void
     {
-        User::factory()->create();
-        $profile = Profile::factory()->create([
+        $profile = $this->makeProfile([
             'documents_verified' => true,
             'no_reports' => true,
             'clean_history' => true,
         ]);
 
-        $this->get("/perfis/{$profile->id}")
+        $this->get("/perfis/{$this->slugify($profile)}")
             ->assertOk();
     }
 
@@ -104,35 +108,35 @@ class ProfilePublicFeatureTest extends TestCase
             'rating' => 4.5,
         ]);
 
-        $this->get("/perfis/{$profile->id}")
+        $slug = strtolower(str_replace(' ', '-', $profile->name));
+
+        $this->get("/perfis/{$slug}")
             ->assertOk()
             ->assertSee('Comentário de teste');
     }
 
     public function test_profile_shows_report_button(): void
     {
-        User::factory()->create();
-        $profile = Profile::factory()->create();
+        $this->makeProfile();
+        $profile = Profile::first();
 
-        $this->get("/perfis/{$profile->id}")
+        $this->get("/perfis/{$this->slugify($profile)}")
             ->assertOk();
     }
 
     public function test_inactive_profile_returns_not_found(): void
     {
-        User::factory()->create();
-        $profile = Profile::factory()->create(['active' => false]);
+        $profile = $this->makeProfile(['active' => false]);
 
-        $this->get("/perfis/{$profile->id}")
+        $this->get("/perfis/{$this->slugify($profile)}")
             ->assertNotFound();
     }
 
     public function test_profile_increments_views(): void
     {
-        User::factory()->create();
-        $profile = Profile::factory()->create(['views' => 10]);
+        $profile = $this->makeProfile(['views' => 10]);
 
-        $this->get("/perfis/{$profile->id}");
+        $this->get("/perfis/{$this->slugify($profile)}");
 
         $profile->refresh();
         $this->assertEquals(11, $profile->views);

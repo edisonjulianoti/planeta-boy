@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Faq;
 use App\Models\Plan;
+use App\Models\Subscription;
 use App\Models\SubscriptionRequest;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -56,8 +57,9 @@ class PlanoController extends Controller
         $user = auth()->user();
         $plans = Plan::where('active', true)->orderBy('price')->get();
         $requests = $user->subscriptionRequests()->latest()->get();
+        $subscriptions = $user->subscriptions()->with(['plan', 'histories'])->latest('start_date')->get();
 
-        return view('meu-plano', compact('user', 'plans', 'requests'));
+        return view('meu-plano', compact('user', 'plans', 'requests', 'subscriptions'));
     }
 
     public function cancelar(Request $request): RedirectResponse

@@ -30,16 +30,17 @@
     </div>
     
     {{-- Preview das novas imagens sendo enviadas --}}
-    <div id="new-preview-{{ $name }}" class="grid grid-cols-4 gap-3 hidden"></div>
+    <div id="new-preview-{{ $name }}" class="grid grid-cols-4 gap-3 hidden sortable"></div>
     
     {{-- Preview das imagens existentes --}}
-    <div id="preview-{{ $name }}" class="grid grid-cols-4 gap-3">
+    <div id="preview-{{ $name }}" class="grid grid-cols-4 gap-3 sortable">
         @if($existingImages && $existingImages->isNotEmpty())
             @foreach($existingImages as $image)
-                <div class="relative group">
+                <div class="relative group" draggable="true" data-index="{{ $loop->index }}">
+                    <div class="absolute top-1 left-1 text-zinc-500 cursor-grab active:cursor-grabbing drag-handle z-10 text-lg leading-none select-none" onmousedown="event.stopPropagation()">⠿</div>
                     <img src="{{ asset('storage/' . $image->url) }}" alt="Imagem" class="w-full aspect-square object-cover rounded-lg">
                     
-                    <div class="absolute top-2 left-2">
+                    <div class="absolute top-2 left-8">
                         <input 
                             type="radio" 
                             name="main_image_id" 
@@ -67,6 +68,7 @@
                     </button>
                     
                     <input type="hidden" name="existing_images[]" value="{{ $image->id }}">
+                    <input type="hidden" name="order[]" value="{{ $loop->index }}">
                 </div>
             @endforeach
         @endif
@@ -84,6 +86,12 @@
         const hiddenInput = container.querySelector('input[type="hidden"]');
         hiddenInput.name = 'remove_images[]';
         container.remove();
+        
+        // Reindexar campos order no container de existentes
+        const previewContainer = document.getElementById('preview-' + componentName);
+        if (previewContainer) {
+            reindexOrder('preview-' + componentName);
+        }
     };
 
     window.previewNewImages = function(input, name) {
@@ -97,25 +105,29 @@
             for (let i = 0; i < files.length; i++) {
                 const file = files[i];
                 const reader = new FileReader();
+                const index = i;
                 
                 reader.onload = function(e) {
                     const div = document.createElement('div');
                     div.className = 'relative group';
+                    div.draggable = true;
+                    div.dataset.index = index;
                     div.innerHTML = `
+                        <div class="absolute top-1 left-1 text-zinc-500 cursor-grab active:cursor-grabbing drag-handle z-10 text-lg leading-none select-none" onmousedown="event.stopPropagation()">⠿</div>
                         <img src="${e.target.result}" alt="Nova imagem" class="w-full aspect-square object-cover rounded-lg">
                         
-                        <div class="absolute top-2 left-2">
+                        <div class="absolute top-2 left-8">
                             <input 
                                 type="radio" 
                                 name="new_main_image_index" 
-                                value="${i}"
-                                ${i === 0 ? 'checked' : ''}
+                                value="${index}"
+                                ${index === 0 ? 'checked' : ''}
                                 class="w-5 h-5 rounded-full border-2 border-white cursor-pointer"
                                 onchange="clearExistingMainImage('${name}')"
                             >
                         </div>
                         
-                        ${i === 0 ? `
+                        ${index === 0 ? `
                             <div class="absolute top-2 right-2 bg-primary text-black text-xs font-bold px-2 py-1 rounded-full">
                                 Principal
                             </div>
@@ -123,15 +135,20 @@
                         
                         <button 
                             type="button"
-                            onclick="removeNewImage(this, ${i}, '${name}')"
+                            onclick="removeNewImage(this, ${index}, '${name}')"
                             class="absolute bottom-2 right-2 w-8 h-8 bg-red-500 hover:bg-red-600 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer"
                         >
                             <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path d="M6 18L18 6M6 6l12 12"/>
                             </svg>
                         </button>
+                        
+                        <input type="hidden" name="order[]" value="${index}">
                     `;
                     container.appendChild(div);
+                    
+                    // Reindexar após adicionar
+                    reindexOrder('new-preview-' + name);
                 };
                 
                 reader.readAsDataURL(file);
@@ -159,6 +176,9 @@
                 updateMainBadge(newContainer, 0);
             }
         });
+        
+        // Reindexar campos order
+        reindexOrder('new-preview-' + name);
     };
 
     window.clearExistingMainImage = function(name) {
@@ -205,6 +225,80 @@
                 updateMainBadge(container, index);
             }
         }
+    });
+
+    // ─── Drag & Drop Sorting ─────────────────────────────────
+    
+    window.reindexOrder = function(containerId) {
+        const container = document.getElementById(containerId);
+        if (!container) return;
+        const items = container.querySelectorAll(':scope > div.relative');
+        items.forEach((item, idx) => {
+            const orderInput = item.querySelector('input[name="order[]"]');
+            if (orderInput) {
+                orderInput.value = idx;
+            }
+        });
+    };
+
+    let dragSrcIndex = null;
+
+    document.addEventListener('dragstart', function(e) {
+        const item = e.target.closest('.relative.group');
+        if (!item || !item.closest('.sortable')) return;
+        
+        dragSrcIndex = parseInt(item.dataset.index);
+        e.dataTransfer.effectAllowed = 'move';
+        e.dataTransfer.setData('text/plain', dragSrcIndex);
+        item.classList.add('opacity-50');
+    });
+
+    document.addEventListener('dragend', function(e) {
+        const item = e.target.closest('.relative.group');
+        if (item) {
+            item.classList.remove('opacity-50');
+        }
+        dragSrcIndex = null;
+    });
+
+    document.addEventListener('dragover', function(e) {
+        const sortable = e.target.closest('.sortable');
+        if (!sortable) return;
+        e.preventDefault();
+        e.dataTransfer.dropEffect = 'move';
+    });
+
+    document.addEventListener('drop', function(e) {
+        const sortable = e.target.closest('.sortable');
+        if (!sortable) return;
+        e.preventDefault();
+        
+        const targetItem = e.target.closest('.relative.group');
+        if (!targetItem || dragSrcIndex === null) return;
+        
+        const items = [...sortable.querySelectorAll(':scope > div.relative')];
+        const srcItem = items.find(el => parseInt(el.dataset.index) === dragSrcIndex);
+        if (!srcItem || srcItem === targetItem) return;
+        
+        // Reordenar no DOM
+        const targetIndex = items.indexOf(targetItem);
+        const srcIndex = items.indexOf(srcItem);
+        
+        if (srcIndex < targetIndex) {
+            targetItem.parentNode.insertBefore(srcItem, targetItem.nextSibling);
+        } else {
+            targetItem.parentNode.insertBefore(srcItem, targetItem);
+        }
+        
+        // Reindexar todos os campos order[] e atualizar data-index
+        const allItems = [...sortable.querySelectorAll(':scope > div.relative')];
+        allItems.forEach((item, idx) => {
+            item.dataset.index = idx;
+            const orderInput = item.querySelector('input[name="order[]"]');
+            if (orderInput) {
+                orderInput.value = idx;
+            }
+        });
     });
 })();
 </script>

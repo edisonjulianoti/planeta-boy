@@ -8,7 +8,7 @@
     {{-- Header --}}
     <x-ui.section padding="md">
         <x-ui.container size="lg" class="text-center">
-            <h1 class="text-4xl md:text-5xl font-black text-white uppercase italic tracking-tight mb-4">
+            <h1 class="text-heading-1 font-heading text-white uppercase italic tracking-tight mb-4">
                 Perguntas <span class="text-primary">Frequentes</span>
             </h1>
             <p class="text-zinc-400 text-lg max-w-2xl mx-auto">

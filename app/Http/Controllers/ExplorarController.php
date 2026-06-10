@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\City;
 use App\Models\Profile;
+use App\Models\ProfileFavorite;
 use App\Models\Service;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
@@ -102,6 +103,15 @@ class ExplorarController extends Controller
 
         $perfis = $query->paginate(16);
 
+        // Carregar favoritos do usuário logado
+        $favoritedIds = [];
+        if (auth()->check()) {
+            $favoritedIds = ProfileFavorite::where('user_id', auth()->id())
+                ->whereIn('profile_id', $perfis->pluck('id'))
+                ->pluck('profile_id')
+                ->toArray();
+        }
+
         if ($request->wantsJson() || $request->has('scroll')) {
             \Log::info('Scroll infinito AJAX request', [
                 'wantsJson' => $request->wantsJson(),
@@ -110,7 +120,7 @@ class ExplorarController extends Controller
                 'hasMorePages' => $perfis->hasMorePages(),
             ]);
             return response()->json([
-                'html' => view('components.perfil-card', compact('perfis'))->render(),
+                'html' => view('components.perfil-card', compact('perfis', 'favoritedIds'))->render(),
                 'next_page_url' => $perfis->nextPageUrl(),
                 'has_more_pages' => $perfis->hasMorePages(),
             ]);
@@ -121,6 +131,6 @@ class ExplorarController extends Controller
         $servicos = Service::where('active', true)->orderBy('name')->get();
         $estados = $cidades->pluck('state')->unique()->sort()->values();
 
-        return view('explorar', compact('perfis', 'cidades', 'servicos', 'estados'));
+        return view('explorar', compact('perfis', 'cidades', 'servicos', 'estados', 'favoritedIds'));
     }
 }

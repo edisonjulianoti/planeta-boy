@@ -84,6 +84,71 @@
             </form>
         </div>
 
+        {{-- Assinatura --}}
+        <div class="bg-zinc-900 border border-zinc-800 rounded-2xl p-6 mb-6">
+            <div class="flex items-center justify-between mb-4">
+                <h2 class="text-white font-black uppercase tracking-wider text-sm flex items-center gap-2">
+                    <div class="w-1 h-4 bg-primary rounded-full"></div>Assinatura
+                </h2>
+                <a href="{{ route('meu.plano') }}" class="text-sm text-primary hover:text-primary/80 font-medium transition-colors cursor-pointer">
+                    Gerenciar
+                </a>
+            </div>
+
+            @php
+                $user = auth()->user();
+                $activeSub = $user->activeSubscription();
+                $planName = $activeSub?->plan->name ?? ucfirst($user->plan);
+            @endphp
+
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-zinc-500 text-xs uppercase tracking-widest mb-1">Plano</p>
+                    <p class="text-xl font-black text-white uppercase">{{ $planName }}</p>
+                    @if($user->plan !== 'free' && $user->plan_expires_at)
+                    <p class="text-zinc-400 text-xs mt-1">
+                        Válido até
+                        <span class="{{ \Carbon\Carbon::parse($user->plan_expires_at)->isFuture() ? 'text-green-400' : 'text-red-400' }} font-bold">
+                            {{ \Carbon\Carbon::parse($user->plan_expires_at)->format('d/m/Y') }}
+                        </span>
+                    </p>
+                    @else
+                    <p class="text-zinc-500 text-xs mt-1">Plano gratuito</p>
+                    @endif
+                </div>
+                <x-admin.badge 
+                    :variant="$user->plan === 'free' ? 'neutral' : ($user->planIsActive() ? 'success' : 'danger')"
+                    :text="$user->plan === 'free' ? 'Gratuito' : ($user->planIsActive() ? 'Ativo' : 'Expirado')"
+                />
+            </div>
+
+            @if($activeSub && $activeSub->histories->isNotEmpty())
+            <div class="mt-4 pt-4 border-t border-zinc-800">
+                <p class="text-zinc-500 text-xs uppercase tracking-wider mb-2">Últimos Eventos</p>
+                <div class="space-y-1.5">
+                    @foreach($activeSub->histories->sortByDesc('created_at')->take(3) as $h)
+                    <div class="flex items-center gap-2 text-xs">
+                        <span class="shrink-0 w-1.5 h-1.5 rounded-full
+                            {{ match($h->event) {
+                                'created' => 'bg-green-500',
+                                'renewed' => 'bg-blue-500',
+                                'cancelled' => 'bg-red-500',
+                                'expired' => 'bg-zinc-500',
+                                'upgraded' => 'bg-purple-500',
+                                'downgraded' => 'bg-yellow-500',
+                                default => 'bg-zinc-500',
+                            } }}">
+                        </span>
+                        <span class="text-zinc-400 capitalize">{{ $h->event }}</span>
+                        <span class="text-zinc-600">·</span>
+                        <span class="text-zinc-500">{{ $h->description }}</span>
+                    </div>
+                    @endforeach
+                </div>
+            </div>
+            @endif
+        </div>
+
         {{-- Perfil --}}
         <div class="bg-zinc-900 border border-zinc-800 rounded-2xl p-6">
             <div class="flex items-center justify-between mb-6">

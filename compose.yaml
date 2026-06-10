@@ -1,0 +1,113 @@
+name: planeta-boy
+
+services:
+  # Aplicação Laravel - Desenvolvimento
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    container_name: planeta-boy-app
+    restart: unless-stopped
+    working_dir: /var/www/html
+    volumes:
+      - .:/var/www/html
+      - vendor:/var/www/html/vendor
+    env_file:
+      - ./.env
+    environment:
+      - APP_ENV=production
+      - APP_URL=http://localhost:8081
+      - VITE_URL=http://localhost:5173
+    ports:
+      - "9000"
+    networks:
+      - planeta-boy-net
+    depends_on:
+      mysql:
+        condition: service_healthy
+      redis:
+        condition: service_started
+
+  # Nginx - Desenvolvimento
+  nginx:
+    image: nginx:alpine
+    container_name: planeta-boy-nginx
+    restart: unless-stopped
+    ports:
+      - "${APP_PORT:-8081}:80"
+    volumes:
+      - .:/var/www/html
+      - /var/www/html/vendor
+      - /var/www/html/node_modules
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+    networks:
+      - planeta-boy-net
+    depends_on:
+      - app
+    extra_hosts:
+      - 'host.docker.internal:host-gateway'
+
+  # MySQL - Desenvolvimento
+  mysql:
+    image: mysql:8.0
+    container_name: planeta-boy-mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD:-planeta_password}
+      MYSQL_DATABASE: ${DB_DATABASE:-planeta_boy}
+      MYSQL_USER: ${DB_USERNAME:-planeta_user}
+      MYSQL_PASSWORD: ${DB_PASSWORD:-planeta_password}
+    ports:
+      - "${FORWARD_DB_PORT:-3308}:3306"
+    volumes:
+      - planeta-boy-mysql:/var/lib/mysql
+    networks:
+      - planeta-boy-net
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${DB_PASSWORD:-planeta_password}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Redis - Desenvolvimento
+  redis:
+    image: redis:7-alpine
+    container_name: planeta-boy-redis
+    restart: unless-stopped
+    ports:
+      - "${FORWARD_REDIS_PORT:-6380}:6379"
+    volumes:
+      - planeta-boy-redis:/data
+    networks:
+      - planeta-boy-net
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+
+  # Cloudflare Tunnel
+  cloudflared:
+    image: cloudflare/cloudflared:latest
+    container_name: planeta-boy-cloudflared
+    restart: unless-stopped
+    command: tunnel --config /etc/cloudflared/config.yml run
+    volumes:
+      - /home/edison/projetos/planeta-boy/cloudflared/config.yml:/etc/cloudflared/config.yml:ro
+      - /home/edison/.cloudflared/6e7c1ed6-65dc-4caa-8198-22eadbb57ad3.json:/etc/cloudflared/6e7c1ed6-65dc-4caa-8198-22eadbb57ad3.json:ro
+    network_mode: "host"
+
+networks:
+  planeta-boy-net:
+    driver: bridge
+
+volumes:
+  planeta-boy-mysql:
+    driver: local
+  planeta-boy-redis:
+    driver: local
+  vendor:
+    driver: local
+  node_modules:
+    driver: local

@@ -4,16 +4,12 @@
 
 @section('content')
 
-@component('components.home.banner-home')
-@endcomponent
+    <x-home.banner-home />
 
-@component('components.home.filtro-categorias', ['cidades' => $cidades])
-@endcomponent
+    <x-home.filtro-categorias :cidades="$cidades" />
 
-@component('components.home.plataforma')
-@endcomponent
+    <x-home.plataforma />
 
-@component('components.home.como-funciona')
-@endcomponent
+    <x-home.como-funciona />
 
 @endsection

@@ -1,14 +1,14 @@
 {{-- Sessão Plataforma --}}
-<x-ui.section padding="lg" class="bg-zinc-950">
+<x-ui.section padding="lg" class="bg-zinc-950 border-t border-zinc-800/20">
     <x-ui.container size="lg" class="flex flex-col items-center gap-16">
 
         {{-- Header --}}
-        <div class="max-w-[800px] w-full mx-auto text-center flex flex-col items-center gap-4">
+        <div class="max-w-[800px] w-full mx-auto text-center flex flex-col items-center gap-6">
             <div class="inline-flex items-center gap-2 bg-zinc-900 border border-zinc-800 rounded-full px-4 py-1.5">
-                <svg class="w-4 h-4 text-primary" fill="currentColor" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
-                <span class="text-white text-xs font-bold">Porque escolher</span>
+                <div class="w-2 h-2 bg-primary rounded-full"></div>
+                <span class="text-primary text-xs font-bold">Porque escolher</span>
             </div>
-            <h2 class="text-[40px] font-extrabold text-white inline-flex flex-wrap justify-center items-center gap-2">
+            <h2 class="text-heading-1 font-heading text-white inline-flex flex-wrap justify-center items-center gap-2">
                 <span>A Plataforma Mais</span>
                 <span class="text-primary">Confiável</span>
             </h2>

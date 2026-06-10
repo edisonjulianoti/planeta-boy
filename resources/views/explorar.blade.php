@@ -12,7 +12,7 @@
                 <button id="toggle-sidebar" class="md:hidden p-2 text-zinc-400 hover:text-white transition-colors cursor-pointer">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
                 </button>
-                <h1 class="text-[36px] font-extrabold text-white">Explorar Perfis</h1>
+                <h1 class="text-heading-1 font-heading text-white">Explorar Perfis</h1>
             </div>
             <p class="text-[16px] text-zinc-400">{{ $perfis->total() }} perfis encontrados</p>
         </div>
@@ -213,7 +213,7 @@
                 </div>
             @else
                 <div id="perfis-grid" class="grid grid-cols-[repeat(auto-fill,minmax(232px,1fr))] gap-6">
-                    @include('components.perfil-card', ['perfis' => $perfis])
+                    @include('components.perfil-card', ['perfis' => $perfis, 'favoritedIds' => $favoritedIds])
                 </div>
 
                 <div id="loading" class="hidden justify-center py-8">

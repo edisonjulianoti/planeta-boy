@@ -29,6 +29,9 @@ class DatabaseSeeder extends Seeder
             ProfileReportSeeder::class,
             ProfileImageSeeder::class,
             SubscriptionRequestSeeder::class,
+            FaqSeeder::class,
+            SubscriptionSeeder::class,
+            SubscriptionHistorySeeder::class,
         ]);
     }
 }

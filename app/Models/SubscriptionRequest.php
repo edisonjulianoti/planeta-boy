@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\SubscriptionStatus;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -13,8 +14,23 @@ class SubscriptionRequest extends Model
     {
         return [
             'expires_at' => 'datetime',
+            'status'     => SubscriptionStatus::class,
         ];
     }
+
+    // ─── Scopes ───────────────────────────────────────────
+
+    public function scopePending($query): void
+    {
+        $query->where('status', SubscriptionStatus::Pending);
+    }
+
+    public function scopeApproved($query): void
+    {
+        $query->where('status', SubscriptionStatus::Approved);
+    }
+
+    // ─── Relations ────────────────────────────────────────
 
     public function user(): BelongsTo
     {
@@ -23,11 +39,11 @@ class SubscriptionRequest extends Model
 
     public function isPending(): bool
     {
-        return $this->status === 'pending';
+        return $this->status === SubscriptionStatus::Pending;
     }
 
     public function isApproved(): bool
     {
-        return $this->status === 'approved';
+        return $this->status === SubscriptionStatus::Approved;
     }
 }

@@ -24,7 +24,7 @@
 
         {{-- Header --}}
         <div class="py-16 flex flex-col items-center gap-8 text-center">
-            <h1 class="text-[40px] font-black text-white italic">ESCOLHA SEU PLANO PREMIUM</h1>
+            <h1 class="text-heading-1 font-heading text-white italic">ESCOLHA SEU PLANO PREMIUM</h1>
             <p class="text-zinc-400 text-lg max-w-2xl">
                 Eleve sua carreira com um plano que combina com seu estilo. Mais visibilidade, mais clientes, mais sucesso.
             </p>
@@ -34,17 +34,44 @@
         <div class="pb-16">
             <div class="flex gap-8 justify-center flex-wrap">
                 @foreach($plans as $plan)
-                <div class="bg-zinc-900 rounded-xl p-12 flex flex-col gap-8 w-full max-w-[340px] {{ $plan->price > 0 ? 'border border-zinc-800' : '' }}">
+                @php
+                    $theme = match($plan->slug) {
+                        'free' => ['bg' => 'from-zinc-700 to-zinc-900', 'border' => 'border-zinc-800', 'icon' => '☆'],
+                        'silver' => ['bg' => 'from-slate-400 to-slate-600', 'border' => 'border-zinc-800', 'icon' => '✦'],
+                        'gold' => ['bg' => 'from-yellow-500 to-amber-700', 'border' => 'border-primary/30', 'icon' => '★'],
+                        'premium' => ['bg' => 'from-purple-500 to-indigo-700', 'border' => 'border-zinc-800', 'icon' => '♦'],
+                        default => ['bg' => 'from-zinc-700 to-zinc-900', 'border' => 'border-zinc-800', 'icon' => '●'],
+                    };
+                @endphp
+                <div class="bg-zinc-900 rounded-xl p-12 flex flex-col gap-8 w-full max-w-[340px] relative
+                    {{ $plan->slug === 'gold' ? 'border-2 border-primary/30' : ($plan->price > 0 ? 'border border-zinc-800' : '') }}">
+
+                    {{-- Badge "Mais Popular" --}}
+                    @if($plan->slug === 'gold')
+                    <div class="absolute -top-3 left-1/2 -translate-x-1/2 bg-primary text-black text-[11px] font-black uppercase tracking-widest px-4 py-1 rounded-full">
+                        Mais Popular
+                    </div>
+                    @endif
+
                     <div class="flex flex-col items-center gap-4">
-                        <div class="bg-zinc-950 rounded-full w-16 h-16 flex items-center justify-center">
-                            <span class="text-primary text-[28px]">★</span>
+                        {{-- Plan image / icon --}}
+                        @if($plan->image)
+                        <div class="w-20 h-20 rounded-full overflow-hidden border-2 {{ $plan->slug === 'gold' ? 'border-primary' : 'border-zinc-700' }}">
+                            <img src="{{ asset('storage/' . $plan->image) }}" alt="{{ $plan->name }}"
+                                 class="w-full h-full object-cover">
                         </div>
+                        @else
+                        <div class="bg-gradient-to-br {{ $theme['bg'] }} rounded-full w-20 h-20 flex items-center justify-center shadow-lg">
+                            <span class="text-white text-[32px] font-black">{{ $theme['icon'] }}</span>
+                        </div>
+                        @endif
                         <h3 class="text-white text-[24px] font-black italic">{{ $plan->name }}</h3>
                         <p class="text-zinc-400 text-sm text-center w-60">{{ $plan->description }}</p>
                     </div>
-                    <div class="text-white text-[40px] font-black">
+                    <div class="text-white text-[40px] font-black text-center">
                         @if($plan->price > 0)
                             R${{ number_format($plan->price, 2, ',', '.') }}
+                            <span class="text-zinc-500 text-lg font-bold">/mês</span>
                         @else
                             Grátis
                         @endif
@@ -52,7 +79,7 @@
                     <div class="flex flex-col gap-4 flex-1">
                         @foreach($plan->features as $feature)
                         <div class="flex items-center gap-3">
-                            <span class="text-zinc-400 text-sm">✓</span>
+                            <span class="text-primary text-sm">✓</span>
                             <span class="text-zinc-400 text-sm">{{ $feature }}</span>
                         </div>
                         @endforeach
@@ -64,7 +91,9 @@
                             </div>
                         @else
                             @if($plan->price > 0)
-                                <a href="#" onclick="event.preventDefault(); document.getElementById('form-{{ $plan->slug }}').submit();" class="w-full h-[56px] bg-transparent border border-zinc-800 text-white font-bold text-base rounded-full flex items-center justify-center hover:border-primary hover:text-primary transition-all cursor-pointer">
+                                <a href="#" onclick="event.preventDefault(); document.getElementById('form-{{ $plan->slug }}').submit();"
+                                   class="w-full h-[56px] bg-transparent border border-zinc-800 text-white font-bold text-base rounded-full flex items-center justify-center hover:border-primary hover:text-primary transition-all cursor-pointer
+                                   {{ $plan->slug === 'gold' ? 'bg-primary text-black border-primary hover:brightness-110' : '' }}">
                                     Assinar Agora
                                 </a>
                                 <form id="form-{{ $plan->slug }}" action="{{ route('planos.contratar') }}" method="POST" style="display: none;">
@@ -75,13 +104,37 @@
                         @endif
                     @else
                         @if($plan->price > 0)
-                            <a href="{{ route('registro') }}" class="w-full h-[56px] bg-transparent border border-zinc-800 text-white font-bold text-base rounded-full flex items-center justify-center hover:border-primary hover:text-primary transition-all cursor-pointer">
+                            <a href="{{ route('registro') }}"
+                               class="w-full h-[56px] bg-transparent border border-zinc-800 text-white font-bold text-base rounded-full flex items-center justify-center hover:border-primary hover:text-primary transition-all cursor-pointer
+                               {{ $plan->slug === 'gold' ? 'bg-primary text-black border-primary hover:brightness-110' : '' }}">
                                 Assinar Agora
                             </a>
                         @endif
                     @endauth
                 </div>
                 @endforeach
+            </div>
+        </div>
+
+        {{-- Discounts info --}}
+        <div class="pb-16">
+            <div class="bg-zinc-900 border border-zinc-800 rounded-xl p-8 max-w-2xl mx-auto">
+                <h3 class="text-white font-black text-lg mb-4 text-center">Descontos por Período</h3>
+                <div class="grid grid-cols-3 gap-4 text-center">
+                    <div class="bg-zinc-950 rounded-lg p-4">
+                        <p class="text-primary font-black text-xl">10%</p>
+                        <p class="text-zinc-400 text-sm">Trimestral</p>
+                    </div>
+                    <div class="bg-zinc-950 rounded-lg p-4">
+                        <p class="text-primary font-black text-xl">15%</p>
+                        <p class="text-zinc-400 text-sm">Semestral</p>
+                    </div>
+                    <div class="bg-zinc-950 rounded-lg p-4">
+                        <p class="text-primary font-black text-xl">20%</p>
+                        <p class="text-zinc-400 text-sm">Anual</p>
+                    </div>
+                </div>
+                <p class="text-zinc-500 text-xs text-center mt-4">Descontos aplicados sobre o valor mensal. Consulte condições.</p>
             </div>
         </div>
 

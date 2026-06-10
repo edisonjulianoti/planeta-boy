@@ -6,7 +6,12 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title', 'Admin') — PLANETA BOYS</title>
     <meta name="description" content="@yield('description', 'Painel administrativo PLANETA BOYS')">
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
+    {{-- Assets buildados (Vite dev server desligado) --}}
+    @php
+        $viteManifest = json_decode(file_get_contents(public_path('build/manifest.json')), true);
+    @endphp
+    <link rel="stylesheet" href="{{ asset('build/' . $viteManifest['resources/css/app.css']['file']) }}">
+    <script type="module" src="{{ asset('build/' . $viteManifest['resources/js/app.js']['file']) }}"></script>
 </head>
 <body class="bg-zinc-950 text-foreground overflow-hidden m-0">
 

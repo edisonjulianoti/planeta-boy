@@ -24,7 +24,7 @@ class ProfileReportFactory extends Factory
             'user_id' => \App\Models\User::factory(),
             'reason' => $this->faker->randomElement($reasons),
             'description' => $this->faker->optional(0.5)->text(),
-            'status' => $this->faker->randomElement(['pendente', 'analise', 'resolvido', 'rejeitado']),
+            'status' => $this->faker->randomElement(['pendente', 'revisado', 'descartado', 'acao_tomada']),
         ];
     }
 }

@@ -16,7 +16,7 @@
             <x-alerts.alert type="error" :message="$errors->first()" />
         @endif
 
-        <form action="{{ route('admin.plans.update', $plan) }}" method="POST" class="space-y-5">
+        <form action="{{ route('admin.plans.update', $plan) }}" method="POST" enctype="multipart/form-data" class="space-y-5">
             @csrf
             @method('PUT')
 
@@ -25,6 +25,33 @@
             <x-forms.input name="price" type="number" label="Preço (R$/mês)" :value="old('price', $plan->price)" step="0.01" min="0" />
 
             <x-forms.input name="description" label="Descrição" :value="old('description', $plan->description)" />
+
+            {{-- Image upload --}}
+            <div>
+                <label class="block text-zinc-400 text-xs uppercase tracking-widest font-bold mb-2">Imagem do Plano</label>
+
+                @if($plan->image)
+                <div class="mb-3" id="current-image-wrapper">
+                    <img src="{{ asset('storage/' . $plan->image) }}" alt="{{ $plan->name }}"
+                         class="w-24 h-24 object-cover rounded-lg border border-zinc-700">
+                    <label class="inline-flex items-center gap-2 mt-2 text-zinc-500 hover:text-red-400 text-xs font-bold transition-colors cursor-pointer">
+                        <input type="checkbox" name="remove_image" value="1" onchange="document.getElementById('current-image-wrapper')?.classList.toggle('opacity-40')">
+                        Remover imagem atual
+                    </label>
+                </div>
+                @endif
+
+                <input type="file" name="image" accept="image/jpeg,image/png,image/webp"
+                       class="w-full bg-zinc-800 border border-zinc-700 rounded-xl px-4 py-3 text-zinc-400 text-sm file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-bold file:bg-primary file:text-black hover:file:brightness-110 transition-all cursor-pointer"
+                       onchange="previewImage(this)">
+
+                <div id="image-preview" class="hidden mt-3">
+                    <img id="image-preview-img" src="#" alt="Preview"
+                         class="w-24 h-24 object-cover rounded-lg border border-zinc-700">
+                </div>
+
+                <p class="text-zinc-600 text-xs mt-1">Formatos: jpg, png, webp. Máx: 2MB</p>
+            </div>
 
             <div>
                 <label class="block text-zinc-400 text-xs uppercase tracking-widest font-bold mb-2">
@@ -54,5 +81,23 @@
         </form>
     </x-admin.card>
 </div>
+
+<script>
+function previewImage(input) {
+    const preview = document.getElementById('image-preview');
+    const img = document.getElementById('image-preview-img');
+    const currentWrapper = document.getElementById('current-image-wrapper');
+
+    if (input.files && input.files[0]) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            img.src = e.target.result;
+            preview.classList.remove('hidden');
+            if (currentWrapper) currentWrapper.style.display = 'none';
+        };
+        reader.readAsDataURL(input.files[0]);
+    }
+}
+</script>
 
 @endsection

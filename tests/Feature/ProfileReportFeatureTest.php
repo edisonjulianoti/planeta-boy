@@ -5,6 +5,7 @@ namespace Tests\Feature;
 use App\Models\Profile;
 use App\Models\ProfileReport;
 use App\Models\User;
+use App\Enums\ReportStatus;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -18,8 +19,10 @@ class ProfileReportFeatureTest extends TestCase
         $user = User::factory()->create();
         $profile = Profile::factory()->create(['user_id' => $user->id]);
 
+        $slug = strtolower(str_replace(' ', '-', $profile->name));
+
         $this->actingAs($user)
-            ->post("/perfis/{$profile->id}/denunciar", [
+            ->post("/perfis/{$slug}/denunciar", [
                 'reason' => 'conteudo_inapropriado',
                 'description' => 'Descrição da denúncia',
             ])
@@ -38,7 +41,9 @@ class ProfileReportFeatureTest extends TestCase
         $user = User::factory()->create();
         $profile = Profile::factory()->create(['user_id' => $user->id]);
 
-        $this->post("/perfis/{$profile->id}/denunciar", [
+        $slug = strtolower(str_replace(' ', '-', $profile->name));
+
+        $this->post("/perfis/{$slug}/denunciar", [
             'reason' => 'conteudo_inapropriado',
             'description' => 'Descrição da denúncia',
         ])
@@ -51,8 +56,10 @@ class ProfileReportFeatureTest extends TestCase
         $user = User::factory()->create();
         $profile = Profile::factory()->create(['user_id' => $user->id]);
 
+        $slug = strtolower(str_replace(' ', '-', $profile->name));
+
         $this->actingAs($user)
-            ->post("/perfis/{$profile->id}/denunciar", [
+            ->post("/perfis/{$slug}/denunciar", [
                 'reason' => '',
                 'description' => 'Descrição da denúncia',
             ])
@@ -65,8 +72,10 @@ class ProfileReportFeatureTest extends TestCase
         $user = User::factory()->create();
         $profile = Profile::factory()->create(['user_id' => $user->id]);
 
+        $slug = strtolower(str_replace(' ', '-', $profile->name));
+
         $this->actingAs($user)
-            ->post("/perfis/{$profile->id}/denunciar", [
+            ->post("/perfis/{$slug}/denunciar", [
                 'reason' => 'conteudo_inapropriado',
             ])
             ->assertRedirect();
@@ -84,8 +93,10 @@ class ProfileReportFeatureTest extends TestCase
         $user = User::factory()->create();
         $profile = Profile::factory()->create(['user_id' => $user->id]);
 
+        $slug = strtolower(str_replace(' ', '-', $profile->name));
+
         $this->actingAs($user)
-            ->post("/perfis/{$profile->id}/denunciar", [
+            ->post("/perfis/{$slug}/denunciar", [
                 'reason' => 'conteudo_inapropriado',
                 'description' => 'Descrição da denúncia',
             ])
@@ -98,8 +109,10 @@ class ProfileReportFeatureTest extends TestCase
         $user = User::factory()->create();
         $profile = Profile::factory()->create(['user_id' => $user->id]);
 
+        $slug = strtolower(str_replace(' ', '-', $profile->name));
+
         $this->actingAs($user)
-            ->post("/perfis/{$profile->id}/denunciar", [
+            ->post("/perfis/{$slug}/denunciar", [
                 'reason' => 'conteudo_inapropriado',
                 'description' => 'Descrição da denúncia',
             ]);
@@ -110,7 +123,7 @@ class ProfileReportFeatureTest extends TestCase
 
         $this->assertNotNull($report);
         $this->assertEquals('conteudo_inapropriado', $report->reason);
-        $this->assertEquals('pendente', $report->status);
+        $this->assertEquals(ReportStatus::Pending, $report->status);
     }
 
     public function test_report_status_defaults_to_pendente(): void
@@ -119,8 +132,10 @@ class ProfileReportFeatureTest extends TestCase
         $user = User::factory()->create();
         $profile = Profile::factory()->create(['user_id' => $user->id]);
 
+        $slug = strtolower(str_replace(' ', '-', $profile->name));
+
         $this->actingAs($user)
-            ->post("/perfis/{$profile->id}/denunciar", [
+            ->post("/perfis/{$slug}/denunciar", [
                 'reason' => 'conteudo_inapropriado',
             ]);
 
@@ -128,6 +143,6 @@ class ProfileReportFeatureTest extends TestCase
             ->where('user_id', $user->id)
             ->first();
 
-        $this->assertEquals('pendente', $report->status);
+        $this->assertEquals(ReportStatus::Pending, $report->status);
     }
 }

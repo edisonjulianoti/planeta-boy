@@ -6,10 +6,13 @@ use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Carbon;
+use App\Models\Subscription;
+use App\Models\SubscriptionHistory;
 
 #[Fillable(['name', 'email', 'password', 'phone', 'cpf', 'data_nascimento', 'bio', 'avatar', 'plan', 'plan_expires_at', 'is_admin', 'blocked'])]
 #[Hidden(['password', 'remember_token'])]
@@ -85,5 +88,28 @@ class User extends Authenticatable
     public function shouldHavePlan(): bool
     {
         return !$this->isAdmin();
+    }
+
+    public function favorites(): HasMany
+    {
+        return $this->hasMany(ProfileFavorite::class);
+    }
+
+    public function favoriteProfiles(): BelongsToMany
+    {
+        return $this->belongsToMany(Profile::class, 'profile_favorites')
+            ->withTimestamps();
+    }
+
+    // ─── Assinaturas ─────────────────────────────────────
+
+    public function subscriptions(): HasMany
+    {
+        return $this->hasMany(Subscription::class);
+    }
+
+    public function activeSubscription(): ?Subscription
+    {
+        return $this->subscriptions()->active()->latest('start_date')->first();
     }
 }

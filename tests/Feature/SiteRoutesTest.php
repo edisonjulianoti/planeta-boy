@@ -5,8 +5,9 @@ declare(strict_types=1);
 namespace Tests\Feature;
 
 use App\Models\User;
-use Database\Seeders\ProfileSeeder;
+use App\Models\Profile;
 use Database\Seeders\PlanSeeder;
+use Database\Seeders\ProfileSeeder;
 use Illuminate\Foundation\Http\Middleware\ValidateCsrfToken;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -26,7 +27,12 @@ final class SiteRoutesTest extends TestCase
 
     public function test_profile_show_responds_ok_for_demo_slug(): void
     {
-        $this->seed(ProfileSeeder::class);
+        $user = User::factory()->create();
+        Profile::factory()->create([
+            'user_id' => $user->id,
+            'name' => 'Lucas Santos',
+            'active' => true,
+        ]);
 
         $this->get('/perfis/lucas-santos')->assertOk();
     }
@@ -60,13 +66,16 @@ final class SiteRoutesTest extends TestCase
 
         $this->from('/cadastro')
             ->post('/cadastro', [
-                'name' => 'Edison Teste',
+                'nome' => 'Edison Teste',
                 'email' => 'edison-auth@example.com',
-                'password' => 'senha-segura-8',
-                'password_confirmation' => 'senha-segura-8',
+                'senha' => 'senha-segura-8',
+                'senha_confirmation' => 'senha-segura-8',
+                'cpf' => '529.982.247-25',
+                'data_nascimento' => '15/05/1990',
+                'lgpd_consent' => '1',
             ])
-            ->assertRedirect(route('home'))
-            ->assertSessionHas('success');
+            ->assertRedirect(route('perfil'))
+            ->assertSessionHas('status');
 
         $this->assertAuthenticated();
         $this->assertDatabaseHas('users', ['email' => 'edison-auth@example.com']);
@@ -86,7 +95,7 @@ final class SiteRoutesTest extends TestCase
                 'email' => $user->email,
                 'password' => 'password',
             ])
-            ->assertRedirect(route('home'));
+            ->assertRedirect(route('perfil'));
 
         $this->assertAuthenticatedAs($user);
     }
@@ -126,8 +135,7 @@ final class SiteRoutesTest extends TestCase
 
         $this->actingAs($user)
             ->post('/sair')
-            ->assertRedirect(route('home'))
-            ->assertSessionHas('success');
+            ->assertRedirect(route('home'));
 
         $this->assertGuest();
     }

@@ -10,16 +10,23 @@ use App\Http\Controllers\Admin\SubscriptionController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegistroController;
 use App\Http\Controllers\ContatoController;
+use App\Http\Controllers\CityController;
 use App\Http\Controllers\ExplorarController;
+use App\Http\Controllers\DestaqueController;
 use App\Http\Controllers\FaqController;
+use App\Http\Controllers\FavoritoController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\LocationController;
 use App\Http\Controllers\PerfilController;
 use App\Http\Controllers\PlanoController;
 use App\Http\Controllers\AccountDeletionController;
+use App\Http\Controllers\SitemapController;
 use Illuminate\Support\Facades\Route;
 
-// Rotas p\u00fablicas com valida\u00e7\u00e3o de idade
+// Sitemap XML (sem age gate)
+Route::get('/sitemap.xml', [SitemapController::class, 'index'])->name('sitemap');
+
+// Rotas públicas com validação de idade
 Route::middleware('age.gate')->group(function () {
     // Home
     Route::get('/', [HomeController::class, 'index'])->name('home');
@@ -27,8 +34,14 @@ Route::middleware('age.gate')->group(function () {
     // Explorar
     Route::get('/explorar', [ExplorarController::class, 'index'])->name('explorar');
 
-    // Perfil p\u00fablico
-    Route::get('/perfis/{id}', [PerfilController::class, 'ver'])->name('perfil.ver');
+    // Página por cidade
+    Route::get('/cidade/{slug}', [CityController::class, 'show'])->name('cidade.show');
+
+    // Destaques
+    Route::get('/destaques', [DestaqueController::class, 'index'])->name('destaques');
+
+    // Perfil público
+    Route::get('/perfis/{slug}', [PerfilController::class, 'ver'])->name('perfil.ver');
 
     // Planos (p\u00fablico)
     Route::get('/planos', [PlanoController::class, 'index'])->name('planos');
@@ -41,25 +54,37 @@ Route::middleware('age.gate')->group(function () {
     Route::post('/contato', [ContatoController::class, 'store'])->name('contato.store');
 });
 
-// Perfil p\u00fablico (sem age gate para coment\u00e1rios/den\u00fanciaas)
-Route::post('/perfis/{id}/comentar', [PerfilController::class, 'comentar'])->name('perfil.comentar')->middleware('auth');
-Route::post('/perfis/{id}/denunciar', [PerfilController::class, 'denunciar'])->name('perfil.denunciar')->middleware('auth');
+// Perfil público (sem age gate para comentários/denúncias)
+Route::post('/perfis/{slug}/comentar', [PerfilController::class, 'comentar'])->name('perfil.comentar')->middleware('auth');
+Route::post('/perfis/{slug}/denunciar', [PerfilController::class, 'denunciar'])->name('perfil.denunciar')->middleware('auth');
 
-// P\u00e1ginas est\u00e1ticas
+// Páginas estáticas
+Route::view('/sobre', 'sobre')->name('sobre');
 Route::view('/termos', 'termos')->name('termos');
 Route::view('/privacidade', 'privacidade')->name('privacidade');
+Route::view('/seguranca', 'seguranca')->name('seguranca');
+Route::view('/regras', 'regras')->name('regras');
+Route::view('/como-anunciar', 'como-anunciar')->name('como-anunciar');
 
-// Valida\u00e7\u00e3o de idade
+// Redirects de URLs legadas (inglês → português)
+Route::redirect('/privacy', '/privacidade', 301);
+Route::redirect('/terms', '/termos', 301);
+
+// Validação de idade
 Route::post('/age-gate/confirm', function () {
     return response()->json(['success' => true])->cookie('age_gate_confirmed', 'true', 43200);
 })->name('age-gate.confirm');
 
-// Auth (guest) - com rate limiting para prote\u00e7\u00e3o contra brute force
+// Auth (guest) - com rate limiting para proteção contra brute force
 Route::middleware('guest')->group(function () {
-    Route::get('/login', [LoginController::class, 'form'])->name('login');
+    Route::get('/entrar', [LoginController::class, 'form'])->name('login');
+    Route::get('/login', [LoginController::class, 'form']);
+    Route::post('/entrar', [LoginController::class, 'store'])->middleware('throttle:5,1');
     Route::post('/login', [LoginController::class, 'store'])->middleware('throttle:5,1');
 
-    Route::get('/registro', [RegistroController::class, 'form'])->name('registro');
+    Route::get('/cadastro', [RegistroController::class, 'form'])->name('registro');
+    Route::get('/registro', [RegistroController::class, 'form']);
+    Route::post('/cadastro', [RegistroController::class, 'store'])->middleware('throttle:3,30');
     Route::post('/registro', [RegistroController::class, 'store'])->middleware('throttle:3,30');
 
     Route::get('/esqueci-senha', fn() => view('auth.login'))->name('password.request');
@@ -67,7 +92,8 @@ Route::middleware('guest')->group(function () {
 
 // Auth (autenticado)
 Route::middleware('auth')->group(function () {
-    Route::post('/logout', [LoginController::class, 'destroy'])->name('logout');
+    Route::post('/sair', [LoginController::class, 'destroy'])->name('logout');
+    Route::post('/logout', [LoginController::class, 'destroy']);
     Route::get('/meu-perfil', [PerfilController::class, 'meu'])->name('perfil');
     Route::put('/meu-perfil', [PerfilController::class, 'atualizar'])->name('perfil.atualizar');
     Route::post('/localizacao/atualizar', [LocationController::class, 'update'])->name('localizacao.atualizar');
@@ -82,9 +108,13 @@ Route::middleware('auth')->group(function () {
     Route::get('/meu-plano', [PlanoController::class, 'meuPlano'])->name('meu.plano');
     Route::post('/meu-plano/cancelar', [PlanoController::class, 'cancelar'])->name('meu.plano.cancelar');
 
-    // Exclus\u00e3o de conta (LGPD - direito de exclus\u00e3o)
+    // Exclusão de conta (LGPD - direito de exclusão)
     Route::get('/excluir-conta', [AccountDeletionController::class, 'form'])->name('conta.excluir.form');
     Route::delete('/excluir-conta', [AccountDeletionController::class, 'destroy'])->name('conta.excluir');
+
+    // Favoritos
+    Route::get('/meus-favoritos', [FavoritoController::class, 'index'])->name('favoritos.index');
+    Route::post('/perfis/{profileId}/favoritar', [FavoritoController::class, 'toggle'])->name('favoritos.toggle');
 });
 
 // Admin

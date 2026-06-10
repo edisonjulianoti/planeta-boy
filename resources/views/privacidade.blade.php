@@ -4,9 +4,10 @@
 
 @section('content')
 <div class="min-h-screen bg-black">
-    <div class="container mx-auto px-4 py-16">
-        <div class="max-w-4xl mx-auto">
-            <h1 class="text-4xl font-bold text-white mb-8">Política de Privacidade</h1>
+    <x-ui.section padding="lg">
+        <x-ui.container size="lg">
+            <div class="max-w-4xl mx-auto">
+                <h1 class="text-heading-1 font-heading text-white mb-8">Política de Privacidade</h1>
             <div class="bg-zinc-900 border border-zinc-800 rounded-lg p-8 space-y-8">
                 @foreach([
                     ['titulo' => '1. Informações Coletadas', 'texto' => 'Coletamos informações que você nos fornece diretamente, como nome, e-mail, e informações de perfil quando cria uma conta em nossa plataforma.'],
@@ -25,6 +26,7 @@
                 </div>
             </div>
         </div>
-    </div>
+    </x-ui.container>
+    </x-ui.section>
 </div>
 @endsection

@@ -1,11 +1,11 @@
 {{-- Seção Cidades em Destaque --}}
-<x-ui.section padding="sm" class="bg-zinc-950">
+<x-ui.section padding="lg" class="bg-zinc-950 border-t border-zinc-800/20">
     <x-ui.container size="lg" class="flex flex-col gap-8">
 
         {{-- Header --}}
         <div class="flex items-center justify-between w-full">
-            <h2 class="text-2xl font-[800] text-white">Cidades em Destaque</h2>
-            <a href="{{ route('explorar') }}" class="text-primary text-sm font-[600] hover:brightness-110 transition-all cursor-pointer">
+            <h2 class="text-heading-3 font-bold text-white">Cidades em Destaque</h2>
+            <a href="{{ route('explorar') }}" class="text-primary text-sm font-bold hover:brightness-110 transition-all cursor-pointer">
                 Ver todas as cidades
             </a>
         </div>
@@ -25,8 +25,8 @@
                     <div class="absolute inset-0 bg-black/40 z-10"></div>
                     <div class="absolute bottom-0 left-0 right-0 p-4 z-20">
                         <div class="bg-black/70 rounded-xl px-4 py-3 flex flex-col gap-1 w-full">
-                            <h3 class="text-white font-[800] text-lg">{{ $cidade['name'] }}</h3>
-                            <p class="text-primary text-xs font-[700]">{{ $cidade['count'] }} modelos</p>
+                            <h3 class="text-white font-bold text-lg">{{ $cidade['name'] }}</h3>
+                            <p class="text-primary text-xs font-bold">{{ $cidade['count'] }} modelos</p>
                         </div>
                     </div>
                 </div>

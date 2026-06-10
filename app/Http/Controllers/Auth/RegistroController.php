@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
@@ -21,7 +23,7 @@ class RegistroController extends Controller
 
     public function store(Request $request): RedirectResponse
     {
-        $request->validate([
+        $validated = $request->validate([
             'nome'             => 'required|string|min:2|max:255',
             'email'            => 'required|email|unique:users,email',
             'whatsapp'         => 'nullable|string|min:14|max:15',
@@ -48,21 +50,21 @@ class RegistroController extends Controller
             'lgpd_consent.accepted'     => 'Você precisa aceitar a Política de Privacidade e autorizar o tratamento dos seus dados pessoais (LGPD).',
         ]);
 
-        // Converter data de nascimento do formato brasileiro para MySQL
-        $dataNascimento = Carbon::createFromFormat('d/m/Y', $request->data_nascimento)->format('Y-m-d');
+        $dataNascimento = Carbon::createFromFormat('d/m/Y', $validated['data_nascimento'])->format('Y-m-d');
 
         $usuario = User::create([
-            'name'            => $request->nome,
-            'email'           => $request->email,
-            'password'        => Hash::make($request->senha),
-            'phone'           => $request->whatsapp,
-            'cpf'             => $request->cpf,
+            'name'            => $validated['nome'],
+            'email'           => $validated['email'],
+            'password'        => Hash::make($validated['senha']),
+            'phone'           => $validated['whatsapp'] ?? null,
+            'cpf'             => $validated['cpf'],
             'data_nascimento' => $dataNascimento,
             'plan'            => 'free',
         ]);
 
         Auth::login($usuario);
 
-        return redirect()->route('perfil')->with('status', 'Conta criada com sucesso! Bem-vindo(a)!');
+        return redirect()->route('perfil')
+            ->with('status', 'Conta criada com sucesso! Bem-vindo(a)!');
     }
 }

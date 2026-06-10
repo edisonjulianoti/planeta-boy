@@ -17,7 +17,7 @@ return new class extends Migration
             $table->foreignId('user_id')->constrained('users')->cascadeOnDelete();
             $table->string('reason');
             $table->text('description')->nullable();
-            $table->enum('status', ['pendente', 'analise', 'resolvido', 'rejeitado'])->default('pendente');
+            $table->enum('status', ['pendente', 'revisado', 'descartado', 'acao_tomada'])->default('pendente');
             $table->timestamps();
         });
     }

@@ -32,7 +32,7 @@ class UserFactory extends Factory
             'remember_token' => Str::random(10),
             'is_admin' => false,
             'plan' => 'free',
-            'cpf' => fake()->numerify('###.###.###-##'),
+            'cpf' => fake()->unique()->numerify('###.###.###-##'),
             'data_nascimento' => fake()->date('Y-m-d', '-18 years'),
         ];
     }

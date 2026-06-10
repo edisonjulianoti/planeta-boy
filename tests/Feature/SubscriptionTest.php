@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Feature;
 
+use App\Enums\SubscriptionStatus;
 use App\Models\Plan;
 use App\Models\SubscriptionRequest;
 use App\Models\User;
@@ -107,7 +108,7 @@ final class SubscriptionTest extends TestCase
             ->assertRedirect();
 
         $req->refresh();
-        $this->assertSame('approved', $req->status);
+        $this->assertSame(SubscriptionStatus::Approved, $req->status);
         $this->assertSame('Aprovado manualmente', $req->admin_notes);
 
         $user->refresh();
@@ -135,7 +136,7 @@ final class SubscriptionTest extends TestCase
             ->assertRedirect();
 
         $req->refresh();
-        $this->assertSame('rejected', $req->status);
+        $this->assertSame(SubscriptionStatus::Rejected, $req->status);
         $this->assertSame('free', $user->fresh()->plan);
     }
 

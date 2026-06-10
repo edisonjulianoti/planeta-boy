@@ -43,7 +43,12 @@
                     @if($media->isNotEmpty())
                         <div class="relative h-[400px] sm:h-[560px] p-4">
                             <div class="relative w-full h-full rounded-xl overflow-hidden cursor-pointer" onclick="openLightbox()">
-                                @if($mainMedia->type === 'video')
+                                @if($mainMedia->type === 'video' && $mainMedia->data->isLocal())
+                                    <video id="media-principal" controls class="w-full h-full" playsinline>
+                                        <source src="{{ asset('storage/' . $mainMedia->data->path) }}" type="video/mp4">
+                                        Seu navegador não suporta vídeo.
+                                    </video>
+                                @elseif($mainMedia->type === 'video')
                                     <iframe id="media-principal" 
                                             src="https://www.youtube.com/embed/{{ $mainMedia->data->video_id }}?enablejsapi=1" 
                                             class="w-full h-full"
@@ -81,7 +86,16 @@
                             <div class="flex gap-3 overflow-x-auto pb-2">
                                 @foreach($media as $index => $item)
                                     <button onclick="setImage({{ $index }})" class="shrink-0 w-20 h-20 rounded-lg overflow-hidden border-2 transition-all cursor-pointer {{ $index === 0 ? 'border-primary' : 'border-transparent hover:border-zinc-600' }}">
-                                        @if($item->type === 'video')
+                                        @if($item->type === 'video' && $item->data->isLocal())
+                                            <div class="relative w-full h-full bg-zinc-800 flex items-center justify-center">
+                                                <video class="w-full h-full object-cover" muted preload="metadata">
+                                                    <source src="{{ asset('storage/' . $item->data->path) }}" type="video/mp4">
+                                                </video>
+                                                <div class="absolute inset-0 flex items-center justify-center">
+                                                    <svg class="w-8 h-8 text-white drop-shadow-lg" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                                                </div>
+                                            </div>
+                                        @elseif($item->type === 'video')
                                             <div class="relative w-full h-full bg-zinc-800 flex items-center justify-center">
                                                 <img src="https://img.youtube.com/vi/{{ $item->data->video_id }}/mqdefault.jpg" alt="Miniatura vídeo {{ $index + 1 }}" class="w-full h-full object-cover">
                                                 <div class="absolute inset-0 flex items-center justify-center">
@@ -124,7 +138,16 @@
                     <div class="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2">
                         @foreach($media as $index => $item)
                             <button onclick="setLightboxImage({{ $index }})" class="w-12 h-12 rounded-lg overflow-hidden border-2 transition-all cursor-pointer lightbox-thumb" data-index="{{ $index }}">
-                                @if($item->type === 'video')
+                                @if($item->type === 'video' && $item->data->isLocal())
+                                    <div class="relative w-full h-full bg-zinc-800 flex items-center justify-center">
+                                        <video class="w-full h-full object-cover" muted preload="metadata">
+                                            <source src="{{ asset('storage/' . $item->data->path) }}" type="video/mp4">
+                                        </video>
+                                        <div class="absolute inset-0 flex items-center justify-center">
+                                            <svg class="w-6 h-6 text-white drop-shadow-lg" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                                        </div>
+                                    </div>
+                                @elseif($item->type === 'video')
                                     <div class="relative w-full h-full bg-zinc-800 flex items-center justify-center">
                                         <img src="https://img.youtube.com/vi/{{ $item->data->video_id }}/mqdefault.jpg" alt="Miniatura vídeo {{ $index + 1 }}" class="w-full h-full object-cover">
                                         <div class="absolute inset-0 flex items-center justify-center">
@@ -151,14 +174,24 @@
                     </a>
                     @endif
                     {{-- Ícones de ação --}}
+                @auth
                     <div class="flex gap-4">
-                        <button class="flex-1 py-4 bg-zinc-900 border border-zinc-800 rounded-xl hover:border-primary transition-colors">
-                            <svg class="w-6 h-6 mx-auto text-zinc-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg>
+                        <button id="btn-favoritar"
+                                data-profile-id="{{ $perfil->id }}"
+                                data-favorited="{{ $isFavorited ? 'true' : 'false' }}"
+                                class="flex-1 py-4 rounded-xl transition-all duration-200 cursor-pointer
+                                {{ $isFavorited ? 'bg-primary/20 border border-primary text-primary' : 'bg-zinc-900 border border-zinc-800 text-zinc-400 hover:border-primary hover:text-primary' }}">
+                            <svg id="heart-icon" class="w-6 h-6 mx-auto transition-all duration-200"
+                                 fill="{{ $isFavorited ? 'currentColor' : 'none' }}"
+                                 stroke="currentColor" viewBox="0 0 24 24">
+                                <path d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
+                            </svg>
                         </button>
-                        <button class="flex-1 py-4 bg-zinc-900 border border-zinc-800 rounded-xl hover:border-primary transition-colors">
+                        <button class="flex-1 py-4 bg-zinc-900 border border-zinc-800 rounded-xl hover:border-primary transition-colors cursor-pointer">
                             <svg class="w-6 h-6 mx-auto text-zinc-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"/></svg>
                         </button>
                     </div>
+                @endauth
                 </div>
 
                 {{-- Disponibilidade --}}
@@ -185,6 +218,17 @@
                         <span class="text-zinc-400 text-sm">Avaliação</span>
                         <span class="text-primary font-bold text-sm">⭐ {{ number_format($perfil->rating, 1) }}</span>
                     </div>
+                    <div class="flex justify-between items-center">
+                        <span class="text-zinc-400 text-sm">Assinantes</span>
+                        <span class="text-primary font-bold text-sm">{{ $perfil->subscribersCount() }}</span>
+                    </div>
+                    @php $firstSub = $perfil->firstSubscriptionDate(); @endphp
+                    @if($firstSub)
+                    <div class="flex justify-between items-center">
+                        <span class="text-zinc-400 text-sm">Desde</span>
+                        <span class="text-white font-bold text-sm">{{ $firstSub }}</span>
+                    </div>
+                    @endif
                     <div class="flex justify-between items-center">
                         <span class="text-zinc-400 text-sm">Status</span>
                         <span class="text-green-500 font-bold text-sm">🟢 Online</span>
@@ -357,7 +401,18 @@
         const currentItem = media[currentIndex];
         const container = mediaPrincipal.parentElement;
 
-        if (currentItem.type === 'video') {
+        if (currentItem.type === 'video' && currentItem.data.type === 'local') {
+            const video = document.createElement('video');
+            video.id = 'media-principal';
+            video.className = 'w-full h-full';
+            video.controls = true;
+            video.playsInline = true;
+            const source = document.createElement('source');
+            source.src = '/storage/' + currentItem.data.path;
+            source.type = 'video/mp4';
+            video.appendChild(source);
+            container.replaceChild(video, mediaPrincipal);
+        } else if (currentItem.type === 'video') {
             const iframe = document.createElement('iframe');
             iframe.id = 'media-principal';
             iframe.src = `https://www.youtube.com/embed/${currentItem.data.video_id}?enablejsapi=1`;
@@ -446,7 +501,14 @@
 
         const currentItem = media[currentIndex];
 
-        if (currentItem.type === 'video') {
+        if (currentItem.type === 'video' && currentItem.data.type === 'local') {
+            lightboxContent.innerHTML = `
+                <video controls class="max-w-full max-h-[80vh] object-contain" playsinline autoplay>
+                    <source src="/storage/${currentItem.data.path}" type="video/mp4">
+                    Seu navegador não suporta vídeo.
+                </video>
+            `;
+        } else if (currentItem.type === 'video') {
             lightboxContent.innerHTML = `
                 <iframe src="https://www.youtube.com/embed/${currentItem.data.video_id}?autoplay=1" 
                         class="max-w-full max-h-[80vh] object-contain"
@@ -489,6 +551,57 @@
     document.addEventListener('keydown', function(e) {
         if (e.key === 'Escape') {
             closeLightbox();
+        }
+    });
+})();
+
+// ─── Favoritar ───────────────────────────────────────────
+(function() {
+    const btn = document.getElementById('btn-favoritar');
+    if (!btn) return;
+
+    const profileId = btn.dataset.profileId;
+    const heartIcon = document.getElementById('heart-icon');
+
+    btn.addEventListener('click', async function() {
+        const wasFav = this.dataset.favorited === 'true';
+
+        // Otimista: toggle visual imediatamente
+        if (wasFav) {
+            this.dataset.favorited = 'false';
+            this.classList.remove('bg-primary/20', 'border-primary', 'text-primary');
+            this.classList.add('bg-zinc-900', 'border-zinc-800', 'text-zinc-400', 'hover:border-primary', 'hover:text-primary');
+            heartIcon.setAttribute('fill', 'none');
+        } else {
+            this.dataset.favorited = 'true';
+            this.classList.remove('bg-zinc-900', 'border-zinc-800', 'text-zinc-400', 'hover:border-primary', 'hover:text-primary');
+            this.classList.add('bg-primary/20', 'border-primary', 'text-primary');
+            heartIcon.setAttribute('fill', 'currentColor');
+        }
+
+        try {
+            const response = await fetch('/perfis/' + profileId + '/favoritar', {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                    'Accept': 'application/json',
+                },
+            });
+
+            if (!response.ok) throw new Error('Erro ao favoritar');
+        } catch (e) {
+            // Reverter em caso de erro
+            if (wasFav) {
+                this.dataset.favorited = 'true';
+                this.classList.remove('bg-zinc-900', 'border-zinc-800', 'text-zinc-400', 'hover:border-primary', 'hover:text-primary');
+                this.classList.add('bg-primary/20', 'border-primary', 'text-primary');
+                heartIcon.setAttribute('fill', 'currentColor');
+            } else {
+                this.dataset.favorited = 'false';
+                this.classList.remove('bg-primary/20', 'border-primary', 'text-primary');
+                this.classList.add('bg-zinc-900', 'border-zinc-800', 'text-zinc-400', 'hover:border-primary', 'hover:text-primary');
+                heartIcon.setAttribute('fill', 'none');
+            }
         }
     });
 })();

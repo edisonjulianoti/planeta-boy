@@ -55,7 +55,7 @@ class ProfileReportSeederTest extends TestCase
 
     public function test_status_is_valid(): void
     {
-        $validStatuses = ['pendente', 'analise', 'resolvido', 'rejeitado'];
+        $validStatuses = ['pendente', 'revisado', 'descartado', 'acao_tomada'];
 
         $this->seed([UserSeeder::class, ProfileSeeder::class]);
 
@@ -63,7 +63,7 @@ class ProfileReportSeederTest extends TestCase
 
         $reports = ProfileReport::all();
         foreach ($reports as $report) {
-            $this->assertContains($report->status, $validStatuses);
+            $this->assertContains($report->status->value, $validStatuses);
         }
     }
 

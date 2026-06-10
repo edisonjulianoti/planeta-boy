@@ -4,9 +4,10 @@
 
 @section('content')
 <div class="min-h-screen bg-black">
-    <x-ui.container size="lg" class="py-16">
-        <div class="max-w-4xl mx-auto">
-            <h1 class="text-4xl font-bold text-white mb-8">Termos de Uso</h1>
+    <x-ui.section padding="lg">
+        <x-ui.container size="lg">
+            <div class="max-w-4xl mx-auto">
+                <h1 class="text-heading-1 font-heading text-white mb-8">Termos de Uso</h1>
             <div class="bg-zinc-900 border border-zinc-800 rounded-lg p-8 space-y-8">
                 @foreach([
                     ['titulo' => '1. Aceitação dos Termos', 'texto' => 'Ao acessar e usar a plataforma PLANETA BOYS, você concorda com estes termos de uso.'],
@@ -29,5 +30,6 @@
             </div>
         </div>
     </x-ui.container>
+    </x-ui.section>
 </div>
 @endsection

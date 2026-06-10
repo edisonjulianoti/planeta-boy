@@ -3,9 +3,19 @@
     $userPlan = $perfil->user ? $perfil->user->plan : 'free';
     $isPremium = in_array($userPlan, ['premium', 'gold']);
     $physical = $perfil->physicalAttributes;
+    $isFav = isset($favoritedIds) && in_array($perfil->id, $favoritedIds);
 @endphp
 <a href="{{ route('perfil.ver', $perfil->id) }}"
-   class="group bg-zinc-900 border border-zinc-800 rounded-lg overflow-hidden hover:border-primary/50 hover:shadow-xl hover:shadow-primary/10 transition-all duration-300 cursor-pointer flex flex-col h-full">
+   class="group bg-zinc-900 border border-zinc-800 rounded-lg overflow-hidden hover:border-primary/50 hover:shadow-xl hover:shadow-primary/10 transition-all duration-300 cursor-pointer flex flex-col h-full relative">
+
+    @if($isFav)
+        <div class="absolute top-2 right-2 z-10 w-8 h-8 bg-red-500/90 rounded-full flex items-center justify-center shadow-lg">
+            <svg class="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
+            </svg>
+        </div>
+    @endif
+
     {{-- Imagem --}}
     <div class="relative h-[260px] bg-zinc-800 flex flex-col justify-between p-3">
         @if($perfil->images->isNotEmpty())

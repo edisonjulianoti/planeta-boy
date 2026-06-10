@@ -458,6 +458,6 @@ final class ProfileTest extends TestCase
             'state' => 'SP',
         ]);
 
-        $this->assertStringContainsString('latest', $profile->comments()->toSql());
+        $this->assertStringContainsString('order by "created_at" desc', $profile->comments()->toSql());
     }
 }

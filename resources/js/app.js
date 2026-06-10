@@ -1,15 +1,20 @@
 // Header scroll effect
 const header = document.getElementById('header');
 if (header) {
-    window.addEventListener('scroll', () => {
+    const SCROLLED_CLASSES = ['bg-zinc-900/80', 'backdrop-blur-xl', 'shadow-lg', 'shadow-black/20'];
+
+    function updateHeader() {
         if (window.scrollY > 20) {
-            header.classList.add('bg-black/70', 'backdrop-blur-xl', 'border-b', 'border-zinc-800/50', 'shadow-lg', 'shadow-black/20');
-            header.classList.remove('bg-transparent');
+            header.classList.add(...SCROLLED_CLASSES);
+            header.dataset.scrolled = 'true';
         } else {
-            header.classList.remove('bg-black/70', 'backdrop-blur-xl', 'border-b', 'border-zinc-800/50', 'shadow-lg', 'shadow-black/20');
-            header.classList.add('bg-transparent');
+            header.classList.remove(...SCROLLED_CLASSES);
+            header.dataset.scrolled = 'false';
         }
-    });
+    }
+
+    window.addEventListener('scroll', updateHeader, { passive: true });
+    updateHeader(); // estado inicial consistente
 }
 
 // Mobile menu toggle

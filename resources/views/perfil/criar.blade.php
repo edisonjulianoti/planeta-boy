@@ -28,6 +28,7 @@
         <div class="bg-zinc-900 border border-zinc-800 rounded-2xl p-6">
             <form action="{{ route('perfil.salvar') }}" method="POST" class="space-y-6" enctype="multipart/form-data">
                 @csrf
+                <input type="hidden" name="remove_images" value="">
 
                 <x-forms.input name="name" label="Nome do perfil" placeholder="Como você gostaria de ser chamado?" :value="old('name', $perfil->name ?? null)" required variant="dark" />
 
@@ -77,6 +78,17 @@
                             <p class="text-zinc-400 text-sm">{{ $perfil->videos()->where('platform', 'youtube')->first()->url }}</p>
                         </div>
                     @endif
+                </div>
+
+                {{-- Upload de Vídeo Local --}}
+                <div>
+                    <label class="block text-zinc-500 text-xs uppercase tracking-wider mb-1.5">Ou faça upload de um vídeo</label>
+                    <input type="file" name="video_file" accept="video/mp4,video/webm"
+                           class="w-full bg-zinc-950 border border-zinc-800 rounded-lg px-4 py-2.5 text-white text-sm 
+                                  file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 
+                                  file:text-sm file:font-semibold file:bg-primary file:text-primary-foreground
+                                  hover:file:brightness-110 cursor-pointer" />
+                    <p class="text-zinc-600 text-xs mt-1">Formatos: MP4, WebM (máx. 50MB). Se enviar um vídeo, a URL do YouTube será ignorada.</p>
                 </div>
 
                 <div class="flex justify-end gap-3 pt-4">

@@ -60,7 +60,7 @@
 
 <script>
 function confirmAge() {
-    fetch('{{ route('age-gate.confirm') }}', {
+    fetch('/age-gate/confirm', {
         method: 'POST',
         headers: {
             'X-CSRF-TOKEN': '{{ csrf_token() }}',

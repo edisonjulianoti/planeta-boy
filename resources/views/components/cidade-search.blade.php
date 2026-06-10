@@ -7,7 +7,7 @@
             onchange="window.location.href=this.value"
         >
             <option value="">Selecione ou busque sua Cidade...</option>
-            @foreach($cidadesObj as $cidade)
+            @foreach($cidades as $cidade)
                 <option value="{{ route('explorar', ['cidade' => $cidade->slug]) }}">
                     {{ $cidade->name }} - {{ $cidade->state }}
                 </option>

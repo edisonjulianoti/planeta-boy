@@ -27,7 +27,7 @@ class ProfileReportSeeder extends Seeder
                             'user_id' => $users->random()->id,
                             'reason' => fake()->randomElement($reasons),
                             'description' => fake()->optional(0.5)->text(),
-                            'status' => fake()->randomElement(['pendente', 'analise', 'resolvido', 'rejeitado']),
+                            'status' => fake()->randomElement(['pendente', 'revisado', 'descartado', 'acao_tomada']),
                         ]);
                     }
                 }

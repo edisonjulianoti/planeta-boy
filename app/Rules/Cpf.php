@@ -10,45 +10,44 @@ class Cpf implements ValidationRule
     /**
      * Valida CPF brasileiro com dígitos verificadores.
      */
-    public function validate(string , mixed , Closure ): void
+    public function validate(string $attribute, mixed $value, Closure $fail): void
     {
-         = preg_replace('/\D/', '', );
+        $cpf = preg_replace('/\D/', '', $value);
 
-        if (strlen() !== 11) {
-            ('O CPF deve ter 11 dígitos.');
+        if (strlen($cpf) !== 11) {
+            $fail('O CPF deve ter 11 dígitos.');
             return;
         }
 
         // Rejeitar sequências iguais (111.111.111-11, etc.)
-        if (preg_match('/^(\d)\1{10}$/', )) {
-            ('O CPF informado é inválido.');
+        if (preg_match('/^(\d)\1{10}$/', $cpf)) {
+            $fail('O CPF informado é inválido.');
             return;
         }
 
         // Validar 1º dígito verificador
-         = 0;
-        for ( = 0;  < 9; ++) {
-             += (int) [] * (10 - );
+        $soma = 0;
+        for ($i = 0; $i < 9; $i++) {
+            $soma += (int) $cpf[$i] * (10 - $i);
         }
-         =  % 11;
-         =  < 2 ? 0 : 11 - ;
+        $resto = $soma % 11;
+        $digito1 = $resto < 2 ? 0 : 11 - $resto;
 
-        if ((int) [9] !== ) {
-            ('O CPF informado é inválido.');
+        if ((int) $cpf[9] !== $digito1) {
+            $fail('O CPF informado é inválido.');
             return;
         }
 
         // Validar 2º dígito verificador
-         = 0;
-        for ( = 0;  < 10; ++) {
-             += (int) [] * (11 - );
+        $soma = 0;
+        for ($i = 0; $i < 10; $i++) {
+            $soma += (int) $cpf[$i] * (11 - $i);
         }
-         =  % 11;
-         =  < 2 ? 0 : 11 - ;
+        $resto = $soma % 11;
+        $digito2 = $resto < 2 ? 0 : 11 - $resto;
 
-        if ((int) [10] !== ) {
-            ('O CPF informado é inválido.');
+        if ((int) $cpf[10] !== $digito2) {
+            $fail('O CPF informado é inválido.');
         }
     }
 }
-

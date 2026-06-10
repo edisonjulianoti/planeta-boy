@@ -30,7 +30,12 @@ class AdminCityController extends Controller
             'order' => 'nullable|integer',
         ]);
 
-        $slug = Str::slug($request->name . '-' . $request->state);
+        $baseSlug = Str::slug($request->name . '-' . $request->state);
+        $slug = $baseSlug;
+        $counter = 1;
+        while (City::where('slug', $slug)->exists()) {
+            $slug = $baseSlug . '-' . $counter++;
+        }
         $imagePath = null;
 
         if ($request->hasFile('image')) {
@@ -63,7 +68,12 @@ class AdminCityController extends Controller
             'order' => 'nullable|integer',
         ]);
 
-        $slug = Str::slug($request->name . '-' . $request->state);
+        $baseSlug = Str::slug($request->name . '-' . $request->state);
+        $slug = $baseSlug;
+        $counter = 1;
+        while (City::where('slug', $slug)->where('id', '!=', $city->id)->exists()) {
+            $slug = $baseSlug . '-' . $counter++;
+        }
 
         if ($request->hasFile('image')) {
             if ($city->image) {

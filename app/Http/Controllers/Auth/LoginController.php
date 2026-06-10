@@ -1,8 +1,11 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Auth\LoginRequest;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -15,21 +18,9 @@ class LoginController extends Controller
         return view('auth.login');
     }
 
-    public function store(Request $request): RedirectResponse
+    public function store(LoginRequest $request): RedirectResponse
     {
-        $request->validate([
-            'email' => 'required|email',
-            'password' => 'required',
-        ], [
-            'email.required' => 'O e-mail é obrigatório.',
-            'email.email' => 'Informe um e-mail válido.',
-            'password.required' => 'A senha é obrigatória.',
-        ]);
-
-        $credenciais = [
-            'email'    => $request->email,
-            'password' => $request->password,
-        ];
+        $credenciais = $request->safe()->only(['email', 'password']);
 
         if (Auth::attempt($credenciais, $request->boolean('remember'))) {
             $request->session()->regenerate();
@@ -41,7 +32,9 @@ class LoginController extends Controller
             return redirect()->intended($destination);
         }
 
-        return back()->withErrors(['email' => 'E-mail ou senha incorretos.'])->onlyInput('email');
+        return back()
+            ->withErrors(['email' => 'E-mail ou senha incorretos.'])
+            ->onlyInput('email');
     }
 
     public function destroy(Request $request): RedirectResponse

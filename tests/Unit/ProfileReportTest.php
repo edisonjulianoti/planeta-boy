@@ -2,6 +2,7 @@
 
 namespace Tests\Unit;
 
+use App\Enums\ReportStatus;
 use App\Models\Profile;
 use App\Models\ProfileReport;
 use App\Models\User;
@@ -74,12 +75,12 @@ class ProfileReportTest extends TestCase
             'status' => 'pendente',
         ]);
 
-        $this->assertEquals('pendente', $report->status);
+        $this->assertSame(ReportStatus::Pending, $report->status);
     }
 
     public function test_status_is_valid_enum(): void
     {
-        $validStatuses = ['pendente', 'analise', 'resolvido', 'rejeitado'];
+        $validStatuses = ReportStatus::cases();
 
         foreach ($validStatuses as $status) {
             $user = User::factory()->create();
@@ -92,7 +93,7 @@ class ProfileReportTest extends TestCase
                 'status' => $status,
             ]);
 
-            $this->assertEquals($status, $report->status);
+            $this->assertSame($status, $report->status);
         }
     }
 

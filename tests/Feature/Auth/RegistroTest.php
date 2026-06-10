@@ -36,6 +36,9 @@ final class RegistroTest extends TestCase
             'email'                 => 'novo@example.com',
             'senha'                 => 'senha123',
             'senha_confirmation'    => 'senha123',
+            'cpf'                   => '529.982.247-25',
+            'data_nascimento'       => '15/05/1990',
+            'lgpd_consent'          => '1',
         ])
             ->assertRedirect(route('perfil'));
 
@@ -56,6 +59,9 @@ final class RegistroTest extends TestCase
                 'email'              => 'novo@example.com',
                 'senha'              => 'senha123',
                 'senha_confirmation' => 'senha123',
+                'cpf'                => '529.982.247-25',
+                'data_nascimento'    => '15/05/1990',
+                'lgpd_consent'       => '1',
             ])
             ->assertSessionHasErrors('nome')
             ->assertRedirect(route('registro'));
@@ -72,6 +78,9 @@ final class RegistroTest extends TestCase
                 'email'              => 'email-invalido',
                 'senha'              => 'senha123',
                 'senha_confirmation' => 'senha123',
+                'cpf'                => '529.982.247-25',
+                'data_nascimento'    => '15/05/1990',
+                'lgpd_consent'       => '1',
             ])
             ->assertSessionHasErrors('email')
             ->assertRedirect(route('registro'));
@@ -90,6 +99,9 @@ final class RegistroTest extends TestCase
                 'email'              => 'existente@example.com',
                 'senha'              => 'senha123',
                 'senha_confirmation' => 'senha123',
+                'cpf'                => '529.982.247-25',
+                'data_nascimento'    => '15/05/1990',
+                'lgpd_consent'       => '1',
             ])
             ->assertSessionHasErrors('email')
             ->assertRedirect(route('registro'));
@@ -104,6 +116,9 @@ final class RegistroTest extends TestCase
                 'email'              => 'novo@example.com',
                 'senha'              => 'senha123',
                 'senha_confirmation' => 'diferente',
+                'cpf'                => '529.982.247-25',
+                'data_nascimento'    => '15/05/1990',
+                'lgpd_consent'       => '1',
             ])
             ->assertSessionHasErrors('senha')
             ->assertRedirect(route('registro'));
@@ -120,6 +135,9 @@ final class RegistroTest extends TestCase
                 'email'              => 'novo@example.com',
                 'senha'              => '123',
                 'senha_confirmation' => '123',
+                'cpf'                => '529.982.247-25',
+                'data_nascimento'    => '15/05/1990',
+                'lgpd_consent'       => '1',
             ])
             ->assertSessionHasErrors('senha')
             ->assertRedirect(route('registro'));
@@ -135,6 +153,9 @@ final class RegistroTest extends TestCase
             'email'              => 'comum@example.com',
             'senha'              => 'senha123',
             'senha_confirmation' => 'senha123',
+            'cpf'                => '529.982.247-25',
+            'data_nascimento'    => '15/05/1990',
+            'lgpd_consent'       => '1',
         ]);
 
         $user = User::where('email', 'comum@example.com')->first();

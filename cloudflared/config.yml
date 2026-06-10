@@ -1,0 +1,7 @@
+tunnel: 6e7c1ed6-65dc-4caa-8198-22eadbb57ad3
+credentials-file: /etc/cloudflared/6e7c1ed6-65dc-4caa-8198-22eadbb57ad3.json
+
+ingress:
+  - hostname: planetaboy.ejulianoti.com.br
+    service: http://localhost:8081
+  - service: http_status:404
