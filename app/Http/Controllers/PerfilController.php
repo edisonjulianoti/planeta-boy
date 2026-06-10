@@ -90,7 +90,7 @@ class PerfilController extends Controller
                 images: $request->file('gallery', []),
                 videoUrl: $request->input('video_url'),
                 videoFile: $request->file('video_file'),
-                removeImageIds: $request->input('remove_images', []),
+                removeImageIds: $request->filled('remove_images') ? (array) $request->input('remove_images') : [],
                 mainImageId: $request->input('main_image_id'),
                 newMainImageIndex: $request->input('new_main_image_index'),
             );

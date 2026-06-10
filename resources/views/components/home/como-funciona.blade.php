@@ -1,9 +1,9 @@
 {{-- Sessão Como Funciona --}}
-<x-ui.section padding="lg" class="bg-zinc-950 border-t border-zinc-800/20">
+<x-ui.section padding="lg" class="bg-zinc-950">
     <x-ui.container size="lg" class="flex flex-col items-center gap-16">
 
         {{-- Header --}}
-        <div class="flex flex-col items-center gap-6 text-center">
+        <div class="flex flex-col items-center gap-8 text-center">
 
             {{-- Badge --}}
             <div class="inline-flex items-center gap-2 bg-zinc-900 border border-zinc-800 rounded-full px-4 py-1.5">

@@ -244,11 +244,15 @@ const InfiniteScroll = {
     init() {
         if (!this.hasMorePages || !this.nextPageUrl) return;
 
+        // Usar o container de scroll como root (não o viewport)
+        const scrollContainer = document.getElementById('perfis-grid')?.parentElement;
+        if (!scrollContainer) return;
+
         this.observer = new IntersectionObserver(
             (entries) => this.handleIntersection(entries),
             {
-                root: null,
-                rootMargin: '500px',
+                root: scrollContainer,
+                rootMargin: '200px',
                 threshold: 0
             }
         );

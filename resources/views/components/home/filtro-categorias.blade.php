@@ -1,5 +1,5 @@
 {{-- Seção Cidades em Destaque --}}
-<x-ui.section padding="lg" class="bg-zinc-950 border-t border-zinc-800/20">
+<x-ui.section padding="lg" class="bg-zinc-950">
     <x-ui.container size="lg" class="flex flex-col gap-8">
 
         {{-- Header --}}

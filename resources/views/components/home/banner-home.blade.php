@@ -4,9 +4,6 @@
     {{-- Background preto sólido --}}
     <div class="absolute inset-0 z-0 bg-zinc-950"></div>
 
-    {{-- Linha decorativa no topo --}}
-    <div class="absolute top-0 left-0 right-0 z-[1] h-px bg-gradient-to-r from-transparent via-primary/15 to-transparent"></div>
-
     {{-- Conteúdo --}}
     <div class="relative z-10 w-full">
         <x-ui.container size="lg" class="text-center">

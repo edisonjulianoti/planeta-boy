@@ -1,5 +1,5 @@
 {{-- Sessão Plataforma --}}
-<x-ui.section padding="lg" class="bg-zinc-950 border-t border-zinc-800/20">
+<x-ui.section padding="lg" class="bg-zinc-950">
     <x-ui.container size="lg" class="flex flex-col items-center gap-16">
 
         {{-- Header --}}
@@ -18,61 +18,61 @@
         </div>
 
         {{-- Grid de cards --}}
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-[1200px] w-full mx-auto justify-items-center">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-[1200px] w-full mx-auto">
 
             {{-- Perfis Reais --}}
-            <div class="bg-zinc-900 rounded-2xl p-8 flex flex-col gap-4 h-full">
+            <a href="#" class="group bg-zinc-900 border border-zinc-800 rounded-2xl p-8 flex flex-col gap-4 hover:border-primary/50 hover:shadow-xl hover:shadow-primary/10 transition-all duration-300 cursor-pointer">
                 <div class="bg-zinc-950 rounded-lg p-3 w-12 h-12 flex items-center justify-center">
                     <svg class="w-6 h-6 text-primary" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg>
                 </div>
                 <h3 class="text-white font-bold text-lg">Perfis Reais</h3>
                 <p class="text-zinc-400 text-sm leading-normal">Todo perfil possui o Selo de Verificação para garantir sua segurança e evitar fakes.</p>
-            </div>
+            </a>
 
             {{-- Zero Anúncios --}}
-            <div class="bg-zinc-900 rounded-2xl p-8 flex flex-col gap-4 h-full">
+            <a href="#" class="group bg-zinc-900 border border-zinc-800 rounded-2xl p-8 flex flex-col gap-4 hover:border-primary/50 hover:shadow-xl hover:shadow-primary/10 transition-all duration-300 cursor-pointer">
                 <div class="bg-zinc-950 rounded-lg p-3 w-12 h-12 flex items-center justify-center">
                     <svg class="w-6 h-6 text-primary" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M6 3h12l4 6-10 13L2 9Z"/><path d="M11 3 8 9l4 13 4-13-3-6"/><path d="M2 9h20"/></svg>
                 </div>
                 <h3 class="text-white font-bold text-lg">Zero Anúncios</h3>
                 <p class="text-zinc-400 text-sm leading-normal">Uma experiência limpa e premium, livre de banners, pop-ups e poluição visual.</p>
-            </div>
+            </a>
 
             {{-- Total Anonimato --}}
-            <div class="bg-zinc-900 rounded-2xl p-8 flex flex-col gap-4 h-full">
+            <a href="#" class="group bg-zinc-900 border border-zinc-800 rounded-2xl p-8 flex flex-col gap-4 hover:border-primary/50 hover:shadow-xl hover:shadow-primary/10 transition-all duration-300 cursor-pointer">
                 <div class="bg-zinc-950 rounded-lg p-3 w-12 h-12 flex items-center justify-center">
                     <svg class="w-6 h-6 text-primary" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><polyline points="16 11 18 13 22 9"/></svg>
                 </div>
                 <h3 class="text-white font-bold text-lg">Total Anonimato</h3>
                 <p class="text-zinc-400 text-sm leading-normal">Não exigimos cadastro do usuário. Sua navegação é privada e seus dados protegidos.</p>
-            </div>
+            </a>
 
             {{-- Design de Luxo --}}
-            <div class="bg-zinc-900 rounded-2xl p-8 flex flex-col gap-4 h-full">
+            <a href="#" class="group bg-zinc-900 border border-zinc-800 rounded-2xl p-8 flex flex-col gap-4 hover:border-primary/50 hover:shadow-xl hover:shadow-primary/10 transition-all duration-300 cursor-pointer">
                 <div class="bg-zinc-950 rounded-lg p-3 w-12 h-12 flex items-center justify-center">
                     <svg class="w-6 h-6 text-primary" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><rect width="14" height="20" x="5" y="2" rx="2" ry="2"/><path d="M12 18h.01"/></svg>
                 </div>
                 <h3 class="text-white font-bold text-lg">Design de Luxo</h3>
                 <p class="text-zinc-400 text-sm leading-normal">Plataforma moderna e intuitiva, pensada para funcionar perfeitamente no seu celular e web.</p>
-            </div>
+            </a>
 
             {{-- Contato Direto --}}
-            <div class="bg-zinc-900 rounded-2xl p-8 flex flex-col gap-4 h-full">
+            <a href="#" class="group bg-zinc-900 border border-zinc-800 rounded-2xl p-8 flex flex-col gap-4 hover:border-primary/50 hover:shadow-xl hover:shadow-primary/10 transition-all duration-300 cursor-pointer">
                 <div class="bg-zinc-950 rounded-lg p-3 w-12 h-12 flex items-center justify-center">
                     <svg class="w-6 h-6 text-primary" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
                 </div>
                 <h3 class="text-white font-bold text-lg">Contato Direto</h3>
                 <p class="text-zinc-400 text-sm leading-normal">Fale diretamente com a acompanhante pelo WhatsApp, sem intermediários ou taxas surpresa.</p>
-            </div>
+            </a>
 
             {{-- O Melhor do Brasil --}}
-            <div class="bg-zinc-900 rounded-2xl p-8 flex flex-col gap-4 h-full">
+            <a href="#" class="group bg-zinc-900 border border-zinc-800 rounded-2xl p-8 flex flex-col gap-4 hover:border-primary/50 hover:shadow-xl hover:shadow-primary/10 transition-all duration-300 cursor-pointer">
                 <div class="bg-zinc-950 rounded-lg p-3 w-12 h-12 flex items-center justify-center">
                     <svg class="w-6 h-6 text-primary" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="m2 4 3 12h14l3-12-6 7-4-7-4 7-6-7z"/></svg>
                 </div>
                 <h3 class="text-white font-bold text-lg">O Melhor do Brasil</h3>
                 <p class="text-zinc-400 text-sm leading-normal">Você merece uma experiência premium, não jogue seu dinheiro no lixo com portais amadores.</p>
-            </div>
+            </a>
 
         </div>
     </x-ui.container>
