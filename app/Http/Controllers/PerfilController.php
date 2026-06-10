@@ -91,8 +91,8 @@ class PerfilController extends Controller
                 videoUrl: $request->input('video_url'),
                 videoFile: $request->file('video_file'),
                 removeImageIds: $request->filled('remove_images') ? (array) $request->input('remove_images') : [],
-                mainImageId: $request->input('main_image_id'),
-                newMainImageIndex: $request->input('new_main_image_index'),
+                mainImageId: $request->filled('main_image_id') ? (int) $request->input('main_image_id') : null,
+                newMainImageIndex: $request->filled('new_main_image_index') ? (int) $request->input('new_main_image_index') : null,
             );
 
             return redirect()->route('perfil')
