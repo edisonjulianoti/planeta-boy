@@ -162,6 +162,12 @@ class AdminController extends Controller
             'description' => 'nullable|string|max:2000',
             'verified'    => 'boolean',
             'active'      => 'boolean',
+            'height'      => 'nullable|integer|min:100|max:250',
+            'weight'      => 'nullable|integer|min:30|max:300',
+            'hair_color'  => 'nullable|string|max:100',
+            'eye_color'   => 'nullable|string|max:100',
+            'ethnicity'   => 'nullable|string|max:100',
+            'body_type'   => 'nullable|string|max:100',
         ]);
 
         $profile->update([
@@ -173,6 +179,27 @@ class AdminController extends Controller
             'verified'    => $request->boolean('verified'),
             'active'      => $request->boolean('active'),
         ]);
+
+        // Sync physical attributes
+        $attributeData = $request->only(['height', 'weight', 'hair_color', 'eye_color', 'ethnicity', 'body_type']);
+        $hasAnyValue = false;
+        foreach ($attributeData as $value) {
+            if ($value !== null && $value !== '') {
+                $hasAnyValue = true;
+                break;
+            }
+        }
+
+        if ($hasAnyValue) {
+            $filtered = array_filter($attributeData, fn($v) => $v !== null && $v !== '');
+            if ($profile->physicalAttributes) {
+                $profile->physicalAttributes()->update($filtered);
+            } else {
+                $profile->physicalAttributes()->create($filtered);
+            }
+        } elseif ($profile->physicalAttributes) {
+            $profile->physicalAttributes()->delete();
+        }
 
         return redirect()->route('admin.profiles')->with('success', 'Perfil atualizado com sucesso.');
     }

@@ -39,6 +39,17 @@ final class MediaService
         foreach ($images as $index => $file) {
             $path = $file->store('profiles/images', 'public');
 
+            // Skip image if storage failed (disk full, permissions, etc.)
+            if ($path === false) {
+                \Log::warning('Falha ao salvar imagem no storage', [
+                    'profile_id'   => $profile->id,
+                    'original_name' => $file->getClientOriginalName(),
+                    'size'         => $file->getSize(),
+                    'mime'         => $file->getMimeType(),
+                ]);
+                continue;
+            }
+
             $image = $profile->images()->create([
                 'url'     => $path,
                 'is_main' => false,
@@ -156,90 +167,64 @@ final class MediaService
     }
 
     /**
-     * Handle local video upload (MP4/WebM) for a profile.
+     * Handle local video uploads (MP4/WebM) for a profile.
+     * Adds new videos without removing existing ones.
      *
      * @param  Profile  $profile
-     * @param  UploadedFile  $file
-     * @return ProfileVideo|null
+     * @param  array<UploadedFile>  $files
+     * @return array<ProfileVideo>
      */
-    public function handleVideoUpload(Profile $profile, UploadedFile $file): ?ProfileVideo
+    public function handleVideoUploads(Profile $profile, array $files = []): array
     {
-        try {
-            // Extra safety: validate extension even though request should already validate
-            $extension = strtolower($file->getClientOriginalExtension());
+        $videos = [];
 
-            if (!in_array($extension, ['mp4', 'webm'], true)) {
-                return null;
-            }
-
-            // Delete any existing videos for this profile (max 1 video)
-            $profile->videos()->delete();
-
-            // Store the video
-            $path = $file->store('profiles/videos', 'public');
-
-            if ($path === false) {
-                return null;
-            }
-
-            // Create the ProfileVideo record
+        foreach ($files as $file) {
             try {
-                $video = $profile->videos()->create([
-                    'type'    => 'local',
-                    'path'    => $path,
-                    'url'     => $path,
-                    'is_main' => true,
-                    'order'   => 0,
-                ]);
+                $extension = strtolower($file->getClientOriginalExtension());
 
-                return $video;
+                if (!in_array($extension, ['mp4', 'webm'], true)) {
+                    continue;
+                }
+
+                $path = $file->store('profiles/videos', 'public');
+
+                if ($path === false) {
+                    continue;
+                }
+
+                $currentOrder = $profile->videos()->max('order') ?? 0;
+
+                try {
+                    $video = $profile->videos()->create([
+                        'type'    => 'local',
+                        'path'    => $path,
+                        'url'     => $path,
+                        'is_main' => false,
+                        'order'   => $currentOrder + 1,
+                    ]);
+
+                    $videos[] = $video;
+                } catch (\Throwable $e) {
+                    Storage::disk('public')->delete($path);
+                    continue;
+                }
             } catch (\Throwable $e) {
-                // Delete physical file if the DB insert fails
-                Storage::disk('public')->delete($path);
-
-                return null;
+                continue;
             }
-        } catch (\Throwable $e) {
-            return null;
         }
+
+        return $videos;
     }
 
     /**
-     * Process YouTube video URL for a profile.
-     */
-    public function handleYouTubeVideo(Profile $profile, ?string $videoUrl): void
-    {
-        if ($videoUrl === null || $videoUrl === '') {
-            return;
-        }
-
-        $videoId = $this->extractYouTubeId($videoUrl);
-
-        if ($videoId === null) {
-            return;
-        }
-
-        $profile->videos()->delete();
-
-        $profile->videos()->create([
-            'url'      => $videoUrl,
-            'video_id' => $videoId,
-            'platform' => 'youtube',
-            'is_main'  => true,
-            'order'    => 0,
-        ]);
-    }
-
-    /**
-     * Sync all media for a profile — images, video uploads, and YouTube videos.
+     * Sync all media for a profile — images and videos.
      *
      * @param  Profile  $profile
      * @param  array<UploadedFile>  $images
-     * @param  array<int>  $removeImageIds
+     * @param  array<UploadedFile>  $removeImageIds
      * @param  int|null  $newMainImageIndex
      * @param  int|null  $mainImageId
-     * @param  UploadedFile|null  $videoFile
-     * @param  string|null  $videoUrl
+     * @param  array<UploadedFile>  $videoFiles
      * @return void
      */
     public function syncMedia(
@@ -248,8 +233,7 @@ final class MediaService
         array $removeImageIds = [],
         ?int $newMainImageIndex = null,
         ?int $mainImageId = null,
-        ?UploadedFile $videoFile = null,
-        ?string $videoUrl = null,
+        array $videoFiles = [],
     ): void {
         $this->handleImageUploads(
             $profile,
@@ -259,26 +243,9 @@ final class MediaService
             $mainImageId,
         );
 
-        // videoFile has priority over videoUrl
-        if ($videoFile !== null) {
-            $this->handleVideoUpload($profile, $videoFile);
-        } elseif ($videoUrl !== null && $videoUrl !== '') {
-            $this->handleYouTubeVideo($profile, $videoUrl);
+        if (!empty($videoFiles)) {
+            $this->handleVideoUploads($profile, $videoFiles);
         }
-    }
-
-    /**
-     * Extract YouTube video ID from URL.
-     */
-    public function extractYouTubeId(string $url): ?string
-    {
-        $pattern = '/(?:youtube\\.com\\/watch\\?v=|youtu\\.be\\/|youtube\\.com\\/embed\\/)([a-zA-Z0-9_-]{11})/';
-
-        if (preg_match($pattern, $url, $matches)) {
-            return $matches[1];
-        }
-
-        return null;
     }
 
     /**

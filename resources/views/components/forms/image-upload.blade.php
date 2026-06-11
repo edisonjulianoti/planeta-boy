@@ -85,6 +85,10 @@
         const container = button.parentElement;
         const hiddenInput = container.querySelector('input[type="hidden"]');
         hiddenInput.name = 'remove_images[]';
+        
+        // Mover o hidden input para antes do container (fora dele)
+        // para que ele seja enviado no form mesmo após o container ser removido
+        container.parentNode.insertBefore(hiddenInput, container);
         container.remove();
         
         // Reindexar campos order no container de existentes

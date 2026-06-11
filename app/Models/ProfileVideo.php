@@ -21,14 +21,13 @@ class ProfileVideo extends Model
         return $this->belongsTo(Profile::class);
     }
 
+    /**
+     * Get the URL for embedding/displaying the video.
+     */
     public function embedUrl(): ?string
     {
-        if ($this->type === 'local' && $this->path) {
+        if ($this->path) {
             return asset('storage/' . $this->path);
-        }
-
-        if ($this->type === 'youtube' && $this->video_id) {
-            return 'https://www.youtube.com/embed/' . $this->video_id;
         }
 
         return $this->url;
@@ -36,11 +35,6 @@ class ProfileVideo extends Model
 
     public function isLocal(): bool
     {
-        return $this->type === 'local';
-    }
-
-    public function isYoutube(): bool
-    {
-        return $this->type === 'youtube';
+        return true;
     }
 }

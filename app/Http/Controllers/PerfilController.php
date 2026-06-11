@@ -83,31 +83,34 @@ class PerfilController extends Controller
     {
         $user = auth()->user();
 
+        $safeData = $request->safe()->only([
+            'name', 'age', 'city', 'state', 'description', 'services',
+            'height', 'weight', 'hair_color', 'eye_color', 'ethnicity', 'body_type',
+        ]);
+
         if ($user->profile) {
             $this->profileService->update(
                 profile: $user->profile,
-                data: $request->safe()->only(['name', 'age', 'city', 'state', 'description']),
+                data: $safeData,
                 images: $request->file('gallery', []),
-                videoUrl: $request->input('video_url'),
-                videoFile: $request->file('video_file'),
+                videoFiles: $request->file('video_files', []),
                 removeImageIds: $request->filled('remove_images') ? (array) $request->input('remove_images') : [],
                 mainImageId: $request->filled('main_image_id') ? (int) $request->input('main_image_id') : null,
                 newMainImageIndex: $request->filled('new_main_image_index') ? (int) $request->input('new_main_image_index') : null,
             );
 
-            return redirect()->route('perfil')
+            return redirect()->route('perfil.editar', $user->profile->id)
                 ->with('success', 'Perfil atualizado com sucesso!');
         }
 
-        $this->profileService->create(
+        $profile = $this->profileService->create(
             user: $user,
-            data: $request->safe()->only(['name', 'age', 'city', 'state', 'description']),
+            data: $safeData,
             images: $request->file('gallery', []),
-            videoUrl: $request->input('video_url'),
-            videoFile: $request->file('video_file'),
+            videoFiles: $request->file('video_files', []),
         );
 
-        return redirect()->route('perfil')
+        return redirect()->route('perfil.editar', $profile->id)
             ->with('success', 'Perfil criado com sucesso!');
     }
 

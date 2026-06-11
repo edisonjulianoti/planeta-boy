@@ -141,4 +141,14 @@ class ProfilePublicFeatureTest extends TestCase
         $profile->refresh();
         $this->assertEquals(11, $profile->views);
     }
+
+    public function test_share_button_is_visible_without_auth(): void
+    {
+        $profile = $this->makeProfile();
+
+        $this->get("/perfis/{$this->slugify($profile)}")
+            ->assertOk()
+            ->assertSee('Compartilhar')
+            ->assertSee('btn-compartilhar');
+    }
 }

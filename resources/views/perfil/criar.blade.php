@@ -58,6 +58,81 @@
                         class="w-full bg-zinc-950 border border-zinc-800 rounded-lg px-4 py-2.5 text-white text-sm focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all resize-none">{{ old('description', $perfil->description ?? '') }}</textarea>
                 </div>
 
+                {{-- Características Físicas --}}
+                <div class="border-t border-zinc-800 pt-6">
+                    <h3 class="text-white font-black uppercase tracking-wider text-sm mb-4 flex items-center gap-2">
+                        <div class="w-1 h-4 bg-primary rounded-full"></div>Características
+                    </h3>
+                    <p class="text-zinc-600 text-xs mb-4">Informe suas características físicas (opcional)</p>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <x-forms.input name="height" type="number" label="Altura (cm)" placeholder="Ex: 180"
+                            :value="old('height', $perfil?->physicalAttributes?->height ?? null)" min="100" max="250" variant="dark" />
+
+                        <x-forms.input name="weight" type="number" label="Peso (kg)" placeholder="Ex: 75"
+                            :value="old('weight', $perfil?->physicalAttributes?->weight ?? null)" min="30" max="300" variant="dark" />
+
+                        <x-forms.input name="hair_color" label="Cor do Cabelo" placeholder="Ex: castanho, loiro, preto"
+                            :value="old('hair_color', $perfil?->physicalAttributes?->hair_color ?? null)" variant="dark" />
+
+                        <x-forms.input name="eye_color" label="Cor dos Olhos" placeholder="Ex: verdes, castanhos, azuis"
+                            :value="old('eye_color', $perfil?->physicalAttributes?->eye_color ?? null)" variant="dark" />
+
+                        <x-forms.input name="ethnicity" label="Etnia" placeholder="Ex: branco, pardo, negro, asiático"
+                            :value="old('ethnicity', $perfil?->physicalAttributes?->ethnicity ?? null)" variant="dark" />
+
+                        <div>
+                            <label class="block text-zinc-500 text-xs uppercase tracking-wider mb-1.5">Tipo Físico</label>
+                            <select name="body_type"
+                                class="w-full bg-zinc-950 border border-zinc-800 rounded-lg px-4 py-2.5 text-white text-sm focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all">
+                                <option value="">Selecione</option>
+                                @php
+                                    $bodyTypes = ['magro', 'atlético', 'musculoso', 'sarado', 'forte', 'gordo', 'tanquinho'];
+                                    $selectedBodyType = old('body_type', $perfil?->physicalAttributes?->body_type ?? null);
+                                @endphp
+                                @foreach($bodyTypes as $type)
+                                    <option value="{{ $type }}" {{ $selectedBodyType === $type ? 'selected' : '' }}>
+                                        {{ ucfirst($type) }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                {{-- Serviços --}}
+                <div>
+                    <label class="block text-zinc-500 text-xs uppercase tracking-wider mb-1.5">Serviços Prestados</label>
+                    <p class="text-zinc-600 text-xs mb-3">Selecione os serviços que você oferece</p>
+                    @php
+                        $todosServicos = \App\Models\Service::where('active', true)->orderBy('name')->get();
+                        $agrupados = $todosServicos->groupBy('category');
+                        $selectedServices = old('services', $perfil?->services->pluck('id')->toArray() ?? []);
+                    @endphp
+                    @forelse($agrupados as $categoria => $servicos)
+                        <div class="mb-4">
+                            <h4 class="text-zinc-400 text-sm font-semibold mb-2 uppercase tracking-wider">{{ $categoria }}</h4>
+                            <div class="flex flex-wrap gap-2">
+                                @foreach($servicos as $servico)
+                                    <label class="group cursor-pointer">
+                                        <input type="checkbox" name="services[]" value="{{ $servico->id }}"
+                                               class="peer sr-only"
+                                               {{ in_array($servico->id, $selectedServices) ? 'checked' : '' }}>
+                                        <span class="inline-block px-4 py-2 rounded-full text-sm transition-all
+                                                     peer-checked:bg-primary peer-checked:text-black peer-checked:border-primary
+                                                     bg-transparent border border-zinc-700 text-zinc-300
+                                                     group-hover:border-zinc-500">
+                                            {{ $servico->name }}
+                                        </span>
+                                    </label>
+                                @endforeach
+                            </div>
+                        </div>
+                    @empty
+                        <p class="text-zinc-600 text-sm">Nenhum serviço disponível no momento.</p>
+                    @endforelse
+                </div>
+
                 {{-- Imagens --}}
                 <x-forms.image-upload 
                     name="gallery" 
@@ -69,33 +144,33 @@
 
                 {{-- Vídeos --}}
                 <div>
-                    <label class="block text-zinc-500 text-xs uppercase tracking-wider mb-1.5">Vídeo do YouTube</label>
-                    <x-forms.input name="video_url" type="url" label="URL do vídeo" placeholder="https://www.youtube.com/watch?v=..." :value="old('video_url', $perfil?->videos()?->where('platform', 'youtube')->first()?->url ?? null)" variant="dark" />
-                    <p class="text-zinc-600 text-xs mt-1">Cole a URL do vídeo do YouTube (ex: https://www.youtube.com/watch?v=xxx ou https://youtu.be/xxx)</p>
-                    @if($perfil && $perfil->videos()->where('platform', 'youtube')->exists())
-                        <div class="mt-2">
-                            <p class="text-zinc-500 text-xs mb-1">Vídeo atual:</p>
-                            <p class="text-zinc-400 text-sm">{{ $perfil->videos()->where('platform', 'youtube')->first()->url }}</p>
-                        </div>
-                    @endif
-                </div>
-
-                {{-- Upload de Vídeo Local --}}
-                <div>
-                    <label class="block text-zinc-500 text-xs uppercase tracking-wider mb-1.5">Ou faça upload de um vídeo</label>
-                    <input type="file" name="video_file" accept="video/mp4,video/webm"
+                    <label class="block text-zinc-500 text-xs uppercase tracking-wider mb-1.5">Vídeos</label>
+                    <input type="file" name="video_files[]" accept="video/mp4,video/webm" multiple
                            class="w-full bg-zinc-950 border border-zinc-800 rounded-lg px-4 py-2.5 text-white text-sm 
                                   file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 
                                   file:text-sm file:font-semibold file:bg-primary file:text-primary-foreground
-                                  hover:file:brightness-110 cursor-pointer" />
-                    <p class="text-zinc-600 text-xs mt-1">Formatos: MP4, WebM (máx. 50MB). Se enviar um vídeo, a URL do YouTube será ignorada.</p>
+                                  hover:file:brightness-110 active:file:bg-black cursor-pointer" />
+                    <p class="text-zinc-600 text-xs mt-1">Formatos: MP4, WebM (máx. 50MB cada, até 5 vídeos)</p>
+                    @if($perfil && $perfil->videos->isNotEmpty())
+                        <div class="mt-2 space-y-2">
+                            <p class="text-zinc-500 text-xs">Vídeos atuais ({{ $perfil->videos->count() }}):</p>
+                            @foreach($perfil->videos as $video)
+                                <div class="p-2 bg-zinc-900/50 rounded-lg border border-zinc-800">
+                                    <video controls class="w-full max-h-32 rounded-lg">
+                                        <source src="{{ asset('storage/' . $video->path) }}" type="video/mp4">
+                                    </video>
+                                </div>
+                            @endforeach
+                        </div>
+                    @endif
+                </div>
                 </div>
 
                 <div class="flex justify-end gap-3 pt-4">
                     <a href="{{ route('perfil') }}" class="px-6 py-2.5 text-zinc-400 hover:text-white text-sm font-medium rounded-lg transition-colors cursor-pointer">
                         Cancelar
                     </a>
-                    <button type="submit" class="px-6 py-2.5 bg-primary hover:brightness-110 text-primary-foreground text-sm font-bold rounded-lg transition-all uppercase tracking-wider cursor-pointer">
+                    <button type="submit" class="px-6 py-2.5 bg-primary hover:brightness-110 active:bg-black text-primary-foreground text-sm font-bold rounded-lg transition-all uppercase tracking-wider cursor-pointer">
                         {{ $perfil ? 'Salvar Alterações' : 'Criar Perfil' }}
                     </button>
                 </div>

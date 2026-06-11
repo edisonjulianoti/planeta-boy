@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Services;
 
 use App\Models\Profile;
+use App\Models\ProfilePhysicalAttribute;
 use App\Models\User;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Str;
@@ -21,11 +22,10 @@ final class ProfileService
      * @param  User  $user
      * @param  array<string, mixed>  $data
      * @param  array<UploadedFile>  $images
-     * @param  string|null  $videoUrl
-     * @param  UploadedFile|null  $videoFile
+     * @param  array<UploadedFile>  $videoFiles
      * @return Profile
      */
-    public function create(User $user, array $data, array $images = [], ?string $videoUrl = null, ?UploadedFile $videoFile = null): Profile
+    public function create(User $user, array $data, array $images = [], array $videoFiles = []): Profile
     {
         $profile = $user->profile()->create([
             'name'        => $data['name'],
@@ -39,14 +39,16 @@ final class ProfileService
             'views'       => 0,
         ]);
 
+        $this->syncServices($profile, $data['services'] ?? []);
+
+        $this->syncPhysicalAttributes($profile, $data);
+
         if (!empty($images)) {
             $this->mediaService->handleImageUploads($profile, $images);
         }
 
-        $this->mediaService->handleYouTubeVideo($profile, $videoUrl);
-
-        if ($videoFile !== null) {
-            $this->mediaService->handleVideoUpload($profile, $videoFile);
+        if (!empty($videoFiles)) {
+            $this->mediaService->handleVideoUploads($profile, $videoFiles);
         }
 
         return $profile;
@@ -61,8 +63,7 @@ final class ProfileService
      * @param  array<int>  $removeImageIds
      * @param  int|null  $newMainImageIndex
      * @param  int|null  $mainImageId
-     * @param  string|null  $videoUrl
-     * @param  UploadedFile|null  $videoFile
+     * @param  array<UploadedFile>  $videoFiles
      * @return Profile
      */
     public function update(
@@ -72,8 +73,7 @@ final class ProfileService
         array $removeImageIds = [],
         ?int $newMainImageIndex = null,
         ?int $mainImageId = null,
-        ?string $videoUrl = null,
-        ?UploadedFile $videoFile = null,
+        array $videoFiles = [],
     ): Profile {
         $profile->update([
             'name'        => $data['name'],
@@ -83,6 +83,10 @@ final class ProfileService
             'description' => $data['description'] ?? null,
         ]);
 
+        $this->syncServices($profile, $data['services'] ?? []);
+
+        $this->syncPhysicalAttributes($profile, $data);
+
         $this->mediaService->handleImageUploads(
             $profile,
             $images,
@@ -91,11 +95,9 @@ final class ProfileService
             $mainImageId,
         );
 
-        if ($videoFile !== null) {
-            $this->mediaService->handleVideoUpload($profile, $videoFile);
+        if (!empty($videoFiles)) {
+            $this->mediaService->handleVideoUploads($profile, $videoFiles);
         }
-
-        $this->mediaService->handleYouTubeVideo($profile, $videoUrl);
 
         return $profile->fresh();
     }
@@ -125,5 +127,58 @@ final class ProfileService
         return Profile::with(['images'])
             ->similarTo($profile, $limit)
             ->get();
+    }
+
+    /**
+     * Sync the services attached to a profile via the pivot table.
+     */
+    private function syncServices(Profile $profile, array $serviceIds): void
+    {
+        if (empty($serviceIds)) {
+            $profile->services()->detach();
+            return;
+        }
+
+        $syncData = [];
+        foreach ($serviceIds as $id) {
+            $syncData[$id] = [];
+        }
+
+        $profile->services()->sync($syncData);
+    }
+
+    /**
+     * Sync the physical attributes for a profile.
+     *
+     * @param  Profile  $profile
+     * @param  array<string, mixed>  $data
+     */
+    private function syncPhysicalAttributes(Profile $profile, array $data): void
+    {
+        $attributeFields = ['height', 'weight', 'hair_color', 'eye_color', 'ethnicity', 'body_type'];
+        
+        $hasAnyValue = false;
+        $attributes = ['profile_id' => $profile->id];
+        
+        foreach ($attributeFields as $field) {
+            if (isset($data[$field]) && $data[$field] !== '' && $data[$field] !== null) {
+                $attributes[$field] = $data[$field];
+                $hasAnyValue = true;
+            }
+        }
+
+        if (!$hasAnyValue) {
+            // If profile has existing attributes but no new ones, delete them
+            if ($profile->physicalAttributes) {
+                $profile->physicalAttributes()->delete();
+            }
+            return;
+        }
+
+        if ($profile->physicalAttributes) {
+            $profile->physicalAttributes()->update($attributes);
+        } else {
+            $profile->physicalAttributes()->create($attributes);
+        }
     }
 }

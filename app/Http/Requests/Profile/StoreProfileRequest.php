@@ -22,10 +22,12 @@ final class StoreProfileRequest extends FormRequest
             'city'               => ['required', 'string', 'max:255'],
             'state'              => ['required', 'string', 'size:2'],
             'description'        => ['nullable', 'string', 'max:2000'],
+            'services'           => ['nullable', 'array'],
+            'services.*'         => ['integer', 'exists:services,id'],
             'gallery'            => ['nullable', 'array', 'max:10'],
             'gallery.*'          => ['image', 'mimes:jpeg,jpg,png,gif,webp', 'max:5120'],
-            'video_url'          => ['nullable', 'url', 'regex:/^(https?:\/\/)?(www\.)?(youtube\.com\/watch\?v=|youtu\.be\/)/'],
-            'video_file'         => ['nullable', 'file', 'mimes:mp4,webm', 'max:51200'],
+            'video_files'        => ['nullable', 'array', 'max:5'],
+            'video_files.*'      => ['file', 'mimes:mp4,webm', 'max:51200'],
             'remove_images'      => ['nullable', 'array'],
             'remove_images.*'    => ['integer', 'exists:profile_images,id'],
             'existing_images'    => ['nullable', 'array'],
@@ -34,6 +36,14 @@ final class StoreProfileRequest extends FormRequest
             'new_main_image_index' => ['nullable', 'integer', 'min:0'],
             'order'              => ['nullable', 'array'],
             'order.*'            => ['integer', 'min:0'],
+
+            // Características físicas
+            'height'             => ['nullable', 'integer', 'min:100', 'max:250'],
+            'weight'             => ['nullable', 'integer', 'min:30', 'max:300'],
+            'hair_color'         => ['nullable', 'string', 'max:100'],
+            'eye_color'          => ['nullable', 'string', 'max:100'],
+            'ethnicity'          => ['nullable', 'string', 'max:100'],
+            'body_type'          => ['nullable', 'string', 'max:100'],
         ];
     }
 
@@ -49,11 +59,16 @@ final class StoreProfileRequest extends FormRequest
             'state.size'     => 'Estado deve ter 2 caracteres (UF).',
             'gallery.*.image'        => 'Cada arquivo deve ser uma imagem.',
             'gallery.*.max'          => 'Cada imagem deve ter no máximo 5MB.',
-            'video_url.url'          => 'URL do vídeo inválida.',
-            'video_file.required'    => 'Selecione um arquivo de vídeo.',
-            'video_file.file'        => 'O arquivo enviado não é um vídeo válido.',
-            'video_file.mimes'       => 'O vídeo deve ser do formato MP4 ou WebM.',
-            'video_file.max'         => 'O vídeo deve ter no máximo 50MB.',
+            'video_files.array'       => 'Formato inválido para vídeos.',
+            'video_files.*.file'     => 'Cada arquivo de vídeo deve ser um arquivo válido.',
+            'video_files.*.mimes'    => 'Cada vídeo deve ser MP4 ou WebM.',
+            'video_files.*.max'      => 'Cada vídeo deve ter no máximo 50MB.',
+            'height.integer' => 'A altura deve ser um valor numérico.',
+            'height.min'     => 'Altura mínima é 100cm.',
+            'height.max'     => 'Altura máxima é 250cm.',
+            'weight.integer' => 'O peso deve ser um valor numérico.',
+            'weight.min'     => 'Peso mínimo é 30kg.',
+            'weight.max'     => 'Peso máximo é 300kg.',
         ];
     }
 }

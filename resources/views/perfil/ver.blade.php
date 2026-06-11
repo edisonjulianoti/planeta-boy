@@ -43,18 +43,11 @@
                     @if($media->isNotEmpty())
                         <div class="relative h-[400px] sm:h-[560px] p-4">
                             <div class="relative w-full h-full rounded-xl overflow-hidden cursor-pointer" onclick="openLightbox()">
-                                @if($mainMedia->type === 'video' && $mainMedia->data->isLocal())
+                                @if($mainMedia->type === 'video')
                                     <video id="media-principal" controls class="w-full h-full" playsinline>
                                         <source src="{{ asset('storage/' . $mainMedia->data->path) }}" type="video/mp4">
                                         Seu navegador não suporta vídeo.
                                     </video>
-                                @elseif($mainMedia->type === 'video')
-                                    <iframe id="media-principal" 
-                                            src="https://www.youtube.com/embed/{{ $mainMedia->data->video_id }}?enablejsapi=1" 
-                                            class="w-full h-full"
-                                            frameborder="0" 
-                                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
-                                            allowfullscreen></iframe>
                                 @else
                                     <img id="media-principal" src="{{ asset('storage/' . $mainMedia->data->url) }}" alt="{{ $perfil->name }}"
                                          class="w-full h-full object-cover transition-opacity duration-300">
@@ -86,18 +79,11 @@
                             <div class="flex gap-3 overflow-x-auto pb-2">
                                 @foreach($media as $index => $item)
                                     <button onclick="setImage({{ $index }})" class="shrink-0 w-20 h-20 rounded-lg overflow-hidden border-2 transition-all cursor-pointer {{ $index === 0 ? 'border-primary' : 'border-transparent hover:border-zinc-600' }}">
-                                        @if($item->type === 'video' && $item->data->isLocal())
+                                        @if($item->type === 'video')
                                             <div class="relative w-full h-full bg-zinc-800 flex items-center justify-center">
                                                 <video class="w-full h-full object-cover" muted preload="metadata">
                                                     <source src="{{ asset('storage/' . $item->data->path) }}" type="video/mp4">
                                                 </video>
-                                                <div class="absolute inset-0 flex items-center justify-center">
-                                                    <svg class="w-8 h-8 text-white drop-shadow-lg" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
-                                                </div>
-                                            </div>
-                                        @elseif($item->type === 'video')
-                                            <div class="relative w-full h-full bg-zinc-800 flex items-center justify-center">
-                                                <img src="https://img.youtube.com/vi/{{ $item->data->video_id }}/mqdefault.jpg" alt="Miniatura vídeo {{ $index + 1 }}" class="w-full h-full object-cover">
                                                 <div class="absolute inset-0 flex items-center justify-center">
                                                     <svg class="w-8 h-8 text-white drop-shadow-lg" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
                                                 </div>
@@ -149,7 +135,9 @@
                                     </div>
                                 @elseif($item->type === 'video')
                                     <div class="relative w-full h-full bg-zinc-800 flex items-center justify-center">
-                                        <img src="https://img.youtube.com/vi/{{ $item->data->video_id }}/mqdefault.jpg" alt="Miniatura vídeo {{ $index + 1 }}" class="w-full h-full object-cover">
+                                        <video class="w-full h-full object-cover" muted preload="metadata">
+                                            <source src="{{ asset('storage/' . $item->data->path) }}" type="video/mp4">
+                                        </video>
                                         <div class="absolute inset-0 flex items-center justify-center">
                                             <svg class="w-6 h-6 text-white drop-shadow-lg" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
                                         </div>
@@ -174,8 +162,8 @@
                     </a>
                     @endif
                     {{-- Ícones de ação --}}
-                @auth
                     <div class="flex gap-4">
+                        @auth
                         <button id="btn-favoritar"
                                 data-profile-id="{{ $perfil->id }}"
                                 data-favorited="{{ $isFavorited ? 'true' : 'false' }}"
@@ -187,25 +175,19 @@
                                 <path d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
                             </svg>
                         </button>
-                        <button class="flex-1 py-4 bg-zinc-900 border border-zinc-800 rounded-xl hover:border-primary transition-colors cursor-pointer">
-                            <svg class="w-6 h-6 mx-auto text-zinc-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"/></svg>
+                        @endauth
+                        <button id="btn-compartilhar" data-url="{{ route('perfil.ver', $perfil->id) }}"
+                                class="flex-1 py-4 bg-zinc-900 border border-zinc-800 rounded-xl hover:border-primary hover:text-primary text-zinc-400 transition-all cursor-pointer group relative"
+                                onclick="compartilharPerfil(this)">
+                            <svg class="w-6 h-6 mx-auto transition-all duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"/>
+                            </svg>
+                            <span class="block text-[10px] font-medium mt-0.5">Compartilhar</span>
                         </button>
                     </div>
-                @endauth
                 </div>
 
-                {{-- Disponibilidade --}}
-                <div class="bg-zinc-900 rounded-xl p-6 space-y-4">
-                    <h3 class="text-white font-black uppercase tracking-wider text-sm">Disponibilidade</h3>
-                    <p class="text-zinc-400 text-sm flex items-center gap-2">
-                        <span>📍</span> {{ $perfil->city }}, {{ $perfil->state }}
-                    </p>
-                    @if($perfil->availability)
-                    <p class="text-zinc-400 text-sm flex items-center gap-2">
-                        <span>⏱</span> Responde em até 5 minutos
-                    </p>
-                    @endif
-                </div>
+
 
                 {{-- Estatísticas --}}
                 <div class="bg-zinc-900 rounded-xl p-6 space-y-4">
@@ -218,10 +200,7 @@
                         <span class="text-zinc-400 text-sm">Avaliação</span>
                         <span class="text-primary font-bold text-sm">⭐ {{ number_format($perfil->rating, 1) }}</span>
                     </div>
-                    <div class="flex justify-between items-center">
-                        <span class="text-zinc-400 text-sm">Assinantes</span>
-                        <span class="text-primary font-bold text-sm">{{ $perfil->subscribersCount() }}</span>
-                    </div>
+
                     @php $firstSub = $perfil->firstSubscriptionDate(); @endphp
                     @if($firstSub)
                     <div class="flex justify-between items-center">
@@ -297,7 +276,7 @@
                 <div class="space-y-4">
                     <h2 class="text-white font-bold text-lg">Características</h2>
                     @php $af = $perfil->physicalAttributes; @endphp
-                    <div class="grid grid-cols-2 gap-4">
+                    <div class="grid grid-cols-3 gap-4">
                         @if($af->height)
                         <div class="bg-zinc-900 rounded-xl p-4 space-y-1">
                             <p class="text-zinc-500 text-xs">📏 Altura</p>
@@ -323,9 +302,15 @@
                         </div>
                         @endif
                         @if($af->ethnicity)
-                        <div class="bg-zinc-900 rounded-xl p-4 space-y-1 col-span-2">
+                        <div class="bg-zinc-900 rounded-xl p-4 space-y-1">
                             <p class="text-zinc-500 text-xs">👤 Etnia</p>
                             <p class="text-white font-bold text-sm capitalize">{{ $af->ethnicity }}</p>
+                        </div>
+                        @endif
+                        @if($af->body_type)
+                        <div class="bg-zinc-900 rounded-xl p-4 space-y-1">
+                            <p class="text-zinc-500 text-xs">💪 Tipo Físico</p>
+                            <p class="text-white font-bold text-sm capitalize">{{ $af->body_type }}</p>
                         </div>
                         @endif
                     </div>
@@ -413,15 +398,16 @@
             video.appendChild(source);
             container.replaceChild(video, mediaPrincipal);
         } else if (currentItem.type === 'video') {
-            const iframe = document.createElement('iframe');
-            iframe.id = 'media-principal';
-            iframe.src = `https://www.youtube.com/embed/${currentItem.data.video_id}?enablejsapi=1`;
-            iframe.className = 'w-full h-full';
-            iframe.frameBorder = '0';
-            iframe.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture';
-            iframe.allowFullscreen = true;
-            container.replaceChild(iframe, mediaPrincipal);
-        } else {
+            const video = document.createElement('video');
+            video.id = 'media-principal';
+            video.controls = true;
+            video.className = 'w-full h-full';
+            const source = document.createElement('source');
+            source.src = `/storage/${currentItem.data.path}`;
+            source.type = 'video/mp4';
+            video.appendChild(source);
+            container.innerHTML = '';
+            container.appendChild(video);
             const img = document.createElement('img');
             img.id = 'media-principal';
             img.src = '/storage/' + currentItem.data.url;
@@ -501,20 +487,12 @@
 
         const currentItem = media[currentIndex];
 
-        if (currentItem.type === 'video' && currentItem.data.type === 'local') {
+        if (currentItem.type === 'video') {
             lightboxContent.innerHTML = `
                 <video controls class="max-w-full max-h-[80vh] object-contain" playsinline autoplay>
                     <source src="/storage/${currentItem.data.path}" type="video/mp4">
                     Seu navegador não suporta vídeo.
                 </video>
-            `;
-        } else if (currentItem.type === 'video') {
-            lightboxContent.innerHTML = `
-                <iframe src="https://www.youtube.com/embed/${currentItem.data.video_id}?autoplay=1" 
-                        class="max-w-full max-h-[80vh] object-contain"
-                        frameborder="0" 
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
-                        allowfullscreen></iframe>
             `;
         } else {
             lightboxContent.innerHTML = `
@@ -605,5 +583,98 @@
         }
     });
 })();
+
+// ─── Compartilhar Perfil ────────────────────────────────────
+window.compartilharPerfil = function(btn) {
+    const url = btn.dataset.url;
+    const nome = document.querySelector('h1')?.textContent?.trim() || 'Perfil';
+
+    // Tentar usar Web Share API (nativo em mobile)
+    if (navigator.share) {
+        navigator.share({
+            title: nome + ' - PLANETA BOYS',
+            text: 'Conheça ' + nome + ' no PLANETA BOYS!',
+            url: url,
+        }).catch(() => {
+            // Se cancelar, não faz nada
+        });
+        return;
+    }
+
+    // Fallback: abrir modal com opções
+    const texto = nome + ' - PLANETA BOYS\n\nConfira este perfil:\n' + url;
+
+    // Criar modal simples
+    const overlay = document.createElement('div');
+    overlay.className = 'fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4';
+    overlay.onclick = function(e) { if (e.target === overlay) overlay.remove(); };
+
+    overlay.innerHTML = `
+        <div class="bg-zinc-900 border border-zinc-800 rounded-2xl p-6 w-full max-w-sm space-y-4">
+            <h3 class="text-white font-black uppercase tracking-wider text-sm">Compartilhar</h3>
+
+            <button onclick="copiarLink('${url}', this)"
+                    class="w-full flex items-center gap-3 px-4 py-3 bg-zinc-800 hover:bg-zinc-700 rounded-xl text-white text-sm transition-all cursor-pointer">
+                <span class="text-lg">🔗</span>
+                <span class="flex-1 text-left">Copiar link</span>
+                <span class="text-xs text-zinc-500 copiar-status">link</span>
+            </button>
+
+            <a href="https://wa.me/?text=${encodeURIComponent(texto)}"
+               target="_blank" rel="noopener noreferrer"
+               class="flex items-center gap-3 px-4 py-3 bg-zinc-800 hover:bg-zinc-700 rounded-xl text-white text-sm transition-all cursor-pointer">
+                <span class="text-lg">📱</span>
+                <span>Compartilhar no WhatsApp</span>
+            </a>
+
+            <a href="https://t.me/share/url?url=${encodeURIComponent(url)}&text=${encodeURIComponent(nome + ' - PLANETA BOYS')}"
+               target="_blank" rel="noopener noreferrer"
+               class="flex items-center gap-3 px-4 py-3 bg-zinc-800 hover:bg-zinc-700 rounded-xl text-white text-sm transition-all cursor-pointer">
+                <span class="text-lg">✈️</span>
+                <span>Compartilhar no Telegram</span>
+            </a>
+
+            <button onclick="this.closest('.fixed').remove()"
+                    class="w-full px-4 py-2 text-zinc-500 hover:text-white text-sm transition-all cursor-pointer">
+                Cancelar
+            </button>
+        </div>
+    `;
+
+    document.body.appendChild(overlay);
+};
+
+// ─── Copiar link para área de transferência ─────────────────
+window.copiarLink = async function(url, btn) {
+    try {
+        await navigator.clipboard.writeText(url);
+        const status = btn.querySelector('.copiar-status');
+        if (status) {
+            status.textContent = 'copiado!';
+            status.classList.add('text-green-400');
+            setTimeout(() => {
+                status.textContent = 'link';
+                status.classList.remove('text-green-400');
+            }, 2000);
+        }
+    } catch (e) {
+        // Fallback: selecionar texto
+        const ta = document.createElement('textarea');
+        ta.value = url;
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand('copy');
+        document.body.removeChild(ta);
+        const status = btn.querySelector('.copiar-status');
+        if (status) {
+            status.textContent = 'copiado!';
+            status.classList.add('text-green-400');
+            setTimeout(() => {
+                status.textContent = 'link';
+                status.classList.remove('text-green-400');
+            }, 2000);
+        }
+    }
+};
 </script>
 @endsection

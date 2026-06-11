@@ -25,7 +25,7 @@
                 </a>
             </div>
         @else
-            <div class="grid grid-cols-[repeat(auto-fill,minmax(232px,1fr))] gap-6">
+            <div class="grid grid-cols-[repeat(auto-fit,minmax(232px,1fr))] gap-6">
                 @include('components.perfil-card', ['perfis' => $perfis, 'favoritedIds' => $favoritedIds])
             </div>
 

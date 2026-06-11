@@ -37,7 +37,7 @@
                     </a>
                 </div>
             @else
-                <div id="perfis-grid" class="grid grid-cols-[repeat(auto-fill,minmax(232px,1fr))] gap-6">
+                <div id="perfis-grid" class="grid grid-cols-[repeat(auto-fit,minmax(232px,1fr))] gap-6">
                     @include('components.perfil-card', ['perfis' => $perfis])
                 </div>
 

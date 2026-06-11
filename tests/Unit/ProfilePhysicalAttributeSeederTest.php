@@ -87,4 +87,18 @@ class ProfilePhysicalAttributeSeederTest extends TestCase
 
         $this->assertContains($attribute->ethnicity, $validEthnicities);
     }
+
+    public function test_body_type_is_valid(): void
+    {
+        $validBodyTypes = ['magro', 'atlético', 'musculoso', 'sarado', 'forte'];
+
+        User::factory()->create();
+        $profile = Profile::factory()->create();
+        $this->seed(ProfilePhysicalAttributeSeeder::class);
+
+        $attribute = ProfilePhysicalAttribute::where('profile_id', $profile->id)->first();
+
+        $this->assertNotNull($attribute->body_type);
+        $this->assertContains($attribute->body_type, $validBodyTypes);
+    }
 }

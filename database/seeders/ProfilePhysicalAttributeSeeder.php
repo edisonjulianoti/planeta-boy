@@ -21,6 +21,7 @@ class ProfilePhysicalAttributeSeeder extends Seeder
                 'hair_color' => fake()->randomElement(['preto', 'castanho', 'loiro', 'ruivo', 'grisalho']),
                 'eye_color' => fake()->randomElement(['castanho', 'azul', 'verde', 'preto']),
                 'ethnicity' => fake()->randomElement(['branca', 'negra', 'parda', 'amarela', 'indígena']),
+                'body_type' => fake()->randomElement(['magro', 'atlético', 'musculoso', 'sarado', 'forte']),
             ]);
         }
 

@@ -103,7 +103,10 @@ RUN chown -R www-data:www-data \
 # Configuração PHP de desenvolvimento
 RUN echo "opcache.enable=0" >> /usr/local/etc/php/conf.d/custom.ini \
     && echo "display_errors=On" >> /usr/local/etc/php/conf.d/custom.ini \
-    && echo "error_reporting=E_ALL" >> /usr/local/etc/php/conf.d/custom.ini
+    && echo "error_reporting=E_ALL" >> /usr/local/etc/php/conf.d/custom.ini \
+    && echo "upload_max_filesize=20M" >> /usr/local/etc/php/conf.d/custom.ini \
+    && echo "post_max_size=20M" >> /usr/local/etc/php/conf.d/custom.ini \
+    && echo "max_file_uploads=20" >> /usr/local/etc/php/conf.d/custom.ini
 
 # Exposição da porta PHP-FPM
 EXPOSE 9000

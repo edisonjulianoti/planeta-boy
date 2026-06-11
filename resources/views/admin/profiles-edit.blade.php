@@ -43,6 +43,41 @@
                     placeholder="Descrição do perfil...">{{ $profile->description ?? '' }}</textarea>
             </div>
 
+            {{-- Características Físicas --}}
+            <div class="border-t border-zinc-700 pt-6">
+                <h3 class="text-zinc-400 text-xs uppercase tracking-wider font-bold mb-4">Características Físicas</h3>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <x-forms.input name="height" type="number" label="Altura (cm)" placeholder="Ex: 180"
+                        :value="$profile->physicalAttributes?->height ?? null" min="100" max="250" />
+
+                    <x-forms.input name="weight" type="number" label="Peso (kg)" placeholder="Ex: 75"
+                        :value="$profile->physicalAttributes?->weight ?? null" min="30" max="300" />
+
+                    <x-forms.input name="hair_color" label="Cor do Cabelo" placeholder="Ex: castanho, loiro"
+                        :value="$profile->physicalAttributes?->hair_color ?? null" />
+
+                    <x-forms.input name="eye_color" label="Cor dos Olhos" placeholder="Ex: verdes, castanhos"
+                        :value="$profile->physicalAttributes?->eye_color ?? null" />
+
+                    <x-forms.input name="ethnicity" label="Etnia" placeholder="Ex: branco, pardo, negro"
+                        :value="$profile->physicalAttributes?->ethnicity ?? null" />
+
+                    <div>
+                        <label class="block text-zinc-400 text-xs uppercase tracking-wider font-bold mb-2">Tipo Físico</label>
+                        <select name="body_type"
+                            class="w-full bg-zinc-800 border border-zinc-700 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-primary">
+                            <option value="">Selecione</option>
+                            @php $bodyTypes = ['magro', 'atlético', 'musculoso', 'sarado', 'forte', 'gordo', 'tanquinho']; @endphp
+                            @foreach($bodyTypes as $type)
+                                <option value="{{ $type }}" {{ ($profile->physicalAttributes?->body_type ?? null) === $type ? 'selected' : '' }}>
+                                    {{ ucfirst($type) }}
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
+                </div>
+            </div>
+
             {{-- Status --}}
             <div class="flex gap-6">
                 <div class="flex items-center gap-3">
