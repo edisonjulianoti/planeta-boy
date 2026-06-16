@@ -9,6 +9,7 @@ use App\Http\Controllers\Admin\PlanController;
 use App\Http\Controllers\Admin\SubscriptionController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegistroController;
+use App\Http\Controllers\Auth\VerificationController;
 use App\Http\Controllers\ContatoController;
 use App\Http\Controllers\CityController;
 use App\Http\Controllers\ExplorarController;
@@ -43,7 +44,7 @@ Route::middleware('age.gate')->group(function () {
     // Perfil público
     Route::get('/perfis/{slug}', [PerfilController::class, 'ver'])->name('perfil.ver');
 
-    // Planos (p\u00fablico)
+    // Planos (público)
     Route::get('/planos', [PlanoController::class, 'index'])->name('planos');
 
     // FAQ
@@ -90,8 +91,15 @@ Route::middleware('guest')->group(function () {
     Route::get('/esqueci-senha', fn() => view('auth.login'))->name('password.request');
 });
 
-// Auth (autenticado)
+// Verificação de e-mail (requer login mas não verified)
 Route::middleware('auth')->group(function () {
+    Route::get('/email/verify', [VerificationController::class, 'notice'])->name('verification.notice');
+    Route::get('/email/verify/{id}/{hash}', [VerificationController::class, 'verify'])->name('verification.verify');
+    Route::post('/email/resend', [VerificationController::class, 'resend'])->name('verification.resend');
+});
+
+// Auth (autenticado + email verificado)
+Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('/sair', [LoginController::class, 'destroy'])->name('logout');
     Route::post('/logout', [LoginController::class, 'destroy']);
     Route::get('/meu-perfil', [PerfilController::class, 'meu'])->name('perfil');
@@ -155,7 +163,7 @@ Route::middleware(['auth', \App\Http\Middleware\EnsureUserIsAdmin::class])
         Route::put('/cidades/{city}', [AdminCityController::class, 'update'])->name('cities.update');
         Route::delete('/cidades/{city}', [AdminCityController::class, 'destroy'])->name('cities.destroy');
 
-        // Servi\u00e7os
+        // Serviços
         Route::get('/servicos', [AdminServiceController::class, 'index'])->name('services');
         Route::get('/servicos/criar', [AdminServiceController::class, 'create'])->name('services.create');
         Route::post('/servicos', [AdminServiceController::class, 'store'])->name('services.store');

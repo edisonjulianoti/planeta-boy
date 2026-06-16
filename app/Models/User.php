@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Database\Factories\UserFactory;
+use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -16,7 +17,7 @@ use App\Models\SubscriptionHistory;
 
 #[Fillable(['name', 'email', 'password', 'phone', 'cpf', 'data_nascimento', 'bio', 'avatar', 'plan', 'plan_expires_at', 'is_admin', 'blocked'])]
 #[Hidden(['password', 'remember_token'])]
-class User extends Authenticatable
+class User extends Authenticatable implements MustVerifyEmail
 {
     /** @use HasFactory<UserFactory> */
     use HasFactory, Notifiable;
@@ -101,7 +102,7 @@ class User extends Authenticatable
             ->withTimestamps();
     }
 
-    // ─── Assinaturas ─────────────────────────────────────
+    // --- Assinaturas ---
 
     public function subscriptions(): HasMany
     {
@@ -111,5 +112,12 @@ class User extends Authenticatable
     public function activeSubscription(): ?Subscription
     {
         return $this->subscriptions()->active()->latest('start_date')->first();
+    }
+
+    // --- Email Verification ---
+
+    public function sendEmailVerificationNotification(): void
+    {
+        $this->notify(new \App\Notifications\VerifyEmailNotification);
     }
 }

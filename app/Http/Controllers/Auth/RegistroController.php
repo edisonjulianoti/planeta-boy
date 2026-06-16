@@ -32,22 +32,22 @@ class RegistroController extends Controller
             'data_nascimento'  => 'required|date_format:d/m/Y|before:today|after:-100 years',
             'lgpd_consent'     => 'accepted',
         ], [
-            'nome.required'             => 'O nome é obrigatório.',
-            'nome.min'                  => 'O nome deve ter no mínimo 2 caracteres.',
-            'email.required'            => 'O e-mail é obrigatório.',
-            'email.email'               => 'Informe um e-mail válido.',
-            'email.unique'              => 'Este e-mail já está cadastrado.',
-            'senha.required'            => 'A senha é obrigatória.',
-            'senha.min'                 => 'A senha deve ter no mínimo 6 caracteres.',
-            'senha.confirmed'           => 'As senhas não coincidem.',
-            'cpf.required'              => 'O CPF é obrigatório.',
-            'cpf.max'                   => 'CPF inválido.',
-            'cpf.unique'                => 'Este CPF já está cadastrado.',
-            'data_nascimento.required'  => 'A data de nascimento é obrigatória.',
-            'data_nascimento.date_format' => 'Data de nascimento inválida. Use o formato dd/mm/aaaa.',
+            'nome.required'             => 'O nome e obrigatorio.',
+            'nome.min'                  => 'O nome deve ter no minimo 2 caracteres.',
+            'email.required'            => 'O e-mail e obrigatorio.',
+            'email.email'               => 'Informe um e-mail valido.',
+            'email.unique'              => 'Este e-mail ja esta cadastrado.',
+            'senha.required'            => 'A senha e obrigatoria.',
+            'senha.min'                 => 'A senha deve ter no minimo 6 caracteres.',
+            'senha.confirmed'           => 'As senhas nao coincidem.',
+            'cpf.required'              => 'O CPF e obrigatorio.',
+            'cpf.max'                   => 'CPF invalido.',
+            'cpf.unique'                => 'Este CPF ja esta cadastrado.',
+            'data_nascimento.required'  => 'A data de nascimento e obrigatoria.',
+            'data_nascimento.date_format' => 'Data de nascimento invalida. Use o formato dd/mm/aaaa.',
             'data_nascimento.before'    => 'A data de nascimento deve ser anterior a hoje.',
-            'data_nascimento.after'     => 'Data de nascimento inválida.',
-            'lgpd_consent.accepted'     => 'Você precisa aceitar a Política de Privacidade e autorizar o tratamento dos seus dados pessoais (LGPD).',
+            'data_nascimento.after'     => 'Data de nascimento invalida.',
+            'lgpd_consent.accepted'     => 'Voce precisa aceitar a Politica de Privacidade e autorizar o tratamento dos seus dados pessoais (LGPD).',
         ]);
 
         $dataNascimento = Carbon::createFromFormat('d/m/Y', $validated['data_nascimento'])->format('Y-m-d');
@@ -62,9 +62,12 @@ class RegistroController extends Controller
             'plan'            => 'free',
         ]);
 
+        // Envia e-mail de verificacao
+        $usuario->sendEmailVerificationNotification();
+
         Auth::login($usuario);
 
-        return redirect()->route('perfil')
-            ->with('status', 'Conta criada com sucesso! Bem-vindo(a)!');
+        return redirect()->route('verification.notice')
+            ->with('status', 'Conta criada! Verifique seu e-mail para ativar sua conta.');
     }
 }
