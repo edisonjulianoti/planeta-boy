@@ -10,7 +10,7 @@ class VerifyEmailNotification extends VerifyEmail
 {
     use Queueable;
 
-    public function toMail(object $notifiable): MailMessage
+    public function toMail($notifiable)
     {
         $verificationUrl = $this->verificationUrl($notifiable);
 

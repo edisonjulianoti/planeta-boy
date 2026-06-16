@@ -50,6 +50,10 @@
                     <dt class="text-zinc-500 text-xs uppercase tracking-wider mb-1">Telefone</dt>
                     <dd class="text-white font-medium">{{ auth()->user()->phone ?: 'Não informado' }}</dd>
                 </div>
+                <div>
+                    <dt class="text-zinc-500 text-xs uppercase tracking-wider mb-1">CPF</dt>
+                    <dd class="text-white font-medium">{{ auth()->user()->cpf ? '***.***.***-**' : 'Não informado' }}</dd>
+                </div>
                 <div class="sm:col-span-2">
                     <dt class="text-zinc-500 text-xs uppercase tracking-wider mb-1">Bio</dt>
                     <dd class="text-white font-medium">{{ auth()->user()->bio ?: 'Não informada' }}</dd>
@@ -66,6 +70,8 @@
                 <x-forms.input name="email" type="email" label="E-mail" :value="old('email', auth()->user()->email)" required variant="dark" />
 
                 <x-forms.input name="phone" label="Telefone" :value="old('phone', auth()->user()->phone)" placeholder="(00) 00000-0000" variant="dark" />
+
+                <x-forms.input name="cpf" label="CPF" :value="old('cpf', auth()->user()->cpf)" placeholder="000.000.000-00" variant="dark" maxlength="14" id="cpf" />
 
                 <div class="sm:col-span-2">
                     <label class="block text-zinc-500 text-xs uppercase tracking-wider mb-1.5">Bio</label>
@@ -236,6 +242,19 @@
 </div>
 
 <script>
+    // Mascara CPF
+    const cpfInput = document.getElementById('cpf');
+    if (cpfInput) {
+        cpfInput.addEventListener('input', function(e) {
+            let value = e.target.value.replace(/\D/g, '');
+            if (value.length > 11) value = value.slice(0, 11);
+            value = value.replace(/(\d{3})(\d)/, '$1.$2');
+            value = value.replace(/(\d{3})(\d)/, '$1.$2');
+            value = value.replace(/(\d{3})(\d{1,2})$/, '$1-$2');
+            e.target.value = value;
+        });
+    }
+
     (function() {
         const btnEditar = document.getElementById('btn-editar-perfil');
         const btnCancelar = document.getElementById('btn-cancelar');

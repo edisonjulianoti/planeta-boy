@@ -74,7 +74,7 @@ final class SiteRoutesTest extends TestCase
                 'data_nascimento' => '15/05/1990',
                 'lgpd_consent' => '1',
             ])
-            ->assertRedirect(route('perfil'))
+            ->assertRedirect(route('verification.notice'))
             ->assertSessionHas('status');
 
         $this->assertAuthenticated();
