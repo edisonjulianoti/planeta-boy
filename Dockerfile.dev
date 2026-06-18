@@ -108,6 +108,11 @@ RUN echo "opcache.enable=0" >> /usr/local/etc/php/conf.d/custom.ini \
     && echo "post_max_size=20M" >> /usr/local/etc/php/conf.d/custom.ini \
     && echo "max_file_uploads=20" >> /usr/local/etc/php/conf.d/custom.ini
 
+# Entrypoint que ajusta permissões automaticamente
+COPY docker/dev/docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
+RUN chmod +x /usr/local/bin/docker-entrypoint.sh
+ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]
+
 # Exposição da porta PHP-FPM
 EXPOSE 9000
 
