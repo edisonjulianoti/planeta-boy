@@ -183,8 +183,38 @@
                     <div>
                         <p class="text-white font-bold group-hover:text-primary transition-colors">{{ $perfil->name }}</p>
                         <p class="text-zinc-400 text-sm">{{ $perfil->city }}, {{ $perfil->state }} · {{ $perfil->age }} anos</p>
-                    </div>
-                </a>
+                        </div>
+                        </a>
+
+                {{-- Link para verificação --}}
+                        <div class="mt-4 p-4 bg-zinc-800 rounded-xl border border-zinc-700">
+                        <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-2">
+                            <svg class="w-4 h-4 text-zinc-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                            <span class="text-white text-sm font-bold uppercase tracking-wider">Verificação</span>
+                        </div>
+                        @php
+                            $vStatus = match($perfil->verification_status) {
+                                'approved' => ['label' => 'Aprovado', 'color' => 'text-green-400'],
+                                'pending' => ['label' => 'Pendente', 'color' => 'text-yellow-400'],
+                                'rejected' => ['label' => 'Rejeitado', 'color' => 'text-red-400'],
+                                default => ['label' => 'Não verificado', 'color' => 'text-zinc-500'],
+                            };
+                        @endphp
+                        <span class="text-xs font-bold uppercase tracking-wider {{ $vStatus['color'] }}">{{ $vStatus['label'] }}</span>
+                        </div>
+                        <p class="text-zinc-500 text-xs mt-2">
+                        @if($perfil->verification_status === 'approved')
+                            Sua identidade foi verificada. ✓
+                        @else
+                            Envie documentos para verificar sua identidade e aumentar a confiança dos clientes.
+                        @endif
+                        </p>
+                        <a href="{{ route('perfil.verificacao') }}"
+                        class="mt-3 w-full flex items-center justify-center gap-2 px-4 py-2 bg-zinc-700 hover:bg-zinc-600 border border-zinc-600 rounded-lg text-zinc-300 hover:text-white text-sm transition-all cursor-pointer">
+                        <span>{{ $perfil->verification_status === 'none' ? 'Solicitar Verificação' : 'Ver Detalhes' }}</span>
+                        </a>
+                        </div>
 
                 {{-- Seção de Localização --}}
                 <div class="mt-4 p-4 bg-zinc-800 rounded-xl border border-zinc-700">
@@ -217,6 +247,21 @@
                         <span>Atualizar minha localização</span>
                     </button>
                     <p id="localizacao-erro" class="hidden mt-2 text-xs text-red-400"></p>
+                </div>
+
+                {{-- Seção de Comentários --}}
+                <div class="mt-4 p-4 bg-zinc-800 rounded-xl border border-zinc-700">
+                    <div class="flex items-center gap-2 mb-3">
+                        <svg class="w-4 h-4 text-zinc-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                        <span class="text-white text-sm font-bold uppercase tracking-wider">Comentários</span>
+                    </div>
+                    <p class="text-zinc-400 text-xs mb-3">
+                        Gerencie os comentários do seu perfil. Aprove ou rejeite as avaliações recebidas.
+                    </p>
+                    <a href="{{ route('perfil.comentarios') }}"
+                        class="w-full flex items-center justify-center gap-2 px-4 py-2 bg-zinc-700 hover:bg-zinc-600 border border-zinc-600 rounded-lg text-zinc-300 hover:text-white text-sm transition-all cursor-pointer">
+                        <span>Gerenciar Comentários</span>
+                    </a>
                 </div>
             @endif
 

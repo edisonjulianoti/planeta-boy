@@ -40,7 +40,7 @@
                     <p class="text-zinc-600 text-sm mt-1">Volte mais tarde para conferir</p>
                 </div>
             @else
-                <div id="perfis-grid" class="grid grid-cols-[repeat(auto-fit,minmax(232px,1fr))] gap-6">
+                <div id="perfis-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                     @include('components.perfil-card', ['perfis' => $perfis])
                 </div>
 

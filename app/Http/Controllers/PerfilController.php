@@ -14,6 +14,7 @@ use App\Models\ProfileFavorite;
 use App\Models\ProfileReport;
 use App\Services\ProfileService;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\View\View;
 
@@ -125,7 +126,7 @@ class PerfilController extends Controller
     }
 
     /**
-     * Post a comment on a profile.
+     * Post a comment on a profile (anyone can comment, needs approval).
      */
     public function comentar(CommentRequest $request, string $slug): RedirectResponse
     {
@@ -136,10 +137,45 @@ class PerfilController extends Controller
             'user_id'    => auth()->id(),
             'comment'    => $request->input('comment'),
             'rating'     => $request->input('rating'),
+            'approved'   => false,
         ]);
 
         return redirect()->route('perfil.ver', $slug)
-            ->with('success', 'Comentário adicionado com sucesso!');
+            ->with('success', 'Comentário enviado! Aguarde a aprovação do proprietário do perfil.');
+    }
+
+    /**
+     * Approve a comment (profile owner only).
+     */
+    public function approveComment(ProfileComment $comment): RedirectResponse
+    {
+        $profile = $comment->profile;
+
+        if (auth()->id() !== $profile->user_id) {
+            abort(403, 'Apenas o dono do perfil pode aprovar comentários.');
+        }
+
+        $comment->update(['approved' => true]);
+
+        return redirect()->route('perfil.comentarios')
+            ->with('success', 'Comentário aprovado!');
+    }
+
+    /**
+     * Reject/delete a comment (profile owner only).
+     */
+    public function rejectComment(ProfileComment $comment): RedirectResponse
+    {
+        $profile = $comment->profile;
+
+        if (auth()->id() !== $profile->user_id) {
+            abort(403, 'Apenas o dono do perfil pode rejeitar comentários.');
+        }
+
+        $comment->delete();
+
+        return redirect()->route('perfil.comentarios')
+            ->with('success', 'Comentário rejeitado.');
     }
 
     /**
@@ -169,5 +205,22 @@ class PerfilController extends Controller
             ->whereRaw('LOWER(REPLACE(name, " ", "-")) = ?', [Str::lower($slug)])
             ->orWhere('id', is_numeric($slug) ? (int) $slug : 0)
             ->firstOrFail();
+    }
+
+    /**
+     * Show the profile owner's comment management page.
+     */
+    public function comentarios(): View
+    {
+        $perfil = auth()->user()->profile;
+
+        if (!$perfil) {
+            abort(404, 'Você não tem um perfil cadastrado.');
+        }
+
+        $pendingComments = $perfil->pendingComments()->with('user')->get();
+        $approvedComments = $perfil->approvedComments()->with('user')->get();
+
+        return view('perfil.comentarios', compact('perfil', 'pendingComments', 'approvedComments'));
     }
 }

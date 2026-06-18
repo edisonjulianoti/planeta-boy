@@ -371,11 +371,9 @@ final class ProfileImageManagementTest extends TestCase
         // 3 images total
         $this->assertCount(3, $images);
 
-        // The new images get orders starting after the existing max(order)
-        // First new image becomes main (order=0), second gets order=5
-        // existing.jpg stays at order=3
+        // Main image = order 0, remaining images renumbered sequentially
         $this->assertEquals(0, $orders[0]);
-        $this->assertEquals(3, $orders[1]);
-        $this->assertEquals(5, $orders[2]);
+        $this->assertEquals(1, $orders[1]);
+        $this->assertEquals(2, $orders[2]);
     }
 }

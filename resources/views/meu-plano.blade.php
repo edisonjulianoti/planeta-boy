@@ -132,16 +132,13 @@
                         @endif
                     </div>
                     <x-admin.badge 
-                        :variant="match($req->status) {
-                            'pending'  => 'warning',
-                            'approved' => 'success',
-                            'rejected' => 'danger',
+                        :variant="match($req->status->value) {
+                            'pending'   => 'warning',
+                            'approved'  => 'success',
+                            'rejected'  => 'danger',
+                            'cancelled' => 'neutral',
                         }"
-                        :text="match($req->status) {
-                            'pending'  => 'Pendente',
-                            'approved' => 'Aprovado',
-                            'rejected' => 'Rejeitado',
-                        }"
+                        :text="$req->status->label()"
                     />
                 </div>
                 @endforeach

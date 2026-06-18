@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Profile;
+use App\Models\ProfileComment;
 use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -177,6 +178,7 @@ class AdminController extends Controller
             'state'       => $request->state,
             'description' => $request->description,
             'verified'    => $request->boolean('verified'),
+            'verified_manually' => $request->boolean('verified'),
             'active'      => $request->boolean('active'),
         ]);
 
@@ -226,5 +228,45 @@ class AdminController extends Controller
             return back()->with('error', 'Não é possível editar perfis de administradores.');
         }
         return null;
+    }
+
+    // ─── Comentários ───────────────────────────────────────
+
+    public function comments(Request $request): View
+    {
+        $query = ProfileComment::with(['profile', 'user']);
+
+        // Filtro por status
+        if ($request->filled('status')) {
+            if ($request->status === 'approved') {
+                $query->where('approved', true);
+            } elseif ($request->status === 'pending') {
+                $query->where('approved', false);
+            }
+        }
+
+        // Filtro por perfil
+        if ($request->filled('profile_id')) {
+            $query->where('profile_id', $request->profile_id);
+        }
+
+        $comments = $query->latest()->paginate(20)->withQueryString();
+        $profiles = Profile::select('id', 'name')->where('active', true)->orderBy('name')->get();
+
+        return view('admin.comentarios', compact('comments', 'profiles'));
+    }
+
+    public function approveComment(ProfileComment $comment): RedirectResponse
+    {
+        $comment->update(['approved' => true]);
+
+        return back()->with('success', 'Comentário aprovado com sucesso.');
+    }
+
+    public function deleteComment(ProfileComment $comment): RedirectResponse
+    {
+        $comment->delete();
+
+        return back()->with('success', 'Comentário excluído com sucesso.');
     }
 }

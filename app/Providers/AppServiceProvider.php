@@ -7,6 +7,7 @@ namespace App\Providers;
 use App\Models\Profile;
 use App\Models\ProfileReport;
 use App\Models\User;
+use App\Observers\ProfileObserver;
 use App\Policies\ProfilePolicy;
 use App\Policies\ProfileReportPolicy;
 use App\Policies\UserPolicy;
@@ -44,5 +45,7 @@ class AppServiceProvider extends ServiceProvider
         Gate::policy(ProfileReport::class, ProfileReportPolicy::class);
 
         View::composer('layouts.app', LayoutComposer::class);
+
+        Profile::observe(ProfileObserver::class);
     }
 }

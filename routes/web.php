@@ -3,9 +3,11 @@
 use App\Http\Controllers\Admin\AdminCityController;
 use App\Http\Controllers\Admin\AdminFaqController;
 use App\Http\Controllers\Admin\AdminServiceController;
+use App\Http\Controllers\Admin\AdminSettingsController;
 use App\Http\Controllers\Admin\AdminSubscriberCategoryController;
 use App\Http\Controllers\Admin\AdminController;
 use App\Http\Controllers\Admin\PlanController;
+use App\Http\Controllers\Admin\AdminVerificacaoController;
 use App\Http\Controllers\Admin\SubscriptionController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegistroController;
@@ -19,6 +21,7 @@ use App\Http\Controllers\FavoritoController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\LocationController;
 use App\Http\Controllers\PerfilController;
+use App\Http\Controllers\PerfilVerificacaoController;
 use App\Http\Controllers\PlanoController;
 use App\Http\Controllers\AccountDeletionController;
 use App\Http\Controllers\SitemapController;
@@ -55,9 +58,16 @@ Route::middleware('age.gate')->group(function () {
     Route::post('/contato', [ContatoController::class, 'store'])->name('contato.store');
 });
 
-// Perfil público (sem age gate para comentários/denúncias)
-Route::post('/perfis/{slug}/comentar', [PerfilController::class, 'comentar'])->name('perfil.comentar')->middleware('auth');
+// Perfil público — comentários e denúncias (sem age gate)
+Route::post('/perfis/{slug}/comentar', [PerfilController::class, 'comentar'])->name('perfil.comentar');
+Route::patch('/comentarios/{comment}/aprovar', [PerfilController::class, 'approveComment'])->name('perfil.comment.approve');
+Route::delete('/comentarios/{comment}', [PerfilController::class, 'rejectComment'])->name('perfil.comment.reject');
 Route::post('/perfis/{slug}/denunciar', [PerfilController::class, 'denunciar'])->name('perfil.denunciar')->middleware('auth');
+
+// Perfil do usuário (precisa de auth)
+Route::middleware('auth')->group(function () {
+    Route::get('/meu-perfil/comentarios', [PerfilController::class, 'comentarios'])->name('perfil.comentarios');
+});
 
 // Páginas estáticas
 Route::view('/sobre', 'sobre')->name('sobre');
@@ -98,10 +108,14 @@ Route::middleware('auth')->group(function () {
     Route::post('/email/resend', [VerificationController::class, 'resend'])->name('verification.resend');
 });
 
-// Auth (autenticado + email verificado)
-Route::middleware(['auth', 'verified'])->group(function () {
+// Logout (requer só auth, não verified — senão cria loop na tela de verificação)
+Route::middleware('auth')->group(function () {
     Route::post('/sair', [LoginController::class, 'destroy'])->name('logout');
     Route::post('/logout', [LoginController::class, 'destroy']);
+});
+
+// Auth (autenticado + email verificado)
+Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/meu-perfil', [PerfilController::class, 'meu'])->name('perfil');
     Route::put('/meu-perfil', [PerfilController::class, 'atualizar'])->name('perfil.atualizar');
     Route::post('/localizacao/atualizar', [LocationController::class, 'update'])->name('localizacao.atualizar');
@@ -110,6 +124,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/meu-perfil/criar', [PerfilController::class, 'criar'])->name('perfil.criar');
     Route::get('/meu-perfil/editar/{id}', [PerfilController::class, 'editar'])->name('perfil.editar');
     Route::post('/meu-perfil/criar', [PerfilController::class, 'salvar'])->name('perfil.salvar');
+
+    // Verificação de documentos
+    Route::get('/meu-perfil/verificacao', [PerfilVerificacaoController::class, 'index'])->name('perfil.verificacao');
+    Route::post('/meu-perfil/verificacao/upload', [PerfilVerificacaoController::class, 'upload'])->name('perfil.verificacao.upload');
+    Route::delete('/meu-perfil/verificacao/documento/{id}', [PerfilVerificacaoController::class, 'destroy'])->name('perfil.verificacao.documento.destroy');
 
     // Planos (requer login)
     Route::post('/planos/contratar', [PlanoController::class, 'contratar'])->name('planos.contratar');
@@ -154,6 +173,23 @@ Route::middleware(['auth', \App\Http\Middleware\EnsureUserIsAdmin::class])
         Route::post('/assinaturas/{subscription}/aprovar', [SubscriptionController::class, 'approve'])->name('subscriptions.approve');
         Route::post('/assinaturas/{subscription}/rejeitar', [SubscriptionController::class, 'reject'])->name('subscriptions.reject');
         Route::post('/usuarios/{user}/plano', [SubscriptionController::class, 'updateUserPlan'])->name('users.plan.update');
+
+        // Verificação de documentos
+        Route::get('/verificacoes', [AdminVerificacaoController::class, 'index'])->name('verificacoes');
+        Route::get('/verificacoes/{documento}', [AdminVerificacaoController::class, 'show'])->name('verificacoes.show');
+        Route::post('/verificacoes/{documento}/aprovar', [AdminVerificacaoController::class, 'approve'])->name('verificacoes.approve');
+        Route::post('/verificacoes/{documento}/rejeitar', [AdminVerificacaoController::class, 'reject'])->name('verificacoes.reject');
+        Route::get('/verificacoes/{documento}/foto', [AdminVerificacaoController::class, 'showPhoto'])->name('verificacoes.foto');
+        Route::get('/verificacao-perfis', [AdminVerificacaoController::class, 'profiles'])->name('verificacao-perfis');
+
+        // Configuracoes
+        Route::get('/configuracoes', [AdminSettingsController::class, 'index'])->name('settings');
+        Route::put('/configuracoes', [AdminSettingsController::class, 'update'])->name('settings.update');
+
+        // Comentarios
+        Route::get('/comentarios', [AdminController::class, 'comments'])->name('comentarios');
+        Route::patch('/comentarios/{comment}/aprovar', [AdminController::class, 'approveComment'])->name('comentarios.approve');
+        Route::delete('/comentarios/{comment}', [AdminController::class, 'deleteComment'])->name('comentarios.destroy');
 
         // Cidades
         Route::get('/cidades', [AdminCityController::class, 'index'])->name('cities');

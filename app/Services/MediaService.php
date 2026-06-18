@@ -250,6 +250,7 @@ final class MediaService
 
     /**
      * Resolve which image should be the main one.
+     * Renumbers all image orders to avoid conflicts (main = order 0, rest = 1+).
      */
     private function resolveMainImage(
         Profile $profile,
@@ -261,7 +262,7 @@ final class MediaService
         if ($newMainImageIndex !== null && isset($newImages[$newMainImageIndex])) {
             $profile->images()->update(['is_main' => false]);
             $newImages[$newMainImageIndex]->update(['is_main' => true, 'order' => 0]);
-
+            $this->renumberOrders($profile);
             return;
         }
 
@@ -269,7 +270,7 @@ final class MediaService
         if ($mainImageId !== null && $profile->images()->where('id', $mainImageId)->exists()) {
             $profile->images()->update(['is_main' => false]);
             $profile->images()->where('id', $mainImageId)->update(['is_main' => true, 'order' => 0]);
-
+            $this->renumberOrders($profile);
             return;
         }
 
@@ -277,16 +278,31 @@ final class MediaService
         if (!empty($newImages)) {
             $profile->images()->update(['is_main' => false]);
             $newImages[0]->update(['is_main' => true, 'order' => 0]);
-
+            $this->renumberOrders($profile);
             return;
         }
 
         // Priority 4: first existing image without main
         if (!$profile->images()->where('is_main', true)->exists()) {
             $firstImage = $profile->images()->orderBy('order')->first();
-
             if ($firstImage) {
                 $firstImage->update(['is_main' => true, 'order' => 0]);
+                $this->renumberOrders($profile);
+            }
+        }
+    }
+
+    /**
+     * Renumber orders so main = 0 and all other images start from 1.
+     */
+    private function renumberOrders(Profile $profile): void
+    {
+        $images = $profile->images()->orderBy('order')->get();
+        $nextOrder = 1;
+        foreach ($images as $img) {
+            if (!$img->is_main) {
+                $img->update(['order' => $nextOrder]);
+                $nextOrder++;
             }
         }
     }

@@ -84,6 +84,11 @@
                     <input type="checkbox" name="verified" id="verified" {{ $profile->verified ? 'checked' : '' }}
                         class="w-5 h-5 rounded border-zinc-600 bg-zinc-800 text-primary focus:ring-primary focus:ring-offset-zinc-900">
                     <label for="verified" class="text-white font-bold">Verificado</label>
+                    @if($profile->isAutoVerified())
+                        <span class="text-xs text-green-400 font-bold bg-green-500/10 px-2 py-0.5 rounded-full border border-green-500/30">Auto</span>
+                    @elseif($profile->isVerifiedByAdmin())
+                        <span class="text-xs text-yellow-400 font-bold bg-yellow-500/10 px-2 py-0.5 rounded-full border border-yellow-500/30">Manual</span>
+                    @endif
                 </div>
 
                 <div class="flex items-center gap-3">
@@ -92,6 +97,21 @@
                     <label for="active" class="text-white font-bold">Ativo</label>
                 </div>
             </div>
+
+            @if($profile->verified && !$profile->verified_manually)
+            <div class="bg-green-500/10 border border-green-500/30 rounded-xl p-4 text-sm">
+                <p class="text-green-400 font-bold text-xs uppercase tracking-wider mb-1">✅ Verificação Automática</p>
+                <p class="text-zinc-300 text-xs">Todos os requisitos foram atendidos automaticamente.</p>
+                @php $missing = $profile->missingVerifiedRequirements(); @endphp
+                @if(!empty($missing))
+                <ul class="mt-2 space-y-1">
+                    @foreach($missing as $req)
+                    <li class="text-red-400 text-xs flex items-center gap-1">✗ {{ $req }}</li>
+                    @endforeach
+                </ul>
+                @endif
+            </div>
+            @endif
 
             {{-- Botões --}}
             <div class="flex gap-4 pt-4">

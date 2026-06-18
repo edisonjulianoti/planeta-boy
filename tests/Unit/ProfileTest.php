@@ -58,6 +58,7 @@ final class ProfileTest extends TestCase
             'city' => 'São Paulo',
             'state' => 'SP',
             'verified' => 1,
+            'verified_manually' => true,
         ]);
 
         $this->assertIsBool($profile->verified);

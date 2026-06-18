@@ -66,8 +66,8 @@
                     <p class="text-zinc-600 text-xs mb-4">Informe suas características físicas (opcional)</p>
 
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        <x-forms.input name="height" type="number" label="Altura (cm)" placeholder="Ex: 180"
-                            :value="old('height', $perfil?->physicalAttributes?->height ?? null)" min="100" max="250" variant="dark" />
+                        <x-forms.input name="height" type="text" inputmode="decimal" label="Altura (m)" placeholder="Ex: 1,75"
+                            :value="old('height', $perfil?->physicalAttributes?->height ?? null)" min="1.00" max="2.50" variant="dark" />
 
                         <x-forms.input name="weight" type="number" label="Peso (kg)" placeholder="Ex: 75"
                             :value="old('weight', $perfil?->physicalAttributes?->weight ?? null)" min="30" max="300" variant="dark" />
@@ -179,4 +179,14 @@
 
     </div>
 </div>
+@push('scripts')
+<script>
+document.querySelector('form')?.addEventListener('submit', function() {
+    const heightInput = document.querySelector('[name="height"]');
+    if (heightInput) {
+        heightInput.value = heightInput.value.replace(',', '.');
+    }
+});
+</script>
+@endpush
 @endsection

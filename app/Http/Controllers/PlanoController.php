@@ -6,8 +6,11 @@ use App\Models\Faq;
 use App\Models\Plan;
 use App\Models\Subscription;
 use App\Models\SubscriptionRequest;
+use App\Models\Setting;
+use App\Notifications\NewSubscriptionNotification;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Notification;
 use Illuminate\View\View;
 
 class PlanoController extends Controller
@@ -45,6 +48,18 @@ class PlanoController extends Controller
             'plan_slug' => $request->plan_slug,
             'status'    => 'pending',
         ]);
+
+        // Notify admin emails about new subscription request
+        $notifyEmails = Setting::getValue('notification_emails', '');
+        if ($notifyEmails) {
+            $emails = array_map('trim', explode(',', $notifyEmails));
+            foreach ($emails as $email) {
+                if (filter_var($email, FILTER_VALIDATE_EMAIL)) {
+                    Notification::route('mail', $email)
+                        ->notify(new NewSubscriptionNotification($user, $request->plan_slug));
+                }
+            }
+        }
 
         return redirect()->route('meu.plano')
             ->with('success', 'Solicitação enviada! Aguarde a aprovação do administrador.');

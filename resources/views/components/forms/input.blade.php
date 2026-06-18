@@ -58,6 +58,10 @@
                 {{ $required ? 'required' : '' }}
                 {{ $autocomplete ? 'autocomplete="' . $autocomplete . '"' : '' }}
                 {{ $disabled ? 'disabled' : '' }}
+                {{ $attributes->get('inputmode') ? 'inputmode="' . $attributes->get('inputmode') . '"' : '' }}
+                {{ $attributes->get('step') ? 'step="' . $attributes->get('step') . '"' : '' }}
+                {{ $attributes->get('min') ? 'min="' . $attributes->get('min') . '"' : '' }}
+                {{ $attributes->get('max') ? 'max="' . $attributes->get('max') . '"' : '' }}
                 class="block w-full {{ $icon ? 'pl-10' : 'pl-3' }} pr-3 py-2 sm:py-2.5 {{ $bgColor }} border {{ $borderColor }} rounded-lg text-white placeholder-zinc-500 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all {{ $disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer' }}">
         @endif
     </div>

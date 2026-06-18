@@ -260,13 +260,33 @@
 
                 {{-- Seção de Verificação --}}
                 @if($perfil->verified)
-                <div class="rounded-xl p-6 space-y-4 bg-green-500/10 border border-green-500/30 flex items-center gap-4">
-                    <div class="w-8 h-8 rounded-full bg-green-500 flex items-center justify-center shrink-0">
-                        <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></svg>
+                <div class="rounded-xl p-6 space-y-4 bg-green-500/10 border border-green-500/30">
+                    <div class="flex items-center gap-4">
+                        <div class="w-8 h-8 rounded-full bg-green-500 flex items-center justify-center shrink-0">
+                            <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></svg>
+                        </div>
+                        <div>
+                            <p class="text-white font-bold text-sm">Perfil Verificado</p>
+                            <p class="text-green-400 text-xs">Identidade confirmada através de documentos válidos.</p>
+                        </div>
                     </div>
-                    <div class="space-y-1">
-                        <p class="text-white font-bold text-sm">Perfil Verificado</p>
-                        <p class="text-green-400 text-xs">Identidade confirmada através de documentos válidos.</p>
+                    @if($perfil->documents_verified)
+                    <div class="flex items-center gap-3 text-xs text-zinc-400 border-t border-green-500/20 pt-3">
+                        <svg class="w-4 h-4 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M9 12l2 2 4-4m6 2a9 9 0 1 1-18 0 9 9 0 0 1 18 0z"/></svg>
+                        <span>Documentos verificados</span>
+                        <span class="text-zinc-600">•</span>
+                        <svg class="w-4 h-4 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M9 12l2 2 4-4m6 2a9 9 0 1 1-18 0 9 9 0 0 1 18 0z"/></svg>
+                        <span>E-mail verificado</span>
+                    </div>
+                    @endif
+                </div>
+                @elseif($perfil->documents_verified)
+                <div class="rounded-xl p-4 bg-zinc-800 border border-zinc-700">
+                    <div class="flex items-center gap-3">
+                        <div class="w-6 h-6 rounded-full bg-zinc-700 flex items-center justify-center shrink-0">
+                            <svg class="w-3.5 h-3.5 text-zinc-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M9 12l2 2 4-4m6 2a9 9 0 1 1-18 0 9 9 0 0 1 18 0z"/></svg>
+                        </div>
+                        <p class="text-zinc-400 text-xs">Documentos verificados — aguardando os demais requisitos para o selo.</p>
                     </div>
                 </div>
                 @endif
@@ -351,7 +371,7 @@
 
         {{-- Comentários e Avaliações - Seção Full Width --}}
         <div class="mt-16">
-            <x-comentarios :perfil="$perfil" :comments="$perfil->comments" />
+            <x-comentarios :perfil="$perfil" :comments="$perfil->approvedComments" />
         </div>
 
         {{-- Perfis Similares - Seção Full Width --}}
@@ -365,6 +385,17 @@
 (function() {
     const media = @json($media ?? []);
     let currentIndex = 0;
+
+    // Garantir que apenas UM vídeo toque por vez na página
+    document.addEventListener('play', function(e) {
+        if (e.target.tagName === 'VIDEO') {
+            document.querySelectorAll('video').forEach(function(v) {
+                if (v !== e.target && !v.paused) {
+                    v.pause();
+                }
+            });
+        }
+    }, true);
 
     window.changeImage = function(direction) {
         if (media.length === 0) return;
@@ -386,39 +417,47 @@
         const currentItem = media[currentIndex];
         const container = mediaPrincipal.parentElement;
 
-        if (currentItem.type === 'video' && currentItem.data.type === 'local') {
-            const video = document.createElement('video');
-            video.id = 'media-principal';
-            video.className = 'w-full h-full';
-            video.controls = true;
-            video.playsInline = true;
-            const source = document.createElement('source');
-            source.src = '/storage/' + currentItem.data.path;
-            source.type = 'video/mp4';
-            video.appendChild(source);
-            container.replaceChild(video, mediaPrincipal);
-        } else if (currentItem.type === 'video') {
-            const video = document.createElement('video');
-            video.id = 'media-principal';
-            video.controls = true;
-            video.className = 'w-full h-full';
-            const source = document.createElement('source');
-            source.src = `/storage/${currentItem.data.path}`;
-            source.type = 'video/mp4';
-            video.appendChild(source);
-            container.innerHTML = '';
-            container.appendChild(video);
-            const img = document.createElement('img');
-            img.id = 'media-principal';
-            img.src = '/storage/' + currentItem.data.url;
-            img.alt = 'Imagem';
-            img.className = 'w-full h-full object-cover transition-opacity duration-300';
-            img.style.opacity = '0';
-            container.replaceChild(img, mediaPrincipal);
-            
-            setTimeout(() => {
-                img.style.opacity = '1';
-            }, 50);
+        if (currentItem.type === 'video') {
+            if (mediaPrincipal.tagName === 'VIDEO') {
+                // Já é um vídeo — só trocar a source (evita criar elemento novo)
+                mediaPrincipal.pause();
+                const source = mediaPrincipal.querySelector('source');
+                if (source) {
+                    source.src = '/storage/' + currentItem.data.path;
+                }
+                mediaPrincipal.load();
+            } else {
+                // Era imagem, virou vídeo — substituir o elemento
+                const video = document.createElement('video');
+                video.id = 'media-principal';
+                video.controls = true;
+                video.className = 'w-full h-full';
+                video.playsInline = true;
+                const source = document.createElement('source');
+                source.src = '/storage/' + currentItem.data.path;
+                source.type = 'video/mp4';
+                video.appendChild(source);
+                container.replaceChild(video, mediaPrincipal);
+            }
+        } else {
+            // Image case
+            if (mediaPrincipal.tagName === 'IMG') {
+                // Já é imagem — só trocar a src
+                mediaPrincipal.src = '/storage/' + currentItem.data.url;
+            } else {
+                // Era vídeo, virou imagem — substituir o elemento
+                mediaPrincipal.pause();
+                const img = document.createElement('img');
+                img.id = 'media-principal';
+                img.src = '/storage/' + currentItem.data.url;
+                img.alt = 'Imagem';
+                img.className = 'w-full h-full object-cover';
+                img.style.opacity = '0';
+                container.replaceChild(img, mediaPrincipal);
+                requestAnimationFrame(() => {
+                    img.style.opacity = '1';
+                });
+            }
         }
 
         // Atualizar borda das miniaturas
@@ -434,14 +473,25 @@
         });
     }
 
-    // Navegação por teclado
+    // Navegação por teclado (ignorar se lightbox estiver aberto)
     document.addEventListener('keydown', function(e) {
         if (e.key === 'ArrowLeft') {
+            if (!document.getElementById('lightbox')?.classList.contains('hidden')) return;
             changeImage(-1);
         } else if (e.key === 'ArrowRight') {
+            if (!document.getElementById('lightbox')?.classList.contains('hidden')) return;
             changeImage(1);
         }
     });
+
+    // Função auxiliar: pausa TODOS os vídeos da página
+    function pauseAllVideos() {
+        document.querySelectorAll('video').forEach(function(v) {
+            if (!v.paused) {
+                v.pause();
+            }
+        });
+    }
 
     // Lightbox functions
     window.openLightbox = function() {
@@ -449,6 +499,9 @@
         const lightbox = document.getElementById('lightbox');
         const lightboxContent = document.getElementById('lightbox-content');
         if (!lightbox || !lightboxContent) return;
+
+        // Pausar QUALQUER vídeo na página para evitar áudio/vídeo duplicado
+        pauseAllVideos();
 
         updateLightboxImage();
         lightbox.classList.remove('hidden');
@@ -485,21 +538,43 @@
         const lightboxContent = document.getElementById('lightbox-content');
         if (!lightboxContent || !media[currentIndex]) return;
 
+        // Pausar e destruir qualquer vídeo existente no lightbox antes de trocar
+        const oldVideo = lightboxContent.querySelector('video');
+        if (oldVideo) {
+            oldVideo.pause();
+            oldVideo.removeAttribute('src');
+            oldVideo.load();
+        }
+
         const currentItem = media[currentIndex];
 
+        // Limpar conteúdo
+        lightboxContent.innerHTML = '';
+
         if (currentItem.type === 'video') {
-            lightboxContent.innerHTML = `
-                <video controls class="max-w-full max-h-[80vh] object-contain" playsinline autoplay>
-                    <source src="/storage/${currentItem.data.path}" type="video/mp4">
-                    Seu navegador não suporta vídeo.
-                </video>
-            `;
+            const video = document.createElement('video');
+            video.controls = true;
+            video.className = 'max-w-full max-h-[80vh] object-contain';
+            video.playsInline = true;
+
+            const source = document.createElement('source');
+            source.src = '/storage/' + currentItem.data.path;
+            source.type = 'video/mp4';
+            video.appendChild(source);
+            video.appendChild(document.createTextNode('Seu navegador não suporta vídeo.'));
+
+            lightboxContent.appendChild(video);
+
+            // Tentar iniciar reprodução (precisa estar dentro de user gesture)
+            video.play().catch(function(err) {
+                // Autoplay pode ser bloqueado pelo browser - ignora silenciosamente
+            });
         } else {
-            lightboxContent.innerHTML = `
-                <img src="/storage/${currentItem.data.url}" 
-                     alt="Imagem em tela cheia" 
-                     class="max-w-full max-h-[80vh] object-contain">
-            `;
+            const img = document.createElement('img');
+            img.src = '/storage/' + currentItem.data.url;
+            img.alt = 'Imagem em tela cheia';
+            img.className = 'max-w-full max-h-[80vh] object-contain';
+            lightboxContent.appendChild(img);
         }
 
         updateLightboxThumbnails();

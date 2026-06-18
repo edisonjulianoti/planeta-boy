@@ -9,9 +9,10 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Support\Str;
 use App\Models\Subscription;
 
-#[Fillable(['user_id', 'name', 'age', 'gender', 'city', 'state', 'description', 'telegram', 'tagline', 'attendance_target', 'payment_methods', 'documents_verified', 'no_reports', 'clean_history', 'verified', 'rating', 'views', 'last_active_at', 'active', 'subscriber_category_id', 'latitude', 'longitude', 'location_enabled'])]
+#[Fillable(['user_id', 'name', 'age', 'gender', 'city', 'state', 'description', 'telegram', 'tagline', 'attendance_target', 'payment_methods', 'documents_verified', 'no_reports', 'clean_history', 'verified', 'verified_manually', 'verification_status', 'rating', 'views', 'last_active_at', 'active', 'subscriber_category_id', 'latitude', 'longitude', 'location_enabled'])]
 class Profile extends Model
 {
     use HasFactory;
@@ -19,6 +20,8 @@ class Profile extends Model
     {
         return [
             'verified'           => 'boolean',
+            'verified_manually'   => 'boolean',
+            'verification_status' => 'string',
             'active'             => 'boolean',
             'rating'             => 'decimal:2',
             'last_active_at'     => 'datetime',
@@ -125,9 +128,77 @@ class Profile extends Model
         return $this->hasMany(ProfileComment::class)->latest();
     }
 
+    public function approvedComments(): HasMany
+    {
+        return $this->hasMany(ProfileComment::class)->approved()->latest();
+    }
+
+    public function pendingComments(): HasMany
+    {
+        return $this->hasMany(ProfileComment::class)->pending()->latest();
+    }
+
+    public function allComments(): HasMany
+    {
+        return $this->hasMany(ProfileComment::class)->latest();
+    }
+
     public function reports(): HasMany
     {
         return $this->hasMany(ProfileReport::class);
+    }
+
+    // ─── Verificação ───────────────────────────────────────
+
+    public function verificationDocuments(): HasMany
+    {
+        return $this->hasMany(ProfileVerificationDocument::class);
+    }
+
+    public function pendingVerificationDocuments(): HasMany
+    {
+        return $this->verificationDocuments()->where('status', 'pending');
+    }
+
+    public function hasPendingVerification(): bool
+    {
+        return $this->verification_status === 'pending';
+    }
+
+    public function canRequestVerification(): bool
+    {
+        return in_array($this->verification_status, ['none', 'rejected']);
+    }
+
+    public function isVerifiedByAdmin(): bool
+    {
+        return $this->verified && $this->verified_manually;
+    }
+
+    public function isAutoVerified(): bool
+    {
+        return $this->verified && !$this->verified_manually;
+    }
+
+    public function missingVerifiedRequirements(): array
+    {
+        $missing = [];
+        if (!($this->user?->hasVerifiedEmail() ?? false)) {
+            $missing[] = 'E-mail não verificado';
+        }
+        if (!$this->documents_verified) {
+            $missing[] = 'Documentos não verificados';
+        }
+        if (!$this->no_reports) {
+            $missing[] = 'Possui denúncias não resolvidas';
+        }
+        if (!$this->clean_history) {
+            $missing[] = 'Histórico recente com violações';
+        }
+        if (!($this->user?->planIsActive() ?? false) && !($this->user?->isAdmin() ?? false)) {
+            $missing[] = 'Plano ativo não identificado';
+        }
+        return $missing;
     }
 
     // ─── Favoritos ───────────────────────────────────────

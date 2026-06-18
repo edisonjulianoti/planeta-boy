@@ -118,7 +118,7 @@
 
         {{-- Discounts info --}}
         <div class="pb-16">
-            <div class="bg-zinc-900 border border-zinc-800 rounded-xl p-8 max-w-2xl mx-auto">
+            <div class="bg-zinc-900 border border-zinc-800 rounded-xl p-8">
                 <h3 class="text-white font-black text-lg mb-4 text-center">Descontos por Período</h3>
                 <div class="grid grid-cols-3 gap-4 text-center">
                     <div class="bg-zinc-950 rounded-lg p-4">

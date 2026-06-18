@@ -25,6 +25,9 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
+    {{-- Alpine.js via CDN (antes de qualquer script que use x-data) --}}
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+
     {{-- Assets buildados (Vite dev server desligado) --}}
     @php
         $viteManifest = json_decode(file_get_contents(public_path('build/manifest.json')), true);
@@ -71,10 +74,14 @@
                     {{-- Dropdown do Perfil --}}
                     <div class="relative" id="user-dropdown-container">
                         <button id="user-dropdown-btn" class="flex items-center gap-2 px-3 py-3 rounded-lg hover:bg-zinc-800 transition-all duration-200 group cursor-pointer">
-                            {{-- Avatar --}}
+                            {{-- Avatar — foto do perfil (thumbnail) ou avatar manual ou ícone --}}
                             <div class="w-8 h-8 rounded-full bg-zinc-800 border border-zinc-700 overflow-hidden shrink-0">
-                                @if(auth()->user()->avatar)
-                                    <img src="{{ auth()->user()->avatar }}" alt="{{ auth()->user()->name }}" class="w-full h-full object-cover">
+                                @php
+                                    $avatarSrc = auth()->user()->profile?->primaryImage()?->thumbUrl()
+                                        ?? auth()->user()->avatar;
+                                @endphp
+                                @if($avatarSrc)
+                                    <img src="{{ $avatarSrc }}" alt="{{ auth()->user()->name }}" class="w-full h-full object-cover">
                                 @else
                                     <div class="w-full h-full flex items-center justify-center bg-zinc-800">
                                         <svg class="w-4 h-4 text-zinc-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
@@ -86,10 +93,25 @@
 
                         {{-- Card de Opções --}}
                         <div id="user-dropdown-menu" class="hidden absolute right-0 top-full mt-2 w-64 bg-zinc-900 border border-zinc-800 rounded-xl shadow-2xl shadow-black/50 overflow-hidden z-50 origin-top-right">
-                            {{-- Cabeçalho com info do usuário --}}
-                            <div class="px-4 py-3 border-b border-zinc-800 bg-zinc-900/50">
-                                <p class="text-white font-bold text-sm truncate">{{ auth()->user()->name }}</p>
-                                <p class="text-zinc-500 text-xs truncate">{{ auth()->user()->email }}</p>
+                            {{-- Cabeçalho com info do usuário + thumbnail --}}
+                            <div class="px-4 py-3 border-b border-zinc-800 bg-zinc-900/50 flex items-center gap-3">
+                                <div class="w-10 h-10 rounded-full bg-zinc-800 border border-zinc-700 overflow-hidden shrink-0">
+                                    @php
+                                        $dropdownAvatar = auth()->user()->profile?->primaryImage()?->thumbUrl()
+                                            ?? auth()->user()->avatar;
+                                    @endphp
+                                    @if($dropdownAvatar)
+                                        <img src="{{ $dropdownAvatar }}" alt="{{ auth()->user()->name }}" class="w-full h-full object-cover">
+                                    @else
+                                        <div class="w-full h-full flex items-center justify-center bg-zinc-800">
+                                            <svg class="w-5 h-5 text-zinc-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                                        </div>
+                                    @endif
+                                </div>
+                                <div class="min-w-0">
+                                    <p class="text-white font-bold text-sm truncate">{{ auth()->user()->name }}</p>
+                                    <p class="text-zinc-500 text-xs truncate">{{ auth()->user()->email }}</p>
+                                </div>
                             </div>
 
                             {{-- Opções do Menu --}}
@@ -162,9 +184,24 @@
                 @endif
                 <div class="h-px bg-zinc-800 my-4"></div>
                 @auth
-                    <div class="px-4 py-3 border-b border-zinc-800">
-                        <p class="text-white font-bold text-sm">{{ auth()->user()->name }}</p>
-                        <p class="text-zinc-500 text-xs">{{ auth()->user()->email }}</p>
+                    <div class="px-4 py-3 border-b border-zinc-800 flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-full bg-zinc-800 border border-zinc-700 overflow-hidden shrink-0">
+                            @php
+                                $mobileAvatar = auth()->user()->profile?->primaryImage()?->thumbUrl()
+                                    ?? auth()->user()->avatar;
+                            @endphp
+                            @if($mobileAvatar)
+                                <img src="{{ $mobileAvatar }}" alt="{{ auth()->user()->name }}" class="w-full h-full object-cover">
+                            @else
+                                <div class="w-full h-full flex items-center justify-center bg-zinc-800">
+                                    <svg class="w-5 h-5 text-zinc-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                                </div>
+                            @endif
+                        </div>
+                        <div class="min-w-0">
+                            <p class="text-white font-bold text-sm truncate">{{ auth()->user()->name }}</p>
+                            <p class="text-zinc-500 text-xs truncate">{{ auth()->user()->email }}</p>
+                        </div>
                     </div>
                     @if(auth()->user()->isAdmin())
                     <a href="{{ route('admin.dashboard') }}" class="flex items-center gap-3 px-4 py-4 text-lg font-bold text-zinc-300 hover:text-white hover:bg-zinc-800/50 rounded-xl transition-all uppercase tracking-wider cursor-pointer">Administração</a>
@@ -192,14 +229,13 @@
     </main>
 
     {{-- Footer --}}
-    <footer class="w-full bg-zinc-900 py-16">
+    <footer class="w-full bg-zinc-900">
         <x-ui.container size="lg">
-            <div class="flex flex-col md:flex-row justify-between gap-16">
+            <div class="flex flex-col md:flex-row justify-between gap-16 py-16">
             {{-- Coluna Esquerda --}}
             <div class="flex flex-col gap-4 max-w-[300px]">
                 <h3 class="text-heading-3 font-heading"><span class="text-primary">PLANETA</span> <span class="text-foreground">BOYS</span></h3>
                 <p class="text-zinc-400 text-[14px] font-normal">O melhor diretório premium para conectar você aos melhores acompanhantes masculinos e trans.</p>
-                <p class="text-zinc-400 text-[12px] font-normal">&copy; 2026 Planeta Boys.</p>
             </div>
 
             {{-- Links Container --}}
@@ -239,6 +275,12 @@
                 </div>
             </div>
         </x-ui.container>
+        {{-- Copyright Bar --}}
+        <div class="border-t border-zinc-800 py-6">
+            <x-ui.container size="lg">
+                <p class="text-zinc-500 text-[12px] text-center">&copy; 2026 Planeta Boys. Todos os direitos reservados.</p>
+            </x-ui.container>
+        </div>
     </footer>
 
     {{-- Cookie Consent Banner --}}

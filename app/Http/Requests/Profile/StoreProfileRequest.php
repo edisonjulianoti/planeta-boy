@@ -38,7 +38,7 @@ final class StoreProfileRequest extends FormRequest
             'order.*'            => ['integer', 'min:0'],
 
             // Características físicas
-            'height'             => ['nullable', 'integer', 'min:100', 'max:250'],
+            'height'             => ['nullable', 'numeric', 'min:1.00', 'max:2.50'],
             'weight'             => ['nullable', 'integer', 'min:30', 'max:300'],
             'hair_color'         => ['nullable', 'string', 'max:100'],
             'eye_color'          => ['nullable', 'string', 'max:100'],
@@ -63,9 +63,9 @@ final class StoreProfileRequest extends FormRequest
             'video_files.*.file'     => 'Cada arquivo de vídeo deve ser um arquivo válido.',
             'video_files.*.mimes'    => 'Cada vídeo deve ser MP4 ou WebM.',
             'video_files.*.max'      => 'Cada vídeo deve ter no máximo 50MB.',
-            'height.integer' => 'A altura deve ser um valor numérico.',
-            'height.min'     => 'Altura mínima é 100cm.',
-            'height.max'     => 'Altura máxima é 250cm.',
+            'height.numeric' => 'A altura deve ser um valor numerico (ex: 1,75).',
+            'height.min'     => 'Altura minima e 1,00m.',
+            'height.max'     => 'Altura maxima e 2,50m.',
             'weight.integer' => 'O peso deve ser um valor numérico.',
             'weight.min'     => 'Peso mínimo é 30kg.',
             'weight.max'     => 'Peso máximo é 300kg.',

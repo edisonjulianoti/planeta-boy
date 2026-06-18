@@ -5,13 +5,16 @@ declare(strict_types=1);
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Models\Setting;
 use App\Models\User;
+use App\Notifications\NewUserRegistered;
 use App\Rules\Cpf;
 use Carbon\Carbon;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Notification;
 use Illuminate\View\View;
 
 class RegistroController extends Controller
@@ -66,6 +69,18 @@ class RegistroController extends Controller
         $usuario->sendEmailVerificationNotification();
 
         Auth::login($usuario);
+
+        // Notifica admins sobre novo cadastro
+        $notifyEmails = Setting::getValue('notification_emails', '');
+        if ($notifyEmails) {
+            $emails = array_map('trim', explode(',', $notifyEmails));
+            foreach ($emails as $email) {
+                if (filter_var($email, FILTER_VALIDATE_EMAIL)) {
+                    Notification::route('mail', $email)
+                        ->notify(new NewUserRegistered($usuario));
+                }
+            }
+        }
 
         return redirect()->route('verification.notice')
             ->with('status', 'Conta criada! Verifique seu e-mail para ativar sua conta.');

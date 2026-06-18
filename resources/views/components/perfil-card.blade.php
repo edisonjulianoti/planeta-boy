@@ -18,8 +18,9 @@
 
     {{-- Imagem --}}
     <div class="relative h-[260px] bg-zinc-800 flex flex-col justify-between p-3">
-        @if($perfil->images->isNotEmpty())
-            <img src="{{ asset('storage/' . $perfil->images->first()->url) }}" alt="{{ $perfil->name }}"
+        @php $mainImage = $perfil->primaryImage(); @endphp
+        @if($mainImage)
+            <img src="{{ $mainImage->thumbUrl() }}" alt="{{ $perfil->name }}"
                  class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
         @else
             <div class="absolute inset-0 w-full h-full flex items-center justify-center bg-zinc-800">
